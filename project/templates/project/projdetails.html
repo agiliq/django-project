@@ -1,0 +1,25 @@
+{% extends 'project/base.html' %}
+
+{% block contents %}
+    <h2>{{project.name}}</h2>
+    <ul>
+    {% for sub in subs %}
+        <li>
+        <a href="{{sub.project.get_absolute_url}}">{{sub.project.name}}</a>
+        </li>
+    {% endfor %}
+    </ul>
+    <div id="inviteform">
+        <form action="." method="POST">
+            {{inviteform.as_p}}
+            <input type="SUBMIT" name="invite" value="Create new project" />
+        </form>
+    </div>
+    
+    <div id="taskform">
+        <form action="." method="POST">
+            {{taskform.as_p}}
+            <input type="SUBMIT" name="task" value="Create new project" />
+        </form>
+    </div>    
+{% endblock %}

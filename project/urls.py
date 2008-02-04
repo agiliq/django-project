@@ -20,7 +20,9 @@ urlpatterns += patterns('project.tasks',
 
 urlpatterns += patterns('project.wiki',
     (r'^(?P<project_name>\w+)/wiki/$', 'wiki'),
+    (r'^(?P<project_name>\w+)/wiki/new/$', 'create_wikipage'),
     (r'^(?P<project_name>\w+)/wiki/(?P<page_name>)/$', 'wikipage'),
+    (r'^(?P<project_name>\w+)/wiki/(?P<page_name>)/edit/$', 'edit_wikipage'),
     #(r'^(?P<project_name>\w+)/wiki/(?P<page_name>)/revisions/$', 'wiki_revisions'),
     (r'^(?P<project_name>\w+)/wiki/(?P<page_name>)/revisions/(?P<revision_id>)/$', 'wiki_revision'),
     )

@@ -1,0 +1,19 @@
+{% extends 'project/base.html' %}
+
+{% block contents %}
+    <h2>Noticeboard</h2>
+    <ul>
+    {% for notice in notices %}
+	<li>
+        {{notice.text}}
+	</li>
+    {% endfor %}
+    </ul>
+    
+    <div id="noticeform">
+        <form action="." method="post">
+            {{addnoticeform.as_p}}
+            <input type="SUBMIT" name="addnotice" value="Add Notice" />
+        </form>
+    </div>
+{% endblock %}

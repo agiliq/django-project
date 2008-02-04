@@ -1,5 +1,18 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django import newforms as forms
+
+class AddTodoItemForm(forms.Form):
+    text = forms.CharField()
+    
+    def __init__(self, list = None, *args, **kwargs):
+        super(AddTodoItemForm, self).__init__(*args, ** kwargs)
+        self.list = list
+        
+    def save(self):
+        todoitem = TodoItem(text = self.cleaned_data['text'], list = self.user)
+        todoitem.save()
+        return todoitem
 
 class Project(models.Model):
     """Model for project.
@@ -16,6 +29,9 @@ class Project(models.Model):
     
     def get_absolute_url(self):
         return '/%s/' % self.shortname
+    
+    def __unicode__(self):
+        return self.shortname
     
     class Admin:
         pass
@@ -35,6 +51,9 @@ class SubscribedUser(models.Model):
     project = models.ForeignKey(Project)
     group = models.CharField(max_length = 20, choices = options)
     
+    class Admin:
+        pass    
+    
 class InvitedUser(models.Model):
     """Users who have invited to a given project
     user: the user
@@ -46,32 +65,52 @@ class InvitedUser(models.Model):
     group = models.CharField(max_length = 20, choices = options)
     rejected = models.BooleanField(default = False)
     
+    class Admin:
+        pass    
+    
 class Task(models.Model):
     """Model for task.
     number: of the task under the current project.
     name: name for this task.
-    project: the project under hwich this rask was created.
+    project: the project under hwich this task was created.
     parent_task: For which task is this a subtask. If this is null, this is a task directly under project.
     user_responsible: who is the person who is responsible for completing this task.
     dates: excpected, and actual dates for this task.
     is_complete: has this task been completed? Defaults to false.
     created_on: when was this task created. Auto filled."""
+    
     number = models.IntegerField()
     name = models.CharField(max_length = 200)
     project = models.ForeignKey(Project)
-    parent_task = models.ForeignKey('Task')
-    user_responsible = models.ForeignKey(User)
+    parent_task = models.ForeignKey('Task', null = True)
+    user_responsible = models.ForeignKey(User, null = True)
     expected_start_date = models.DateField()
-    expected_end_date = models.DateField()
-    actual_start_date = models.DateField()
-    actual_end_date = models.DateField()
+    expected_end_date = models.DateField(null = True)
+    actual_start_date = models.DateField(null = True)
+    actual_end_date = models.DateField(null = True)
     is_complete = models.BooleanField(default = False)
     created_on = models.DateTimeField(auto_now_add = 1)
     #Versioning
-    effective_start_date = models.DateTimeField()
-    effective_end_date = models.DateTimeField()
+    effective_start_date = models.DateTimeField(auto_now_add = True)
+    effective_end_date = models.DateTimeField(null = True)
     version_number = models.IntegerField()
-    is_current = models.BooleanField()
+    is_current = models.BooleanField(default = True)
+    
+    def save(self):
+        """If this is the firsts time populate required details, if this is update version it."""
+        if not self.id:
+            self.version_number = 1
+            self.number = Task.objects.filter(project = self.project, is_current = True).count() + 1
+            super(Task, self).save()
+        else:
+            #Version it
+            import copy
+            new_task = copy.copy(self)
+            new_task.id = None
+            new_task.save()
+            
+    class Admin:
+        pass               
     
 class TaskItem(models.Model):
     """A task item for a task.
@@ -101,11 +140,22 @@ class TaskItem(models.Model):
     
 class TodoList(models.Model):
     """A todo list of a user of the project"""
-    name = models.CharField(max_length = 100)
+    name = models.CharField(max_length = 200)
     user = models.ForeignKey(User)
     project = models.ForeignKey(Project)
+    is_complete = models.BooleanField(default = False)
+    created_on = models.DateTimeField(auto_now_add = 1)
+    def get_item_form(self):
+        return AddTodoItemForm()
+    
+    item_form = property(get_item_form, None, None)
+    
+class TodoItem(models.Model):
+    """A todo item of the project."""
+    list = models.ForeignKey(TodoList)
+    text = models.CharField(max_length = 200)
     is_complete = models.BooleanField(False)
-    created_on = models.DateTimeField(auto_now_add = 1) 
+    created_on = models.DateTimeField(auto_now_add = 1)
     
 class Log(models.Model):
     """Log of the project.
@@ -123,10 +173,14 @@ class Notice(models.Model):
     user: User who wrote this notice.
     text: text of the notice.
     created_on: When was this notice created. Auto filled."""
-    number = models.IntegerField()
-    user = models.ForeignKey(Project)
+    
+    user = models.ForeignKey(User)
+    project = models.ForeignKey(Project)
     text = models.TextField()
     created_on = models.DateTimeField(auto_now_add = 1)
+    
+    class Admin:
+        pass
     
 class WikiPage(models.Model):
     """Model of the wiki page.

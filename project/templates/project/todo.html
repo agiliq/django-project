@@ -1,0 +1,25 @@
+{% extends 'project/base.html' %}
+
+{% block contents %}
+    <h2>Noticeboard</h2>
+    <ul>
+    {% for list in lists %}
+	<li>
+        {{list.name}}
+	<div class="itemcontrols">
+	<form action="." method="post" name="{{list.name}}">
+	{{list.item_form}}
+	<input type="HIDDEN" name="id" value="{{list.id}}" />
+	<input type="submit" name="additem" value="Add todo item" />
+	<div>
+	</li>
+    {% endfor %}
+    </ul>
+    
+    <div id="noticeform">
+        <form action="." method="post">
+            {{addlistform.as_p}}
+            <input type="SUBMIT" name="addlist" value="Add Notice" />
+        </form>
+    </div>
+{% endblock %}
