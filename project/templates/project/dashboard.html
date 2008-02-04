@@ -1,0 +1,18 @@
+{% extends 'project/base.html' %}
+
+{% block contents %}
+    <h2>Your Projects</h2>
+    <ul>
+    {% for sub in subs %}
+        <li>
+        <a href="{{sub.project.get_absolute_url}}">{{sub.project.name}}</a>
+        </li>
+    {% endfor %}
+    </ul>
+    <div id="createprojectform">
+        <form action="." method="POST">
+            {{createform.as_p}}
+            <input type="SUBMIT" name="submit" value="Create new project" />
+        </form>
+    </div>
+{% endblock %}
