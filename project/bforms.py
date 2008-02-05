@@ -64,12 +64,20 @@ class CreateTaskForm(forms.Form):
         super(CreateTaskForm, self).__init__(*args, **kwargs)
         self.project = project
         users = [subs.user for subs in project.subscribeduser_set.all()]
-        self.fields['user'].choices = [('---','---')] + [(user.username, user.username) for user in users]
+        self.fields['user'].choices = [('None','---')] + [(user.username, user.username) for user in users]
+        
+    def save_without_db(self):
+        task = Task(name = self.cleaned_data['name'], expected_start_date = self.cleaned_data['start_date'], expected_end_date = self.cleaned_data['end_date'])
+        if not self.cleaned_data['user'] == 'None':
+            user = User.objects.get(username = self.cleaned_data['user'])
+            task.user_responsible = user
+        task.project = self.project
+        return task        
         
     def save(self):
-        task = Task(name = self.cleaned_data['name'], expected_start_date = self.cleaned_data['start_date'], expected_end_date = self.cleaned_data['end_date'])
-        task.project = self.project
+        task = self.save_without_db()
         task.save()
+        return task
 
 
 class CreateSubTaskForm(CreateTaskForm):
@@ -77,10 +85,34 @@ class CreateSubTaskForm(CreateTaskForm):
         super(CreateSubTaskForm, self).__init__(project, *args, **kwargs)
         self.parent_task = parent_task
     def save(self):
-        task = Task(name = self.cleaned_data['name'], expected_start_date = self.cleaned_data['start_date'], expected_end_date = self.cleaned_data['end_date'])
-        task.project = self.project
+        task = self.save_without_db()
         task.parent_task = self.parent_task
-        task.save()          
+        task.save()
+        return task
+        
+        
+class CreateTaskItemForm(forms.Form):
+    name = forms.CharField(max_length = 200)
+    user = forms.ChoiceField()
+    time = forms.DecimalField()
+    units = forms.ChoiceField(choices = unit_choices)
+    def __init__(self, task = None, *args, **kwargs):
+        super(CreateTaskItemForm, self).__init__(*args, **kwargs)
+        self.task = task
+        users = [subs.user for subs in task.project.subscribeduser_set.all()]
+        self.fields['user'].choices = [('None','---')] + [(user.username, user.username) for user in users]
+        
+    def save(self):
+        item = TaskItem(name = self.cleaned_data['name'], )
+        item.task = self.task
+        if not self.cleaned_data['user'] == 'None':
+            user = User.objects.get(username = self.cleaned_data['user'])
+            item.user = user
+        item.expected_time = self.cleaned_data['time']
+        item.unit = self.cleaned_data['units']
+        item.save()
+        return item
+        
 
 
 class AddNoticeForm(forms.Form):
@@ -109,7 +141,28 @@ class AddTodoListForm(forms.Form):
         list.save()
         return list
 
-
+class CreateWikiPageForm(forms.Form):
+    title = forms.CharField()
+    text = forms.CharField(widget = forms.Textarea)
+    
+    def __init__(self, project = None, user = None, *args, **kwargs):
+        super(CreateWikiPageForm, self).__init__(*args, **kwargs)
+        self.project = project
+        self.user = user
+        
+    def save(self):
+        page = WikiPage(title = self.cleaned_data['title'],)
+        page.project = self.project
+        page.save()
+        
+        page_rev = WikiPageRevision(text = self.cleaned_data['text'])
+        page_rev.wiki_page = page
+        page_rev.user = self.user
+        page_rev.save()
+        
+        page.curent_revision = page_rev
+        page.save()
+    
 """    
 class AddTodoItemForm(forms.Form):
     text = forms.CharField(widget = forms.Textarea)

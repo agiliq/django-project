@@ -1,1 +1,12 @@
 {% extends 'project/base.html' %}
+
+{% block contents %}
+    <form action="/accounts/login/" method="post">
+        {{login_form.as_p}}
+        <input type="submit" name="login" value="Login" />
+    </form>
+{% endblock %}
+
+{% block sidebar %}
+    Sidebar data
+{% endblock %}

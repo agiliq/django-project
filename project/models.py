@@ -33,6 +33,24 @@ class Project(models.Model):
     def __unicode__(self):
         return self.shortname
     
+    def tasks_url(self):
+        return '/%s/tasks/' % self.shortname
+    
+    def noticeboard_url(self):
+        return '/%s/noticeboard/' % self.shortname
+    
+    def wiki_url(self):
+        return '/%s/wiki/' % self.shortname
+    
+    def files_url(self):
+        return '/%s/files/' % self.shortname
+    
+    def todo_url(self):
+        return '/%s/todo/' % self.shortname
+    
+    def logs_url(self):
+        return '/%s/logs/' % self.shortname
+    
     class Admin:
         pass
     
@@ -113,7 +131,7 @@ class Task(models.Model):
         return self.task_set.all().count()
     
     def num_items(self):
-        return self.taskitem_set.objects.all().count()
+        return self.taskitem_set.all().count()
     
     def get_absolute_url(self):
         return '/%s/taskdetails/%s/' % (self.project.shortname, self.number)
@@ -139,7 +157,7 @@ class TaskItem(models.Model):
     """
     number = models.IntegerField()
     name = models.CharField(max_length = 200)
-    project = models.ForeignKey(Task)
+    task = models.ForeignKey(Task)
     user = models.ForeignKey(User, null = True)
     expected_time = models.DecimalField(decimal_places = 2, max_digits = 10)
     actual_time = models.DecimalField(decimal_places = 2, max_digits = 10, null = True)
@@ -148,7 +166,7 @@ class TaskItem(models.Model):
     created_on = models.DateTimeField(auto_now_add = 1)
     #Versioning
     effective_start_date = models.DateTimeField(auto_now_add = 1)
-    effective_end_date = models.DateTimeField()
+    effective_end_date = models.DateTimeField(null = True)
     version_number = models.IntegerField()
     is_current = models.BooleanField(default = True)
     
@@ -156,14 +174,17 @@ class TaskItem(models.Model):
         """If this is the firsts time populate required details, if this is update version it."""
         if not self.id:
             self.version_number = 1
-            self.number = TaskItem.objects.filter(project = self.project, is_current = True).count() + 1
-            super(Task, self).save()
+            self.number = TaskItem.objects.filter().count() + 1
+            super(TaskItem, self).save()
         else:
             #Version it
             import copy
             new_task = copy.copy(self)
             new_task.id = None
-            new_task.save()    
+            new_task.save()
+            
+    class Admin:
+        pass
     
 class TodoList(models.Model):
     """A todo list of a user of the project"""
@@ -177,12 +198,18 @@ class TodoList(models.Model):
     
     item_form = property(get_item_form, None, None)
     
+    class Admin:
+        pass
+    
 class TodoItem(models.Model):
     """A todo item of the project."""
     list = models.ForeignKey(TodoList)
     text = models.CharField(max_length = 200)
-    is_complete = models.BooleanField(False)
+    is_complete = models.BooleanField(default = False)
     created_on = models.DateTimeField(auto_now_add = 1)
+    
+    class Admin:
+        pass
     
 class Log(models.Model):
     """Log of the project.
@@ -218,7 +245,8 @@ class WikiPage(models.Model):
     """
     name = models.CharField(max_length = 20)
     title = models.CharField(max_length = 200)
-    current_revision = models.ForeignKey('WikiPageRevision')
+    project = models.ForeignKey(Project)
+    current_revision = models.ForeignKey('WikiPageRevision', null = True)
     created_on = models.DateTimeField(auto_now_add = 1)
     
 class WikiPageRevision(models.Model):

@@ -43,4 +43,8 @@ urlpatterns += patterns('project.users',
     (r'^register/$', 'register'),
     )
 
+urlpatterns += patterns('',
+        (r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': 'F:/prajact/project/templates/site_media'}),
+    )
+
 

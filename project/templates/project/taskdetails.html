@@ -16,13 +16,33 @@
 	</ul>
     </div>
     {% endif %}
+    
+    {% if task.num_items %}
+    <div id="taskitems">
+	<h3>Items for {{task.name}}</h3>
+	<ul>
+	{% for item in task.taskitem_set.all %}
+	    <li>
+	    <a href="{{item.get_absolute_url}}">{{item.name}}</a>
+	    </li>
+	{% endfor %}
+	</ul>
+    </div>
+    {% endif %}
     </div>
     
     
-    <div>
+    <div id="subtaskform">
 	<form action="." method="post">
 	{{addsubtaskform.as_p}}
 	<input type="SUBMIT" name="addsubtask" value="Add a subtask" />
 	</form>
     </div>
+    
+    <div id="itemform">
+	<form action="." method="post">
+	{{additemform.as_p}}
+	<input type="SUBMIT" name="additem" value="Add a taskitem" />
+	</form>
+    </div>    
 {% endblock %}

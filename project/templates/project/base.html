@@ -4,6 +4,7 @@
         {% block title %}
         {% endblock %}
     </title>
+    <link rel="stylesheet" type="text/css" href="/site_media/style.css" />
 </head>
 
 <body>
@@ -20,6 +21,16 @@
         
         <div id="tabs">
             {% block tabs %}
+            <ul>
+                <li><a href="/dashboard/">Dashboard</a></li>
+                    <li><a href="{{project.tasks_url}}">Tasks</a></li>
+                    <li><a href="{{project.todo_url}}">Todo</a></li>
+                    <li><a href="{{project.noticeboard_url}}">Noticeboard</a></li>
+                    <li><a href="{{project.wiki_url}}">Wiki</a></li>
+                    <li><a href="{{project.files_url}}">Files</a></li>
+                    <li><a href="{{project.logs_url}}">Logs</a></li>
+                
+            </ul>
             {% endblock %}
         </div>
     </div>

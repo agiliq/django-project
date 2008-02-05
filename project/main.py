@@ -65,7 +65,7 @@ def project_details(request, project_name):
 @login_required
 def full_logs(request, project_name):
     logs = Log.objects.all()
-    payload = {'logs':logs}
+    payload = {'project':project, 'logs':logs}
     return render(request, 'project/fulllogs.html', payload)
 
 @login_required
@@ -83,7 +83,7 @@ def noticeboard(request, project_name):
             return HttpResponseRedirect('.')
     if request.method == 'GET':        
         addnoticeform = bforms.AddNoticeForm()
-    payload = {'notices':notices, 'addnoticeform':addnoticeform}
+    payload = {'project':project, 'notices':notices, 'addnoticeform':addnoticeform}
     return render(request, 'project/noticeboard.html', payload)
 
 @login_required
@@ -99,9 +99,13 @@ def todo(request, project_name):
                 addlistform.save()
                 return HttpResponseRedirect('.')
         elif request.POST.has_key('additem'):
-            print request.POST
+            if request.POST['text']:
+                id = int(request.POST['id'])
+                list = TodoList.objects.get(id = id)
+                item = TodoItem(list = list, text = request.POST['text'])
+                item.save()
     if request.method == 'GET':
         addlistform = bforms.AddTodoListForm()
-    payload = {'lists':lists, 'addlistform':addlistform}
+    payload = {'project':project, 'lists':lists, 'addlistform':addlistform}
     return render(request, 'project/todo.html', payload)
 
