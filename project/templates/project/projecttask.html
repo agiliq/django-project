@@ -1,0 +1,20 @@
+{% extends 'project/base.html' %}
+
+{% block contents %}
+    <h2>Tasks for project</h2>
+    <ul>
+    {% for task in tasks %}
+	<li>
+        <a href="{{task.get_absolute_url}}">{{task.name}}</a>
+        
+	</li>
+    {% endfor %}
+    </ul>
+    
+    <div id="noticeform">
+        <form action="." method="post">
+            {{addlistform.as_p}}
+            <input type="SUBMIT" name="addlist" value="Add Notice" />
+        </form>
+    </div>
+{% endblock %}

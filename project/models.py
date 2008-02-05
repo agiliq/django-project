@@ -109,9 +109,23 @@ class Task(models.Model):
             new_task.id = None
             new_task.save()
             
+    def num_child_tasks(self):
+        return self.task_set.all().count()
+    
+    def num_items(self):
+        return self.taskitem_set.objects.all().count()
+    
+    def get_absolute_url(self):
+        return '/%s/taskdetails/%s/' % (self.project.shortname, self.number)
+            
     class Admin:
         pass               
-    
+
+unit_choices = (
+    ('HOUR', 'Hours'),
+    ('DAY', 'Days'),
+    ('MONTH', 'Months'),
+    )    
 class TaskItem(models.Model):
     """A task item for a task.
     number: of the task under the current project.
@@ -126,17 +140,30 @@ class TaskItem(models.Model):
     number = models.IntegerField()
     name = models.CharField(max_length = 200)
     project = models.ForeignKey(Task)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, null = True)
     expected_time = models.DecimalField(decimal_places = 2, max_digits = 10)
-    actual_time = models.DecimalField(decimal_places = 2, max_digits = 10)
-    unit = models.CharField(max_length = 20)
+    actual_time = models.DecimalField(decimal_places = 2, max_digits = 10, null = True)
+    unit = models.CharField(max_length = 20, choices = unit_choices)
     is_complete = models.BooleanField(default = False)
     created_on = models.DateTimeField(auto_now_add = 1)
     #Versioning
-    effective_start_date = models.DateTimeField()
+    effective_start_date = models.DateTimeField(auto_now_add = 1)
     effective_end_date = models.DateTimeField()
     version_number = models.IntegerField()
-    is_current = models.BooleanField()
+    is_current = models.BooleanField(default = True)
+    
+    def save(self):
+        """If this is the firsts time populate required details, if this is update version it."""
+        if not self.id:
+            self.version_number = 1
+            self.number = TaskItem.objects.filter(project = self.project, is_current = True).count() + 1
+            super(Task, self).save()
+        else:
+            #Version it
+            import copy
+            new_task = copy.copy(self)
+            new_task.id = None
+            new_task.save()    
     
 class TodoList(models.Model):
     """A todo list of a user of the project"""

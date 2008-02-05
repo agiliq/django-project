@@ -13,18 +13,18 @@ urlpatterns = patterns('project.main',
 
 urlpatterns += patterns('project.tasks',
     (r'^(?P<project_name>\w+)/tasks/$', 'project_tasks'),                        
-    (r'^(?P<project_name>\w+)/taskdetails/(?P<task_num>)/$', 'task_details'),
-    (r'^(?P<project_name>\w+)/taskhistory/(?P<task_num>)/$', 'task_history'),
-    (r'^(?P<project_name>\w+)/taskitemhist/(?P<taskitem_num>)/$', 'taskitem_history'),
+    (r'^(?P<project_name>\w+)/taskdetails/(?P<task_num>\d+)/$', 'task_details'),
+    (r'^(?P<project_name>\w+)/taskhistory/(?P<task_num>\d+)/$', 'task_history'),
+    (r'^(?P<project_name>\w+)/taskitemhist/(?P<taskitem_num>\d+)/$', 'taskitem_history'),
     )
 
 urlpatterns += patterns('project.wiki',
     (r'^(?P<project_name>\w+)/wiki/$', 'wiki'),
     (r'^(?P<project_name>\w+)/wiki/new/$', 'create_wikipage'),
-    (r'^(?P<project_name>\w+)/wiki/(?P<page_name>)/$', 'wikipage'),
-    (r'^(?P<project_name>\w+)/wiki/(?P<page_name>)/edit/$', 'edit_wikipage'),
+    (r'^(?P<project_name>\w+)/wiki/(?P<page_name>)\w+/$', 'wikipage'),
+    (r'^(?P<project_name>\w+)/wiki/(?P<page_name>)\w+/edit/$', 'edit_wikipage'),
     #(r'^(?P<project_name>\w+)/wiki/(?P<page_name>)/revisions/$', 'wiki_revisions'),
-    (r'^(?P<project_name>\w+)/wiki/(?P<page_name>)/revisions/(?P<revision_id>)/$', 'wiki_revision'),
+    (r'^(?P<project_name>\w+)/wiki/(?P<page_name>)\w+/revisions/(?P<revision_id>)\d+/$', 'wiki_revision'),
     )
 
 urlpatterns += patterns('project.metrics',

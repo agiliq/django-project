@@ -70,7 +70,19 @@ class CreateTaskForm(forms.Form):
         task = Task(name = self.cleaned_data['name'], expected_start_date = self.cleaned_data['start_date'], expected_end_date = self.cleaned_data['end_date'])
         task.project = self.project
         task.save()
-        
+
+
+class CreateSubTaskForm(CreateTaskForm):
+    def __init__(self, project = None, parent_task = None, *args, **kwargs):
+        super(CreateSubTaskForm, self).__init__(project, *args, **kwargs)
+        self.parent_task = parent_task
+    def save(self):
+        task = Task(name = self.cleaned_data['name'], expected_start_date = self.cleaned_data['start_date'], expected_end_date = self.cleaned_data['end_date'])
+        task.project = self.project
+        task.parent_task = self.parent_task
+        task.save()          
+
+
 class AddNoticeForm(forms.Form):
     text = forms.CharField(widget = forms.Textarea)
     
