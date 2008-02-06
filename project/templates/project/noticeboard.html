@@ -4,9 +4,14 @@
     <h2>Noticeboard</h2>
     <ul>
     {% for notice in notices %}
+        <div class="notice">
 	<li>
         {{notice.text}}
+        <div class="info">
+            Put by {{notice.user.username}} on {{notice.created_on|date}}
+        </div>
 	</li>
+        </div>
     {% endfor %}
     </ul>
     
@@ -16,4 +21,11 @@
             <input type="SUBMIT" name="addnotice" value="Add Notice" />
         </form>
     </div>
+{% endblock %}
+
+{% block sidebar %}
+    There are {{notices.count}} notices.
+    {% if notices %}
+        The latest notice was put by {{notices.0.user.username}} on {{notices.0.created_on|date}}
+    {% endif %}
 {% endblock %}

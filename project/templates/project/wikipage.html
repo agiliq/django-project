@@ -1,0 +1,25 @@
+{% extends 'project/base.html'%}
+
+{% block contents %}
+    <h2>{{page.title}}</h2>
+    <div id="wikitext">
+        {{page.current_revision.html_text}}
+    </div>
+{% endblock %}
+
+{% block sidebar %}
+    <h3>Meta</h3>
+    <ul>
+    <li><a href="/{{project.shortname}}/wiki/new/">Create new page</a></li>
+    <li><a href="{{page.edit_url}}">Edit this page</a></li>
+    </ul>
+    
+    <h2>revisions</h2>
+    <ul>
+    {% for rev in page.wikipagerevision_set.all %}
+	<li>
+	    <a href="{{rev.get_absolute_url}}">{{rev.created_on}}</a>
+	</li>
+    {% endfor %}
+    </ul>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'project/base.html'%}
+
+{% block contents %}
+    <h2>{{page.title}}</h2>
+    <div id="wikitext">
+        {{revision.html_text}}
+    </div>
+{% endblock %}
+
+{% block sidebar %}
+    <h3>Meta</h3>
+    <ul>
+    <li><a href="/{{project.shortname}}/wiki/new/">Create new page</a></li>
+    <li><a href="{{page.edit_url}}">Edit this page</a></li>
+    </ul>
+    
+    <h3>About this revision</h3>
+    <div class="blurb">
+	This is a revision created for {{page.title}} on {{revision.created_on|date}}
+    </div>
+{% endblock %}

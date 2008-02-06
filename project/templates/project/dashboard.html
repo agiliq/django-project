@@ -14,6 +14,16 @@
     {% for sub in subs %}
         <li>
         <a href="{{sub.project.get_absolute_url}}">{{sub.project.name}}</a>
+        {% if sub.project.overdue_tasks %}
+            <h3>Critical Tasks</h3>
+            <ul>
+            {% for task in sub.project.overdue_tasks %}
+                <li>
+                    <a href="{{task.get_absolute_url}}">{{task.name}}</a>
+                </li>
+            {% endfor %}
+            </ul>
+        {% endif %}
         </li>
     {% endfor %}
     </ul>

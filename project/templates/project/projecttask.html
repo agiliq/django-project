@@ -6,6 +6,31 @@
     {% for task in tasks %}
 	<li>
         <a href="{{task.get_absolute_url}}">{{task.name}}</a>
+    {% if task.num_child_tasks %}	
+    <div id="subtasks">
+	<h3>Subs tasks for {{task.name}}</h3>
+	<ul>
+	{% for task in task.task_set.all %}
+	    <li>
+	    <a href="{{task.get_absolute_url}}">{{task.name}}</a>
+	    </li>
+	{% endfor %}
+	</ul>
+    </div>
+    {% endif %}
+    
+    {% if task.num_items %}
+    <div id="taskitems">
+	<h3>Items for {{task.name}}</h3>
+	<ul>
+	{% for item in task.taskitem_set.all %}
+	    <li>
+	    <a href="{{item.get_absolute_url}}">{{item.name}}</a>
+	    </li>
+	{% endfor %}
+	</ul>
+    </div>
+    {% endif %}	
         
 	</li>
     {% endfor %}
@@ -13,8 +38,8 @@
     
     <div id="noticeform">
         <form action="." method="post">
-            {{addlistform.as_p}}
-            <input type="SUBMIT" name="addlist" value="Add Notice" />
+            {{taskform.as_p}}
+            <input type="SUBMIT" name="addtask" value="Add Task" />
         </form>
     </div>
 {% endblock %}

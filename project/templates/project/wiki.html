@@ -4,8 +4,17 @@
     <div id="pagelist">
         <ul>
             {% for page in wikipages %}
-            <li>{{page}}</li>
+            <li>
+                <a href="{{page.get_absolute_url}}">{{page.title}}</a>
+            </li>
             {% endfor %}
         </ul>
     </div>
+{% endblock %}
+
+{% block sidebar %}
+    <h3>Meta</h3>
+    <ul>
+	<li><a href="{{project.new_wikipage_url}}">Create a new page</a></li>
+    </ul>  
 {% endblock %}

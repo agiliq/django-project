@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django import newforms as forms
+import datetime
 
 class AddTodoItemForm(forms.Form):
     text = forms.CharField()
@@ -42,6 +43,9 @@ class Project(models.Model):
     def wiki_url(self):
         return '/%s/wiki/' % self.shortname
     
+    def new_wikipage_url(self):
+        return '/%s/wiki/new/' % self.shortname
+    
     def files_url(self):
         return '/%s/files/' % self.shortname
     
@@ -50,6 +54,13 @@ class Project(models.Model):
     
     def logs_url(self):
         return '/%s/logs/' % self.shortname
+    
+    def new_tasks(self):
+        return self.task_set.all().order_by('-created_on')[:3]
+    
+    def overdue_tasks(self):
+        print self.task_set.filter(expected_end_date__lt = datetime.datetime.today())
+        return self.task_set.filter(expected_end_date__lt = datetime.datetime.today())
     
     class Admin:
         pass
@@ -85,6 +96,14 @@ class InvitedUser(models.Model):
     
     class Admin:
         pass    
+
+class TaskManager(models.Manager):
+    def get_query_set(self):
+        return super(TaskManager, self).get_query_set().filter(is_current = True)
+    
+    def all_include_old(self):
+        """Get all the rows, including the versioned with old ones."""
+        return super(TaskManager, self).all()
     
 class Task(models.Model):
     """Model for task.
@@ -110,9 +129,12 @@ class Task(models.Model):
     created_on = models.DateTimeField(auto_now_add = 1)
     #Versioning
     effective_start_date = models.DateTimeField(auto_now_add = True)
-    effective_end_date = models.DateTimeField(null = True)
+    effective_end_date = models.DateTimeField(null = True, auto_now = True)
     version_number = models.IntegerField()
     is_current = models.BooleanField(default = True)
+    
+    objects = TaskManager()
+    all_objects = models.Manager()
     
     def save(self):
         """If this is the firsts time populate required details, if this is update version it."""
@@ -124,8 +146,17 @@ class Task(models.Model):
             #Version it
             import copy
             new_task = copy.copy(self)
+            self.is_current = False
+            self.effective_end_date = datetime.datetime.now()
+            super(Task, self).save()
             new_task.id = None
-            new_task.save()
+            new_task.version_number = self.version_number + 1
+            super(Task, new_task).save()
+            
+            
+    def get_old_versions(self):
+        """Get all the versions of the this task."""
+        return Task.all_objects.filter(number = self.number, project  = self.project)
             
     def num_child_tasks(self):
         return self.task_set.all().count()
@@ -135,6 +166,19 @@ class Task(models.Model):
     
     def get_absolute_url(self):
         return '/%s/taskdetails/%s/' % (self.project.shortname, self.number)
+    
+    def revision_url(self):
+        return '/%s/taskrevision/%s/' % (self.project.shortname, self.id)
+    
+    def edit_url(self):
+        return '/%s/edittask/%s/' % (self.project.shortname, self.number)
+    
+    def add_note(self, text, user):
+        """Add a note to this task."""
+        note = TaskNote(text = text, user = user)
+        note.task_num = self.task_num
+        note.save()
+        return note
             
     class Admin:
         pass               
@@ -178,10 +222,11 @@ class TaskItem(models.Model):
             super(TaskItem, self).save()
         else:
             #Version it
+            print 'versioning'
             import copy
             new_task = copy.copy(self)
             new_task.id = None
-            new_task.save()
+            super(TaskItem, new_task).save()
             
     class Admin:
         pass
@@ -193,6 +238,7 @@ class TodoList(models.Model):
     project = models.ForeignKey(Project)
     is_complete = models.BooleanField(default = False)
     created_on = models.DateTimeField(auto_now_add = 1)
+    
     def get_item_form(self):
         return AddTodoItemForm()
     
@@ -236,6 +282,9 @@ class Notice(models.Model):
     class Admin:
         pass
     
+    class Meta:
+        ordering = ('-created_on',)
+    
 class WikiPage(models.Model):
     """Model of the wiki page.
     name: name of the page, should be alphanumeric. Shown in url.
@@ -249,6 +298,27 @@ class WikiPage(models.Model):
     current_revision = models.ForeignKey('WikiPageRevision', null = True)
     created_on = models.DateTimeField(auto_now_add = 1)
     
+    def edit_url(self):
+        return '/%s/wiki/%s/edit/' % (self.project.shortname, self.name)
+    
+    def save(self):
+        if not self.name:
+            name = '_'.join(self.title.split())
+            print self.title.split()
+            print name
+            count = WikiPage.objects.filter(name__istartswith=name).count()
+            if count:
+                name = '%s_%s' % (name, count)
+            name = name[:19]
+            self.name = name
+        super(WikiPage, self).save()
+        
+    def get_absolute_url(self):
+        return '/%s/wiki/%s/' % (self.project.shortname, self.name)
+        
+    class Admin:
+        pass
+    
 class WikiPageRevision(models.Model):
     """user: The user who wrote this page revision.
     wiki_page: The page for which this revision is created.
@@ -261,6 +331,17 @@ class WikiPageRevision(models.Model):
     wiki_text = models.TextField()
     html_text = models.TextField()
     created_on = models.DateTimeField(auto_now_add = 1)
+    
+    def save(self):
+        self.html_text = self.wiki_text
+        super(WikiPageRevision, self).save()
+        
+    def get_absolute_url(self):
+        return '/%s/wiki/%s/revisions/%s/' % (self.wiki_page.project.shortname, self.wiki_page.name, self.id)
+        
+    class Admin:
+        pass
+    
     
 class TaskNotes(models.Model):
     """task_num: The task for which this note is created.

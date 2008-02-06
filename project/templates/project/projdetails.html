@@ -8,18 +8,36 @@
         <a href="{{sub.project.get_absolute_url}}">{{sub.project.name}}</a>
         </li>
     {% endfor %}
+    <h3>Recent tasks</h3>
+    {% for task in new_tasks %}
+        <li>
+        <a href="{{task.get_absolute_url}}">{{task.name}}</a>
+        </li>
+    {% endfor %}
+    
+    <h3>Overdue tasks</h3>
+    {% for task in overdue_tasks %}
+        <li>
+        <a href="{{task.get_absolute_url}}">{{task.name}}</a>
+        </li>
+    {% endfor %}    
+    
     </ul>
     <div id="inviteform">
         <form action="." method="POST">
             {{inviteform.as_p}}
-            <input type="SUBMIT" name="invite" value="Create new project" />
+            <input type="SUBMIT" name="invite" value="Invite User" />
         </form>
     </div>
     
     <div id="taskform">
         <form action="." method="POST">
             {{taskform.as_p}}
-            <input type="SUBMIT" name="task" value="Create new project" />
+            <input type="SUBMIT" name="task" value="Add a task" />
         </form>
     </div>    
+{% endblock %}
+
+{% block sidebar %}
+    This project has {{project.task_set.all.count}} tasks.
 {% endblock %}

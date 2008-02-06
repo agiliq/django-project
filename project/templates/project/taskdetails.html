@@ -3,7 +3,7 @@
 {% block contents %}
     <h2>{{task.name}}</h2>
     <div id="taskdetails">
-    {{task}}
+	
     {% if task.num_child_tasks %}
     <div id="subtasks">
 	<h3>Subs tasks for {{task.name}}</h3>
@@ -45,4 +45,27 @@
 	<input type="SUBMIT" name="additem" value="Add a taskitem" />
 	</form>
     </div>    
+{% endblock %}
+
+{% block sidebar %}
+<h3>Meta</h3>
+<ul> 
+    <li><a href="{{task.edit_url}}">Edit this task</a></li>
+</ul>
+
+<h3>
+    Older Versions
+</h3>
+<ul>
+    {% for version in task.get_old_versions %}
+	<li>
+	    <a href="{{version.revision_url}}">Versioned on {{version.effective_end_date}}</a>
+	</li>
+    {% endfor %}
+</ul>
+
+ Task {{task.name}} was created on {{task.created_on|date}}. It has {{task.num_child_tasks}} sub tasks and {{task.num_items}} task items.
+ {% if task.expected_end_date %}
+    You need to complete this by {{task.expected_end_date|date}}
+ {% endif %}
 {% endblock %}

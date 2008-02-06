@@ -155,13 +155,43 @@ class CreateWikiPageForm(forms.Form):
         page.project = self.project
         page.save()
         
-        page_rev = WikiPageRevision(text = self.cleaned_data['text'])
+        page_rev = WikiPageRevision(wiki_text = self.cleaned_data['text'])
         page_rev.wiki_page = page
         page_rev.user = self.user
         page_rev.save()
         
-        page.curent_revision = page_rev
+        page.current_revision = page_rev
         page.save()
+        return page
+        
+class EditWikiPageForm(forms.Form):
+    text = forms.CharField(widget = forms.Textarea)
+    
+    def __init__(self, user = None, page = None, *args, **kwargs):
+        super(EditWikiPageForm, self).__init__(*args, **kwargs)
+        self.page = page
+        self.user = user
+        self.fields['text'].initial = page.current_revision.wiki_text
+    
+    def save(self):
+        page_rev = WikiPageRevision(wiki_text = self.cleaned_data['text'])
+        page_rev.wiki_page = self.page
+        page_rev.user = self.user
+        page_rev.save()
+        
+        self.page.current_revision = page_rev
+        self.page.save()
+        
+class EditTaskForm(forms.ModelForm):
+    user_responsible = forms.ChoiceField()
+    def __init__(self, *args, **kwargs):
+        super(EditTaskForm, self).__init__(*args, **kwargs)
+        users = [subs.user for subs in self.instance.project.subscribeduser_set.all()]
+        self.fields['user_responsible'].choices = [('None','---')] + [(user.username, user.username) for user in users]
+
+    class Meta:
+        model = Task
+        exclude = ('project', 'parent_task', 'version_number', 'is_current', 'effective_end_date')
     
 """    
 class AddTodoItemForm(forms.Form):

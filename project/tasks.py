@@ -10,13 +10,23 @@ def project_tasks(request, project_name):
     shows top tasks
     shows sub tasks name for top tasks
     shows task items for the top tasks
+    shows add a top task form
     """
     project = get_project(request, project_name)
-    #tasks = project.task_set.filter(parent_task = None)
     tasks = project.task_set.filter(parent_task__isnull = True)
-    payload = {'project':project, 'tasks':tasks}
+    
+    if request.method == 'POST':
+        taskform = bforms.CreateTaskForm(project, request.POST)
+        if taskform.is_valid():
+            taskform.save()
+            return HttpResponseRedirect('.')
+    if request.method == 'GET':
+        taskform = bforms.CreateTaskForm(project)
+        
+    payload = {'project':project, 'tasks':tasks, 'taskform':taskform}    
     return render(request, 'project/projecttask.html', payload)
-
+        
+    
 def task_details(request, project_name, task_num):
     """Shows details ofa specific task.
     Shows a specific task.
@@ -29,7 +39,7 @@ def task_details(request, project_name, task_num):
     """
     
     project = get_project(request, project_name)
-    task = Task.objects.get(number = task_num)
+    task = Task.objects.get(project = project, number = task_num)
     
     addsubtaskform = bforms.CreateSubTaskForm(project, task)
     additemform = bforms.CreateTaskItemForm(task)
@@ -50,6 +60,34 @@ def task_details(request, project_name, task_num):
         additemform = bforms.CreateTaskItemForm(task)
     payload = {'project':project, 'task':task, 'addsubtaskform':addsubtaskform, 'additemform':additemform}
     return render(request, 'project/taskdetails.html', payload)
+
+def edit_task(request, project_name, task_num):
+    """
+    Edit a given task
+    """
+    project = get_project(request, project_name)
+    task = Task.objects.get(project = project, number = task_num)
+    if request.method == 'POST':
+        editform = bforms.EditTaskForm(request.POST, instance = task)
+        if editform.is_valid():
+            task = editform.save()
+            return HttpResponseRedirect(task.get_absolute_url())
+    if request.method == 'GET':        
+        editform = bforms.EditTaskForm(instance = task)
+        
+    payload = {'project':project, 'task':task, 'editform':editform}
+    return render(request, 'project/edittask.html', payload)
+    
+    
+
+def task_revision(request, project_name, task_id):
+    """
+    Shows a specific revision of the code.
+    """
+    project = get_project(request, project_name)
+    task = Task.all_objects.get(project = project, id = task_id)
+    payload = {'project':project, 'task':task,}
+    return render(request, 'project/taskrevision.html', payload)
 
 def task_history(request, project_name, task_num):
     """
