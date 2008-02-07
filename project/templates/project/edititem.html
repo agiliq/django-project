@@ -1,0 +1,18 @@
+{% extends 'project/base.html' %}
+
+{% block contents %}
+    <form action="." method="POST">
+        {{itemform.as_p}}
+        <input type="SUBMIT" name="edititem" value="Edit" />
+    </form>
+{% endblock %}
+
+{% block sidebar %}
+    <ul>
+    {% for item in taskitem.old_versions %}
+	<li>
+	<a href="{{item.revision_url}}">Version number {{item.version_number}} versioned on {{item.effective_start_date|date}}.</a>
+	</li>
+    {% endfor %}
+    </ul>
+{% endblock %}

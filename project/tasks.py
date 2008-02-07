@@ -89,12 +89,45 @@ def task_revision(request, project_name, task_id):
     payload = {'project':project, 'task':task,}
     return render(request, 'project/taskrevision.html', payload)
 
-def task_history(request, project_name, task_num):
+def add_task_note(request, project_name, task_num):
     """
-    Shows tasks history for given task.
-    Allows to rol back to a specific revision of the task.
+    Add notes to a task.
     """
-    pass
+    project = get_project(request, project_name)
+    task = Task.objects.get(project = project, number = task_num)
+    if request.method == 'POST':
+        noteform = bforms.AddTaskNoteForm(task, request.user, request.POST)
+        if noteform.is_valid():
+            noteform.save()
+            return HttpResponseRedirect(task.get_absolute_url())
+    if request.method == 'GET':
+        noteform = bforms.AddTaskNoteForm(task, request.user)
+    payload = {'project':project, 'task':task, 'noteform':noteform}
+    return render(request, 'project/addtasknote.html', payload)
+
+def edit_task_item(request, project_name, taskitem_num):
+    """Edit a task item."""
+    project = get_project(request, project_name)
+    taskitem = TaskItem.objects.get(task__project = project, number = taskitem_num)
+    if request.method == 'POST':
+        itemform = bforms.EditTaskItemForm(request.POST, instance = taskitem)
+        if itemform.is_valid():
+            item = itemform.save()
+        return HttpResponseRedirect(item.task.get_absolute_url())
+    elif request.method == 'GET':
+        itemform = bforms.EditTaskItemForm(instance = taskitem)
+    payload = {'project':project, 'taskitem':taskitem, 'itemform':itemform}
+    return render(request, 'project/edititem.html', payload)
+    
+
+def taskitem_revision(request, project_name, taskitem_id):
+    """Shows taskitem history for a given item.
+    Allows to rollback to a specific version."""
+    project = get_project(request, project_name)
+    taskitem = TaskItem.objects.get(task__project = project, id = taskitem_id)
+    payload = {'project':project, 'taskitem':taskitem,}
+    return render(request, 'project/taskitemrev.html', payload)
+    
 
 def taskitem_history(request, project_name, taskitem_num):
     """Shows taskitem history for a given item.

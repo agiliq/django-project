@@ -59,7 +59,6 @@ class Project(models.Model):
         return self.task_set.all().order_by('-created_on')[:3]
     
     def overdue_tasks(self):
-        print self.task_set.filter(expected_end_date__lt = datetime.datetime.today())
         return self.task_set.filter(expected_end_date__lt = datetime.datetime.today())
     
     class Admin:
@@ -80,6 +79,14 @@ class SubscribedUser(models.Model):
     project = models.ForeignKey(Project)
     group = models.CharField(max_length = 20, choices = options)
     
+    def save(self):
+        """Log it and save."""
+        log_text = '%s has accepted invitation and is a %s of %s.' % (self.user.username, self.group, self.project.name)
+        log = Log(project = self.project, text=log_text)
+        log.save()
+        super(SubscribedUser, self).save()
+        
+    
     class Admin:
         pass    
     
@@ -93,6 +100,13 @@ class InvitedUser(models.Model):
     project = models.ForeignKey(Project)
     group = models.CharField(max_length = 20, choices = options)
     rejected = models.BooleanField(default = False)
+    
+    def save(self):
+        """Log it and save."""
+        log_text = '%s has been invited to as %s of %s.' % (self.user.username, self.group, self.project.name)
+        log = Log(project = self.project, text=log_text)
+        log.save()
+        super(InvitedUser, self).save()    
     
     class Admin:
         pass    
@@ -141,6 +155,12 @@ class Task(models.Model):
         if not self.id:
             self.version_number = 1
             self.number = Task.objects.filter(project = self.project, is_current = True).count() + 1
+            if self.user_responsible:
+                log_text = 'Task %s has for %s been created.  ' % (self.name, self.user_responsible)
+            else:
+                log_text = 'Task %s has been created.  ' % self.name
+            log = Log(project = self.project, text=log_text)
+            log.save()             
             super(Task, self).save()
         else:
             #Version it
@@ -151,7 +171,15 @@ class Task(models.Model):
             super(Task, self).save()
             new_task.id = None
             new_task.version_number = self.version_number + 1
+            if self.user_responsible:
+                log_text = 'Task %s for %s has been updated.  ' % (self.name, self.user_responsible)
+            else:
+                log_text = 'Task %s has been updated' % (self.name)
+            log = Log(project = self.project, text=log_text)
+            log.save()            
             super(Task, new_task).save()
+        
+           
             
             
     def get_old_versions(self):
@@ -173,15 +201,26 @@ class Task(models.Model):
     def edit_url(self):
         return '/%s/edittask/%s/' % (self.project.shortname, self.number)
     
+    def add_note_url(self):
+        return '/%s/taskdetails/%s/addnote/' % (self.project.shortname, self.number)
+    
     def add_note(self, text, user):
         """Add a note to this task."""
         note = TaskNote(text = text, user = user)
-        note.task_num = self.task_num
+        note.task_num = self.number
         note.save()
         return note
+    
+    def get_notes(self):
+        """Get notes for this task."""
+        return TaskNote.objects.filter(task_num = self.number)
             
     class Admin:
         pass               
+
+class TaskItemManager(models.Manager):
+    def get_query_set(self):
+        return super(TaskItemManager, self).get_query_set().filter(is_current = True)    
 
 unit_choices = (
     ('HOUR', 'Hours'),
@@ -214,19 +253,43 @@ class TaskItem(models.Model):
     version_number = models.IntegerField()
     is_current = models.BooleanField(default = True)
     
+    objects = TaskItemManager()
+    all_objects = models.Manager()
+    
     def save(self):
         """If this is the firsts time populate required details, if this is update version it."""
         if not self.id:
             self.version_number = 1
-            self.number = TaskItem.objects.filter().count() + 1
+            self.number = -1
             super(TaskItem, self).save()
+            self.number = self.id#Todo, make it use per project numbers.
+            super(TaskItem, self).save()
+            log_text = 'Item %s created for task %s.' % (self.name, self.task.name)
+            log = Log(project = self.task.project, text = log_text)
+            log.save()
         else:
             #Version it
-            print 'versioning'
             import copy
-            new_task = copy.copy(self)
-            new_task.id = None
-            super(TaskItem, new_task).save()
+            new_item = copy.copy(self)
+            self.is_current = False
+            self.effective_end_date = datetime.datetime.now()
+            super(TaskItem, self).save()
+            new_item.version_number = self.version_number + 1
+            new_item.id = None
+            super(TaskItem, new_item).save()
+            log_text = 'Item %s for taks %s has been updated.' % (self.name, self.task.name)
+            log = Log(project = self.task.project, text = log_text)
+            log.save()
+            
+    def edit_url(self):
+        return '/%s/edititem/%s/' % (self.task.project, self.number)
+    
+    def old_versions(self):
+        """return all versions of the taskitem."""
+        return TaskItem.all_objects.filter(task__project = self.task.project, number = self.number).order_by('-version_number')
+    
+    def revision_url(self):
+        return '/%s/itemrevision/%s/' % (self.task.project, self.id)
             
     class Admin:
         pass
@@ -267,6 +330,12 @@ class Log(models.Model):
     is_complete = models.BooleanField(default = False)
     created_on = models.DateTimeField(auto_now_add = 1)
     
+    class Meta:
+        ordering = ('-created_on', )
+    
+    class Admin:
+        pass
+    
 class Notice(models.Model):
     """
     number: of the notice under the current project.
@@ -304,8 +373,6 @@ class WikiPage(models.Model):
     def save(self):
         if not self.name:
             name = '_'.join(self.title.split())
-            print self.title.split()
-            print name
             count = WikiPage.objects.filter(name__istartswith=name).count()
             if count:
                 name = '%s_%s' % (name, count)
@@ -343,23 +410,14 @@ class WikiPageRevision(models.Model):
         pass
     
     
-class TaskNotes(models.Model):
+class TaskNote(models.Model):
     """task_num: The task for which this note is created.
     We cant just use a foreign key coz, the note is for a specific task number, not a revision of it.
     """
     task_num = models.IntegerField()
     text = models.TextField()
     user = models.ForeignKey(User)
-    created_on = models.DateTimeField(auto_now_add = 1)
-    
-class TodoNotes(models.Model):
-    """task_num: The todo for which this note is created.
-    We cant just use a foreign key coz, the note is for a specific todo number, not a revision of it.    
-    """
-    todo_num = models.IntegerField()
-    text = models.TextField()
-    user = models.ForeignKey(User)
-    created_on = models.DateTimeField(auto_now_add = 1)    
+    created_on = models.DateTimeField(auto_now_add = 1)  
     
     
 class ProjectFile(models.Model):

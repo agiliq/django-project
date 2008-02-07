@@ -1,0 +1,23 @@
+{% extends "registration/base.html" %}
+
+{% block title %}
+{{block.super}} - Create a new user
+{% endblock %}
+
+{% block contents %}
+
+<div>
+    <h3>
+    Register.
+    </h3>
+    
+</div>
+
+<form method="post" action=".">
+{{form.as_p}}
+<input name="Submit" type="submit" class="button" value="Regsiter" />
+</form>
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}

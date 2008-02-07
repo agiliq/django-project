@@ -82,3 +82,4 @@ INSTALLED_APPS = (
 )
 
 SESSION_COOKIE_DOMAIN = '.shabda.tld'
+LOGIN_REDIRECT_URL = '/dashboard/'

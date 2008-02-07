@@ -1,17 +1,29 @@
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+      <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+        
 <head>
     <title>
         {% block title %}
         {% endblock %}
     </title>
-    <link rel="stylesheet" type="text/css" href="/site_media/style.css" />
+    <link rel="stylesheet" type="text/css" href="/site_media/css/style.css" />
 </head>
 
 <body>
     <div id="topbar">
     {% block topbar %}
+        <ul>
+            {% if user.is_authenticated %}
+            <li><a href="/accounts/profile/">Settings</a></li>
+            <li><a href="/accounts/logout/">Logout</a></li>
+            {% else %}
+            <li><a href="/accounts/register/">Register</a></li>
+            <li><a href="/accounts/login/">Login</a></li>
+            {% endif %}
+        </ul>
     {% endblock %}
-    </topbar>
+    </div>
     
     <div id="header">
         <div id="logo">
@@ -36,7 +48,7 @@
     </div>
     
     <div id="main">
-        <div id="contents">
+        <div id="content">
             {% block contents %}
             {% endblock %}            
         </div>

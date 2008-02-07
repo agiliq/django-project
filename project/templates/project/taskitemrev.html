@@ -1,0 +1,18 @@
+{% extends 'project/base.html' %}
+
+{% block contents %}
+    {{taskitem.name}}
+{% endblock %}
+
+{% block sidebar %}
+    <h3>Meta</h3>
+        <ul>
+        <li>
+            <a href="{{taskitem.edit_url}}">Edit this item</a>
+        </li>
+        <li>
+            <a href="{{taskitem.task.get_absolute_url}}">Task</a>
+        </li>
+        </ul>
+    This is  a version number {{taskitem.version_number}} created for {{taskitem.name}}, on {{task_item.created_on|date}}
+{% endblock %}

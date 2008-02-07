@@ -47,13 +47,32 @@ class InviteUserForm(forms.Form):
             User.objects.get(username = self.cleaned_data['username'])
         except User.DoesNotExist:
             raise ValidationError('There is no user with that name')
+        self.already_invited()
+        self.already_subscribed()
         return self.cleaned_data['username']
+    
+    def already_invited(self):
+        try:
+            user = User.objects.get(username = self.cleaned_data['username'])
+            invite = user.inviteduser_set.get(user = user, project = self.project)
+        except InvitedUser.DoesNotExist:
+            return    
+        raise ValidationError('This user is already invited. The invite is pending.')
+        
+    def already_subscribed(self):
+        try:
+            user = User.objects.get(username = self.cleaned_data['username'])
+            subs = user.subscribeduser_set.get(user = user, project = self.project)
+        except SubscribedUser.DoesNotExist:
+            return    
+        raise ValidationError('This user is already subscribed to the project.')
         
     def save(self):
         user = User.objects.get(username = self.cleaned_data['username'])
         invite = InvitedUser(user = user, project = self.project)
         invite.group = self.cleaned_data['group']
         invite.save()
+        return invite
         
 class CreateTaskForm(forms.Form):
     name = forms.CharField(max_length = 200)
@@ -192,19 +211,74 @@ class EditTaskForm(forms.ModelForm):
     class Meta:
         model = Task
         exclude = ('project', 'parent_task', 'version_number', 'is_current', 'effective_end_date')
+        
+class EditTaskItemForm(forms.ModelForm):
+    user = forms.ChoiceField()
     
-"""    
-class AddTodoItemForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super(EditTaskItemForm, self).__init__(*args, **kwargs)
+        users = [subs.user for subs in self.instance.task.project.subscribeduser_set.all()]
+        self.fields['user'].choices = [('None','---')] + [(user.username, user.username) for user in users]    
+    
+    class Meta:
+        model = TaskItem
+        exclude = ('task', 'version_number', 'is_current', 'effective_end_date')
+        
+class AddTaskNoteForm(forms.Form):
     text = forms.CharField(widget = forms.Textarea)
     
-    def __init__(self, list = None, *args, **kwargs):
-        super(AddTodoItemForm, self).__init__(*args, ** kwargs)
-        self.list = list
+    def __init__(self, task, user, *args, **kwargs):
+        super(AddTaskNoteForm, self).__init__(*args, **kwargs)
+        self.task = task
+        self.user = user
         
     def save(self):
-        todoitem = TodoItem(text = self.cleaned_data['text'], list = self.user)
-        todoitem.save()
-        return todoitem
+        note = self.task.add_note(text = self.cleaned_data['text'], user = self.user)
+        return note
+    
+    
+class UserCreationForm(forms.Form):
+    """A form that creates a user, with no privileges, from the given username and password."""
+    username = forms.CharField(max_length = 30, required = True)
+    password1 = forms.CharField(max_length = 30, required = True, widget = forms.PasswordInput)
+    password2 = forms.CharField(max_length = 30, required = True, widget = forms.PasswordInput)
+    project_name = forms.CharField(max_length = 20, required = False)
+
+    def clean_username (self):
+        alnum_re = re.compile(r'^\w+$')
+        if not alnum_re.search(self.cleaned_data['username']):
+            raise ValidationError("This value must contain only letters, numbers and underscores.")
+        self.isValidUsername()
+        return self.cleaned_data['username']
+
+    def clean (self):
+        if self.cleaned_data['password1'] != self.cleaned_data['password2']:
+            raise ValidationError(_("The two password fields didn't match."))
+        return super(forms.Form, self).clean()
         
-"""        
+    def isValidUsername(self):
+        try:
+            User.objects.get(username=self.cleaned_data['username'])
+        except User.DoesNotExist:
+            return
+        raise ValidationError(_('A user with that username already exists.'))
+    
+    def clean_project_name(self):
+        alnum_re = re.compile(r'^\w+$')
+        if not alnum_re.search(self.cleaned_data['project_name']):
+            raise ValidationError("This value must contain only letters, numbers and underscores.")
+        self.is_valid_shortname()
+        return self.cleaned_data['project_name']
+    
+    def is_valid_shortname(self):
+        try:
+            Project.objects.get(shortname = self.cleaned_data['project_name'])
+        except Project.DoesNotExist:
+            return
+        raise ValidationError('This project name is already taken. Please try another.')
+    
+    def save(self):
+        return User.objects.create_user(self.cleaned_data['username'], '', self.cleaned_data['password1'])
+
+     
     

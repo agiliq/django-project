@@ -23,7 +23,7 @@
 	<ul>
 	{% for item in task.taskitem_set.all %}
 	    <li>
-	    <a href="{{item.get_absolute_url}}">{{item.name}}</a>
+	    <a href="{{item.edit_url}}">{{item.name}}</a>
 	    </li>
 	{% endfor %}
 	</ul>
@@ -44,13 +44,25 @@
 	{{additemform.as_p}}
 	<input type="SUBMIT" name="additem" value="Add a taskitem" />
 	</form>
-    </div>    
+    </div>
+    
+    <div id="notes">
+        {% if task.get_notes %}
+        <h3>Notes</h3>
+        <ul>
+        {% for note in task.get_notes %}
+            <li>{{note.text}} said by {{note.user.username}}</li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
 {% endblock %}
 
 {% block sidebar %}
 <h3>Meta</h3>
 <ul> 
     <li><a href="{{task.edit_url}}">Edit this task</a></li>
+    <li><a href="{{task.add_note_url}}">Add a note</a></li>
 </ul>
 
 <h3>

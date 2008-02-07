@@ -14,8 +14,11 @@ urlpatterns = patterns('project.main',
 urlpatterns += patterns('project.tasks',
     (r'^(?P<project_name>\w+)/tasks/$', 'project_tasks'),                        
     (r'^(?P<project_name>\w+)/taskdetails/(?P<task_num>\d+)/$', 'task_details'),
+    (r'^(?P<project_name>\w+)/taskdetails/(?P<task_num>\d+)/addnote/$', 'add_task_note'),
     (r'^(?P<project_name>\w+)/edittask/(?P<task_num>\d+)/$', 'edit_task'),
     (r'^(?P<project_name>\w+)/taskrevision/(?P<task_id>\d+)/$', 'task_revision'),
+    (r'^(?P<project_name>\w+)/edititem/(?P<taskitem_num>\d+)/$', 'edit_task_item'),
+    (r'^(?P<project_name>\w+)/itemrevision/(?P<taskitem_id>\d+)/$', 'taskitem_revision'),
     (r'^(?P<project_name>\w+)/taskitemhist/(?P<taskitem_num>\d+)/$', 'taskitem_history'),
     )
 
@@ -39,8 +42,8 @@ urlpatterns += patterns('project.files',
 urlpatterns += patterns('project.users',
     (r'^accounts/login/$', 'login'),
     (r'^accounts/logout/$', 'logout'),
-    (r'^profile/$', 'profile'),
-    (r'^register/$', 'register'),
+    (r'^accounts/profile/$', 'profile'),
+    (r'^accounts/register/$', 'register'),
     )
 
 urlpatterns += patterns('',

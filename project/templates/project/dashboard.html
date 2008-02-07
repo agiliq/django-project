@@ -27,10 +27,27 @@
         </li>
     {% endfor %}
     </ul>
+    
+    {% if invites %}
+        <h2>Pending Invites</h2>
+        <ul>
+        {% for invite in invites %}
+            <li>
+                {{invite.project.name}}
+                <form action="." method="post">
+                <input type="hidden" name="projid" value={{invite.project.id}} />
+                <input type="hidden" name="invid" value={{invite.id}} />
+                <input type="SUBMIT" name="acceptinv" value="Accept" />
+                </form>
+            </li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    
     <div id="createprojectform">
         <form action="." method="POST">
             {{createform.as_p}}
-            <input type="SUBMIT" name="submit" value="Create new project" />
+            <input type="SUBMIT" name="createproject" value="Create new project" />
         </form>
     </div>
 {% endblock %}

@@ -21,15 +21,25 @@ def dashboard(request):
     """
     user = request.user
     subs = user.subscribeduser_set.all()
+    invites = user.inviteduser_set.filter(rejected = False)
+    createform = bforms.CreateProjectForm()
     if request.method == 'POST':
-        createform = bforms.CreateProjectForm(user, request.POST)
-        if createform.is_valid():
-            createform.save()
+        if request.POST.has_key('createproject'):
+            createform = bforms.CreateProjectForm(user, request.POST)
+            if createform.is_valid():
+                createform.save()
+                return HttpResponseRedirect('.')
+        elif request.POST.has_key('acceptinv'):
+            project = Project.objects.get(id = request.POST['projid'])
+            invite = InvitedUser.objects.get(id = request.POST['invid'])
+            subscribe = SubscribedUser(project = project, user = user, group = invite.group)
+            subscribe.save()
+            invite.delete()
             return HttpResponseRedirect('.')
     elif request.method == 'GET':
         createform = bforms.CreateProjectForm()
     
-    payload = {'subs': subs, 'createform':createform}
+    payload = {'subs': subs, 'createform':createform, 'invites':invites}
     return render(request, 'project/dashboard.html', payload)
 
 @login_required
@@ -60,13 +70,14 @@ def project_details(request, project_name):
     if request.method == 'GET':
         inviteform = bforms.InviteUserForm()
         taskform = bforms.CreateTaskForm(project)
-    payload = {'project':project, 'inviteform':inviteform, 'taskform':taskform, 'new_tasks':new_tasks, 'overdue_tasks':overdue_tasks}
+    payload = {'project':project, 'inviteform':inviteform, 'taskform':taskform, 'new_tasks':new_tasks, 'overdue_tasks':overdue_tasks,}
     return render(request, 'project/projdetails.html', payload)
 
 
 @login_required
 def full_logs(request, project_name):
-    logs = Log.objects.all()
+    project = get_project(request, project_name)
+    logs = Log.objects.filter(project = project)
     payload = {'project':project, 'logs':logs}
     return render(request, 'project/fulllogs.html', payload)
 
