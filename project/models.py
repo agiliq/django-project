@@ -3,10 +3,13 @@ from django.contrib.auth.models import User
 from django import newforms as forms
 import datetime
 
+from dojofields import *
+
 class AddTodoItemForm(forms.Form):
-    text = forms.CharField()
+    text = DojoCharField()
     
     def __init__(self, list = None, *args, **kwargs):
+        kwargs.update({'prefix':list.name})
         super(AddTodoItemForm, self).__init__(*args, ** kwargs)
         self.list = list
         
@@ -65,9 +68,9 @@ class Project(models.Model):
         pass
     
 options = (
-        ('OWN', 'Owner'),
-        ('PART', 'Participant'),
-        ('VIEW', 'Viewer'),
+        ('Owner', 'Owner'),
+        ('Participant', 'Participant'),
+        ('Viewer', 'Viewer'),
     )
     
 class SubscribedUser(models.Model):
@@ -223,9 +226,9 @@ class TaskItemManager(models.Manager):
         return super(TaskItemManager, self).get_query_set().filter(is_current = True)    
 
 unit_choices = (
-    ('HOUR', 'Hours'),
-    ('DAY', 'Days'),
-    ('MONTH', 'Months'),
+    ('Hours', 'Hours'),
+    ('Days', 'Days'),
+    ('Months', 'Months'),
     )    
 class TaskItem(models.Model):
     """A task item for a task.
@@ -303,7 +306,7 @@ class TodoList(models.Model):
     created_on = models.DateTimeField(auto_now_add = 1)
     
     def get_item_form(self):
-        return AddTodoItemForm()
+        return AddTodoItemForm(self)
     
     item_form = property(get_item_form, None, None)
     

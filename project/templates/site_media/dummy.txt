@@ -1,0 +1,12 @@
+{ "label": "name",
+  "identifier": "name",
+   "items": [
+     { "name":"Fruit", "type":"category"},
+     { "name":"Cinammon", "type": "category",
+       "children": [
+       { "name":"Cinammon Roll", "type":"poptart" },
+       ]
+     },
+     { "name":"Chocolate", "type": "category"}
+  ]
+}

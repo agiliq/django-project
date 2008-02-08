@@ -1,0 +1,16 @@
+{% extends 'project/base.html' %}
+        
+{% block dojorequires %}
+        {{block.super}}
+        dojo.require("dojo.data.ItemFileReadStore");
+        dojo.require("dijit.Tree");
+{% endblock %}
+
+{% block contents %}
+/projson/Tomatoes/
+<div dojoType="dojo.data.ItemFileReadStore"
+             url="/projson/bad/" jsid="popStore" query="{type:'toptask'}"/>
+
+        <div dojoType="dijit.Tree" store="popStore" labelAttr="name" label="Pop Tarts"></div>
+  
+{% endblock %}

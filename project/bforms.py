@@ -4,32 +4,6 @@ import re
 
 from models import *
 
-class DojoCharField(forms.CharField):
-    def __init__(self, *args, **kwargs):
-        if not kwargs.has_key('widget'):
-            kwargs.update({'widget' : forms.TextInput(attrs={'dojoType':'dijit.form.TextBox'})})                          
-        super(DojoCharField, self).__init__(*args, **kwargs)
-        
-        
-class DojoDateField(forms.CharField):
-    def __init__(self, *args, **kwargs):
-        if not kwargs.has_key('widget'):
-            kwargs.update({'widget' : forms.TextInput(attrs={'dojoType':'dijit.form.DateTextBox'})})                          
-        super(DojoDateField, self).__init__(*args, **kwargs)
-        
-class DojoDecimalField(forms.DecimalField):
-    def __init__(self, *args, **kwargs):
-        if not kwargs.has_key('widget'):
-            kwargs.update({'widget' : forms.TextInput(attrs={'dojoType':'dijit.form.NumberTextBox'})})                          
-        super(DojoDecimalField, self).__init__(*args, **kwargs)    
-
-class DojoChoiceField(forms.ChoiceField):
-    def __init__(self, *args, **kwargs):
-        if not kwargs.has_key('widget'):
-            kwargs.update({'widget' : forms.Select(attrs={'dojoType':'dijit.form.ComboBox'})})                          
-        super(DojoChoiceField, self).__init__(*args, **kwargs)     
-        
-
 class CreateProjectForm(forms.Form):
     #shortname = DojoCharField(max_length = 20, widget=forms.TextInput(attrs={'dojoType':'dijit.form.TextBox'}))
     shortname = DojoCharField(max_length = 20)
@@ -63,7 +37,7 @@ class CreateProjectForm(forms.Form):
     
 class InviteUserForm(forms.Form):
     username = DojoCharField(max_length = 30)
-    group = forms.ChoiceField(choices = options)
+    group = DojoChoiceField(choices = options)
     
     def __init__(self, project = None, *args, **kwargs):
         super(InviteUserForm, self).__init__(*args, **kwargs)
@@ -105,17 +79,17 @@ class CreateTaskForm(forms.Form):
     name = DojoCharField(max_length = 200)
     start_date = DojoDateField()#forms.DateField(widget = forms.TextInput(attrs = {'dojoType':'dijit.form.DateTextBox'}))
     end_date = DojoDateField(required = False)#forms.DateField(required = False)
-    user = DojoChoiceField()#forms.ChoiceField()
+    user_responsible = DojoChoiceField()#forms.ChoiceField()
     def __init__(self, project = None, *args, **kwargs):
         super(CreateTaskForm, self).__init__(*args, **kwargs)
         self.project = project
         users = [subs.user for subs in project.subscribeduser_set.all()]
-        self.fields['user'].choices = [('None','---')] + [(user.username, user.username) for user in users]
+        self.fields['user_responsible'].choices = [('None','None')] + [(user.username, user.username) for user in users]
         
     def save_without_db(self):
         task = Task(name = self.cleaned_data['name'], expected_start_date = self.cleaned_data['start_date'], expected_end_date = self.cleaned_data['end_date'])
-        if not self.cleaned_data['user'] == 'None':
-            user = User.objects.get(username = self.cleaned_data['user'])
+        if not self.cleaned_data['user_responsible'] == 'None':
+            user = User.objects.get(username = self.cleaned_data['user_responsible'])
             task.user_responsible = user
         task.project = self.project
         return task        
@@ -139,14 +113,14 @@ class CreateSubTaskForm(CreateTaskForm):
         
 class CreateTaskItemForm(forms.Form):
     item_name = DojoCharField(max_length = 200)
-    user = forms.ChoiceField()
+    user = DojoChoiceField()
     time = DojoDecimalField()#forms.DecimalField()
-    units = forms.ChoiceField(choices = unit_choices)
+    units = DojoChoiceField(choices = unit_choices)
     def __init__(self, task = None, *args, **kwargs):
         super(CreateTaskItemForm, self).__init__(*args, **kwargs)
         self.task = task
         users = [subs.user for subs in task.project.subscribeduser_set.all()]
-        self.fields['user'].choices = [('None','---')] + [(user.username, user.username) for user in users]
+        self.fields['user'].choices = [('None','None')] + [(user.username, user.username) for user in users]
         
     def save(self):
         item = TaskItem(name = self.cleaned_data['item_name'], )
@@ -229,23 +203,23 @@ class EditWikiPageForm(forms.Form):
         self.page.save()
         
 class EditTaskForm(forms.ModelForm):
-    user_responsible = forms.ChoiceField()
+    user_responsible = DojoChoiceField()
     def __init__(self, *args, **kwargs):
         super(EditTaskForm, self).__init__(*args, **kwargs)
         users = [subs.user for subs in self.instance.project.subscribeduser_set.all()]
-        self.fields['user_responsible'].choices = [('None','---')] + [(user.username, user.username) for user in users]
+        self.fields['user_responsible'].choices = [('None','None')] + [(user.username, user.username) for user in users]
 
     class Meta:
         model = Task
         exclude = ('project', 'parent_task', 'version_number', 'is_current', 'effective_end_date')
         
 class EditTaskItemForm(forms.ModelForm):
-    user = forms.ChoiceField()
+    user = DojoChoiceField()
     
     def __init__(self, *args, **kwargs):
         super(EditTaskItemForm, self).__init__(*args, **kwargs)
         users = [subs.user for subs in self.instance.task.project.subscribeduser_set.all()]
-        self.fields['user'].choices = [('None','---')] + [(user.username, user.username) for user in users]    
+        self.fields['user'].choices = [('None','None')] + [(user.username, user.username) for user in users]    
     
     class Meta:
         model = TaskItem

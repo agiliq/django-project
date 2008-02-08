@@ -1,6 +1,12 @@
 from django.conf.urls.defaults import *
+from django.views.generic.simple import direct_to_template
 
-urlpatterns = patterns('project.main',
+urlpatterns = patterns('project.foo',
+    (r'^foo/$', direct_to_template, {'template':'project/dummy.html'}),
+    (r'^projson/(?P<project_name>\w+)/$', 'proj_json')
+    )
+
+urlpatterns += patterns('project.main',
     # Example:
     (r'^$', 'index'),
     (r'^admin/', include('django.contrib.admin.urls')),
