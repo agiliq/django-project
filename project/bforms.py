@@ -4,9 +4,36 @@ import re
 
 from models import *
 
+class DojoCharField(forms.CharField):
+    def __init__(self, *args, **kwargs):
+        if not kwargs.has_key('widget'):
+            kwargs.update({'widget' : forms.TextInput(attrs={'dojoType':'dijit.form.TextBox'})})                          
+        super(DojoCharField, self).__init__(*args, **kwargs)
+        
+        
+class DojoDateField(forms.CharField):
+    def __init__(self, *args, **kwargs):
+        if not kwargs.has_key('widget'):
+            kwargs.update({'widget' : forms.TextInput(attrs={'dojoType':'dijit.form.DateTextBox'})})                          
+        super(DojoDateField, self).__init__(*args, **kwargs)
+        
+class DojoDecimalField(forms.DecimalField):
+    def __init__(self, *args, **kwargs):
+        if not kwargs.has_key('widget'):
+            kwargs.update({'widget' : forms.TextInput(attrs={'dojoType':'dijit.form.NumberTextBox'})})                          
+        super(DojoDecimalField, self).__init__(*args, **kwargs)    
+
+class DojoChoiceField(forms.ChoiceField):
+    def __init__(self, *args, **kwargs):
+        if not kwargs.has_key('widget'):
+            kwargs.update({'widget' : forms.Select(attrs={'dojoType':'dijit.form.ComboBox'})})                          
+        super(DojoChoiceField, self).__init__(*args, **kwargs)     
+        
+
 class CreateProjectForm(forms.Form):
-    shortname = forms.CharField(max_length = 20)
-    name = forms.CharField(max_length = 200)
+    #shortname = DojoCharField(max_length = 20, widget=forms.TextInput(attrs={'dojoType':'dijit.form.TextBox'}))
+    shortname = DojoCharField(max_length = 20)
+    name = DojoCharField(max_length = 200, widget=forms.TextInput(attrs={'dojoType':'dijit.form.TextBox'}))
     
     def __init__(self, user = None, *args, **kwargs):
         super(CreateProjectForm, self).__init__(*args, **kwargs)
@@ -35,7 +62,7 @@ class CreateProjectForm(forms.Form):
         raise ValidationError('This project name is already taken. Please try another.')
     
 class InviteUserForm(forms.Form):
-    username = forms.CharField(max_length = 30)
+    username = DojoCharField(max_length = 30)
     group = forms.ChoiceField(choices = options)
     
     def __init__(self, project = None, *args, **kwargs):
@@ -75,10 +102,10 @@ class InviteUserForm(forms.Form):
         return invite
         
 class CreateTaskForm(forms.Form):
-    name = forms.CharField(max_length = 200)
-    start_date = forms.DateField()
-    end_date = forms.DateField(required = False)
-    user = forms.ChoiceField()
+    name = DojoCharField(max_length = 200)
+    start_date = DojoDateField()#forms.DateField(widget = forms.TextInput(attrs = {'dojoType':'dijit.form.DateTextBox'}))
+    end_date = DojoDateField(required = False)#forms.DateField(required = False)
+    user = DojoChoiceField()#forms.ChoiceField()
     def __init__(self, project = None, *args, **kwargs):
         super(CreateTaskForm, self).__init__(*args, **kwargs)
         self.project = project
@@ -111,9 +138,9 @@ class CreateSubTaskForm(CreateTaskForm):
         
         
 class CreateTaskItemForm(forms.Form):
-    name = forms.CharField(max_length = 200)
+    item_name = DojoCharField(max_length = 200)
     user = forms.ChoiceField()
-    time = forms.DecimalField()
+    time = DojoDecimalField()#forms.DecimalField()
     units = forms.ChoiceField(choices = unit_choices)
     def __init__(self, task = None, *args, **kwargs):
         super(CreateTaskItemForm, self).__init__(*args, **kwargs)
@@ -122,7 +149,7 @@ class CreateTaskItemForm(forms.Form):
         self.fields['user'].choices = [('None','---')] + [(user.username, user.username) for user in users]
         
     def save(self):
-        item = TaskItem(name = self.cleaned_data['name'], )
+        item = TaskItem(name = self.cleaned_data['item_name'], )
         item.task = self.task
         if not self.cleaned_data['user'] == 'None':
             user = User.objects.get(username = self.cleaned_data['user'])
@@ -135,7 +162,7 @@ class CreateTaskItemForm(forms.Form):
 
 
 class AddNoticeForm(forms.Form):
-    text = forms.CharField(widget = forms.Textarea)
+    text = DojoCharField(widget = forms.Textarea)
     
     def __init__(self, project = None, user = None, *args, **kwargs):
         super(AddNoticeForm, self).__init__(*args, **kwargs)
@@ -148,7 +175,7 @@ class AddNoticeForm(forms.Form):
         return notice
     
 class AddTodoListForm(forms.Form):
-    name = forms.CharField()
+    name = DojoCharField()
     
     def __init__(self, project = None, user = None, *args, **kwargs):
         super(AddTodoListForm, self).__init__(*args, **kwargs)
@@ -161,8 +188,8 @@ class AddTodoListForm(forms.Form):
         return list
 
 class CreateWikiPageForm(forms.Form):
-    title = forms.CharField()
-    text = forms.CharField(widget = forms.Textarea)
+    title = DojoCharField()
+    text = DojoCharField(widget = forms.Textarea)
     
     def __init__(self, project = None, user = None, *args, **kwargs):
         super(CreateWikiPageForm, self).__init__(*args, **kwargs)
@@ -184,7 +211,7 @@ class CreateWikiPageForm(forms.Form):
         return page
         
 class EditWikiPageForm(forms.Form):
-    text = forms.CharField(widget = forms.Textarea)
+    text = DojoCharField(widget = forms.Textarea)
     
     def __init__(self, user = None, page = None, *args, **kwargs):
         super(EditWikiPageForm, self).__init__(*args, **kwargs)
@@ -225,7 +252,7 @@ class EditTaskItemForm(forms.ModelForm):
         exclude = ('task', 'version_number', 'is_current', 'effective_end_date')
         
 class AddTaskNoteForm(forms.Form):
-    text = forms.CharField(widget = forms.Textarea)
+    text = DojoCharField(widget = forms.Textarea)
     
     def __init__(self, task, user, *args, **kwargs):
         super(AddTaskNoteForm, self).__init__(*args, **kwargs)
@@ -239,10 +266,10 @@ class AddTaskNoteForm(forms.Form):
     
 class UserCreationForm(forms.Form):
     """A form that creates a user, with no privileges, from the given username and password."""
-    username = forms.CharField(max_length = 30, required = True)
-    password1 = forms.CharField(max_length = 30, required = True, widget = forms.PasswordInput)
-    password2 = forms.CharField(max_length = 30, required = True, widget = forms.PasswordInput)
-    project_name = forms.CharField(max_length = 20, required = False)
+    username = DojoCharField(max_length = 30, required = True)
+    password1 = DojoCharField(max_length = 30, required = True, widget = forms.PasswordInput)
+    password2 = DojoCharField(max_length = 30, required = True, widget = forms.PasswordInput)
+    project_name = DojoCharField(max_length = 20, required = False)
 
     def clean_username (self):
         alnum_re = re.compile(r'^\w+$')

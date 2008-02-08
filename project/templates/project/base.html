@@ -7,7 +7,27 @@
         {% block title %}
         {% endblock %}
     </title>
+    <style type="text/css">
+        @import "http://o.aolcdn.com/dojo/1.0.0/dijit/themes/tundra/tundra.css";
+        @import "http://o.aolcdn.com/dojo/1.0.0/dojo/resources/dojo.css"
+    </style>
     <link rel="stylesheet" type="text/css" href="/site_media/css/style.css" />
+    <script type="text/javascript" src="http://o.aolcdn.com/dojo/1.0.0/dojo/dojo.xd.js"
+        djConfig="parseOnLoad: true"></script>
+    </script>
+    <script>
+    dojo.addOnLoad(function() {dojo.addClass(dojo.body(), 'tundra');});
+    </script>
+    <script type="text/javascript">
+    {% block dojorequires %}
+        dojo.require("dojo.parser");
+        dojo.require("dijit.form.TextBox");
+        dojo.require("dijit.form.CheckBox");
+        dojo.require("dijit.form.DateTextBox");
+        dojo.require("dijit.form.NumberTextBox");
+        dojo.require("dijit.form.ComboBox");
+    {% endblock %}
+    </script>
 </head>
 
 <body>
