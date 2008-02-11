@@ -1,5 +1,52 @@
 {% extends 'project/base.html' %}
 
 {% block contents %}
-    {{task}}
+ 	<h4>{{task.name}}</h4>
+	<table>
+            <thead>
+                <tr>
+		    
+                    <td>Start Date</td>
+                    <td>End Date</td>
+                    <td>Person Responsible</td>
+		    <td>Details</td>
+                    <td>Edit</td>
+                </tr>
+            </thead>
+	    <tbody>
+            <tr>
+            <td>{{task.expected_start_date|date}}</td>
+            <td>{{task.expected_start_date|date}}</td>
+            <td>{{task.user_responsible}}</td>
+	    <td><a href="{{task.get_absolute_url}}">Details</a></td>
+            <td><a href="{{task.edit_url}}">Edit</a></td>
+            </tr>
+	    </tbody>
+	</table> 
+    {% if task.num_child_tasks %}	
+    <div id="subtasks">
+	<h3>Subs tasks for {{task.name}}</h3>
+	<ul>
+	{% for task in task.task_set.all %}
+	    <li>
+	    <a href="{{task.get_absolute_url}}">{{task.name}}</a>
+	    </li>
+	{% endfor %}
+	</ul>
+    </div>
+    {% endif %}
+    
+    {% if task.num_items %}
+    <div id="taskitems">
+	<h3>Items for {{task.name}}</h3>
+	<ul>
+	{% for item in task.taskitem_set.all %}
+	    <li>
+	    <a href="{{item.get_absolute_url}}">{{item.name}}</a>
+	    </li>
+	{% endfor %}
+	</ul>
+    </div>
+    {% endif %}	
+
 {% endblock %}

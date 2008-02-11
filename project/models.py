@@ -4,6 +4,8 @@ from django import newforms as forms
 import datetime
 
 from dojofields import *
+from django.db import connection
+
 
 class AddTodoItemForm(forms.Form):
     text = DojoCharField()
@@ -55,6 +57,9 @@ class Project(models.Model):
     def todo_url(self):
         return '/%s/todo/' % self.shortname
     
+    def metrics_url(self):
+        return '/%s/health/' % self.shortname
+    
     def logs_url(self):
         return '/%s/logs/' % self.shortname
     
@@ -64,6 +69,21 @@ class Project(models.Model):
     def overdue_tasks(self):
         return self.task_set.filter(expected_end_date__lt = datetime.datetime.today())
     
+    def invited_users(self):
+        return self.inviteduser_set.all()
+    
+    def num_deadline_miss(self):
+        cursor = connection.cursor()
+        cursor.execute('SELECT COUNT(id) FROM project_task WHERE expected_end_date < actual_end_date AND project_id = %s AND is_current = %s' % (self.id, True))
+        data = cursor.fetchone()
+        print data
+    
+    def extra_hours(self):
+        cursor = connection.cursor()
+        cursor.execute('SELECT COUNT(project_taskitem.id) FROM project_task, project_taskitem WHERE project_task.id = project_taskitem.task_id AND project_taskitem.expected_time < project_taskitem.actual_time AND project_id = %s AND project_taskitem.is_current = %s' % (self.id, True))
+        data = cursor.fetchone()
+        print data
+        
     class Admin:
         pass
     
@@ -136,12 +156,12 @@ class Task(models.Model):
     number = models.IntegerField()
     name = models.CharField(max_length = 200)
     project = models.ForeignKey(Project)
-    parent_task = models.ForeignKey('Task', null = True)
-    user_responsible = models.ForeignKey(User, null = True)
+    parent_task = models.ForeignKey('Task', null = True, blank = True)
+    user_responsible = models.ForeignKey(User, null = True, blank = True)
     expected_start_date = models.DateField()
-    expected_end_date = models.DateField(null = True)
-    actual_start_date = models.DateField(null = True)
-    actual_end_date = models.DateField(null = True)
+    expected_end_date = models.DateField(null = True, blank = True)
+    actual_start_date = models.DateField(null = True,  blank = True)
+    actual_end_date = models.DateField(null = True,  blank = True)
     is_complete = models.BooleanField(default = False)
     created_on = models.DateTimeField(auto_now_add = 1)
     #Versioning
@@ -157,7 +177,12 @@ class Task(models.Model):
         """If this is the firsts time populate required details, if this is update version it."""
         if not self.id:
             self.version_number = 1
-            self.number = Task.objects.filter(project = self.project, is_current = True).count() + 1
+            cursor = connection.cursor()
+            cursor.execute('SELECT MAX(number) from project_task WHERE project_id = %s' % self.project.id)
+            num = cursor.fetchone()[0]
+            if not num:
+                num = 0
+            self.number = num + 1#Task.objects.filter(project = self.project, is_current = True).count() + 1
             if self.user_responsible:
                 log_text = 'Task %s has for %s been created.  ' % (self.name, self.user_responsible)
             else:
@@ -187,7 +212,7 @@ class Task(models.Model):
             
     def get_old_versions(self):
         """Get all the versions of the this task."""
-        return Task.all_objects.filter(number = self.number, project  = self.project)
+        return Task.all_objects.filter(number = self.number, project  = self.project).order_by('-created_on')
             
     def num_child_tasks(self):
         return self.task_set.all().count()
@@ -293,6 +318,13 @@ class TaskItem(models.Model):
     
     def revision_url(self):
         return '/%s/itemrevision/%s/' % (self.task.project, self.id)
+    
+    def time_worked(self):
+        if self.actual_time:
+            time = self.actual_time
+        else:
+            time = self.expected_time
+        return '%s %s' % (time, self.unit)
             
     class Admin:
         pass
@@ -411,6 +443,9 @@ class WikiPageRevision(models.Model):
         
     class Admin:
         pass
+    
+    class Meta:
+        ordering = ('-created_on',)
     
     
 class TaskNote(models.Model):

@@ -7,14 +7,6 @@
                 </li>
             </ul>
             {% endblock %}
-	    
-{% block dojorequires %}
-
-    dojo.require("dojo.parser");
-    dojo.require("dijit.form.TextBox");
-    dojo.require("dijit.form.CheckBox");
-    dojo.require("dijit.form.DateTextBox");
-{% endblock %}
 
 {% block contents %}
     <h2>Your Projects</h2>
@@ -22,16 +14,29 @@
     <ul>
     {% for sub in subs %}
         <li>
-        <a href="{{sub.project.get_absolute_url}}">{{sub.project.name}}</a>
+        <h3><a href="{{sub.project.get_absolute_url}}">{{sub.project.name}}</a></h3>
         {% if sub.project.overdue_tasks %}
-            <h3>Critical Tasks</h3>
-            <ul>
+            <h4>Critical Tasks</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <td>
+                            Task
+                        </td>
+                        <td>
+                            Was due on
+                        </td>
+                    </tr>
+                </th>
             {% for task in sub.project.overdue_tasks %}
-                <li>
-                    <a href="{{task.get_absolute_url}}">{{task.name}}</a>
-                </li>
+                <tbody>
+                <tr class={% cycle "odd" "even" %}>
+                    <td><a href="{{task.get_absolute_url}}">{{task.name}}</a></td>
+                    <td>{{task.expected_end_date|date}}</a></td>
+                </tr>
+                </tbody>
             {% endfor %}
-            </ul>
+            </table>
         {% endif %}
         </li>
     {% endfor %}
@@ -54,9 +59,19 @@
     {% endif %}
     
     <div id="createprojectform">
+        <fieldset>
+            <legend>
+                Create a new project.
+            </legend>
         <form action="." method="POST">
             {{createform.as_p}}
             <input type="SUBMIT" name="createproject" value="Create new project" />
         </form>
+        </fieldset>
     </div>
+{% endblock %}
+
+
+{% block sidebar %}
+   Your dashboard has <<23>> projects.
 {% endblock %}

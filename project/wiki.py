@@ -59,6 +59,15 @@ def wiki_revision(request, project_name, page_name, revision_id):
     project = get_project(request, project_name)
     page = WikiPage.objects.get(name = page_name, project = project)
     revision = WikiPageRevision.objects.get(wiki_page = page, id = revision_id)
+    if request.method == 'POST':
+        """Rollback page to this revision."""
+        from copy import copy
+        newrevision = copy(revision)
+        newrevision.id = None
+        newrevision.save()
+        newrevision.wiki_page.current_revision = newrevision
+        newrevision.wiki_page.save()
+        return HttpResponseRedirect('.')
     payload = {'project':project, 'page':page, 'revision':revision}
     return render(request, 'project/wikirevision.html', payload)
     

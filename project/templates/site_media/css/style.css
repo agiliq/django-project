@@ -17,3 +17,32 @@
     display: inline;
     padding-left: 5px;
 }
+
+label{
+    display: block;
+    font-weight: bold;
+}
+
+.noticeeven, .even{
+    background-color: #ffe;
+}
+
+thead tr{
+    font-weight: bold;
+    background-color: grey;
+    color: white;
+}
+
+#subtasks ul, #taskitems ul{
+    list-style: none;
+    
+}
+
+#subtasks ul li, #taskitems ul li{
+    display: inline;
+    padding-left: 5px;
+}
+
+#topbar strong{
+    display: inline;
+}

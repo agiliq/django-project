@@ -4,7 +4,7 @@
     <h2>Noticeboard</h2>
     <ul>
     {% for notice in notices %}
-        <div class="notice">
+        <div class={% cycle "noticeodd" "noticeeven" %}>
 	<li>
         {{notice.text}}
         <div class="info">

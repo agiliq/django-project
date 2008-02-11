@@ -8,11 +8,6 @@ def proj_json(request, project_name):
     items = []
     for task in tasks:
         print 'foo', task
-        children = [
-          { 'name':'Cinammon Roll', 'type':'poptart' },
-          { 'name':'Brown Sugar Cinnamon', 'type':'poptart' },
-          { 'name':'French Toast', 'type':'poptart' }
-       ]
         children = []
         for subtask in task.task_set.all():
             children.append({'_reference':subtask.name})

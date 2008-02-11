@@ -86,8 +86,15 @@ class CreateTaskForm(forms.Form):
         users = [subs.user for subs in project.subscribeduser_set.all()]
         self.fields['user_responsible'].choices = [('None','None')] + [(user.username, user.username) for user in users]
         
+    def clean(self):
+        if self.cleaned_data['end_date'] and self.cleaned_data['start_date'] > self.cleaned_data['end_date']:
+            raise ValidationError('Start date can not be greater than end date')
+        return super(CreateTaskForm, self).clean()
+        
     def save_without_db(self):
-        task = Task(name = self.cleaned_data['name'], expected_start_date = self.cleaned_data['start_date'], expected_end_date = self.cleaned_data['end_date'])
+        task = Task(name = self.cleaned_data['name'], expected_start_date = self.cleaned_data['start_date'], )
+        if self.cleaned_data['end_date']:
+            self.expected_end_date = self.cleaned_data['end_date']
         if not self.cleaned_data['user_responsible'] == 'None':
             user = User.objects.get(username = self.cleaned_data['user_responsible'])
             task.user_responsible = user
@@ -114,13 +121,18 @@ class CreateSubTaskForm(CreateTaskForm):
 class CreateTaskItemForm(forms.Form):
     item_name = DojoCharField(max_length = 200)
     user = DojoChoiceField()
-    time = DojoDecimalField()#forms.DecimalField()
+    time = DojoDecimalField()
     units = DojoChoiceField(choices = unit_choices)
     def __init__(self, task = None, *args, **kwargs):
         super(CreateTaskItemForm, self).__init__(*args, **kwargs)
         self.task = task
         users = [subs.user for subs in task.project.subscribeduser_set.all()]
         self.fields['user'].choices = [('None','None')] + [(user.username, user.username) for user in users]
+        
+    def clean(self):
+        if self.cleaned_data['time'] <= 0:
+            raise ValidationError('Time must be greater than 0')
+        return super(CreateTaskItemForm, self).clean()
         
     def save(self):
         item = TaskItem(name = self.cleaned_data['item_name'], )
@@ -201,9 +213,14 @@ class EditWikiPageForm(forms.Form):
         
         self.page.current_revision = page_rev
         self.page.save()
-        
+
+
 class EditTaskForm(forms.ModelForm):
+    expected_end_date = DojoDateField(required = False)
+    actual_start_date = DojoDateField(required = False)
+    actual_end_date = DojoDateField(required = False)
     user_responsible = DojoChoiceField()
+    
     def __init__(self, *args, **kwargs):
         super(EditTaskForm, self).__init__(*args, **kwargs)
         users = [subs.user for subs in self.instance.project.subscribeduser_set.all()]
@@ -211,8 +228,15 @@ class EditTaskForm(forms.ModelForm):
 
     class Meta:
         model = Task
-        exclude = ('project', 'parent_task', 'version_number', 'is_current', 'effective_end_date')
-        
+        exclude = ('number', 'project', 'parent_task', 'version_number', 'is_current', 'effective_end_date')
+"""
+class EditTaskForm(CreateTaskForm):
+    actual_start_date = DojoDateField()
+    actual_end_date = DojoDateField()
+    def __init__(self, instance, *args, **kwargs):
+        super(EditTaskForm, self).__init__(*args, **kwargs)    
+    """
+
 class EditTaskItemForm(forms.ModelForm):
     user = DojoChoiceField()
     

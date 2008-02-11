@@ -112,10 +112,11 @@ def todo(request, project_name):
                 addlistform.save()
                 return HttpResponseRedirect('.')
         elif request.POST.has_key('additem'):
-            if request.POST['text']:
-                id = int(request.POST['id'])
-                list = TodoList.objects.get(id = id)
-                item = TodoItem(list = list, text = request.POST['text'])
+            id = int(request.POST['id'])
+            list = TodoList.objects.get(id = id)
+            text_id = '%s-text'%list.name            
+            if request.POST[text_id]:
+                item = TodoItem(list = list, text = request.POST[text_id])
                 item.save()
     if request.method == 'GET':
         addlistform = bforms.AddTodoListForm()

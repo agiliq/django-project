@@ -5,13 +5,15 @@
     <ul>
     {% for list in lists %}
 	<li>
-        {{list.name}}
+        <h3>{{list.name}}</h3>
         <div class="items">
-            <ul>
+            <table>
                 {% for item in list.todoitem_set.all %}
-                <li>{{item.text}}</li>
+                <tr>
+		    <td>{{item.text}}</td>
+		</tr>
                 {% endfor %}
-            </ul>
+            </table>
         </div>
 	<div class="itemcontrols">
 	<form action="." method="post" name="{{list.name}}">

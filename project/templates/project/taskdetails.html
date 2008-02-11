@@ -3,31 +3,84 @@
 
 {% block contents %}
     <h2>{{task.name}}</h2>
+    <div class="taskinfo">
+	<table>
+            <thead>
+                <tr>
+                    <td>Start Date</td>
+                    <td>End Date</td>
+                    <td>Person Responsible</td>
+                    <td>Edit</td>
+                </tr>
+            </thead>
+	    <tbody>
+            <tr>
+            <td>{{task.expected_start_date|date}}</td>
+            <td>{{task.expected_start_date|date}}</td>
+            <td>{{task.user_responsible}}</td>
+            <td><a href="{{task.edit_url}}">Edit</a></td>
+            </tr>
+	    </tbody>
+	</table>        
+    </div>
+    
     <div id="taskdetails">
 	
     {% if task.num_child_tasks %}
     <div id="subtasks">
 	<h3>Subs tasks for {{task.name}}</h3>
-	<ul>
+	<table>
+            <thead>
+                <tr>
+                    <td>Subtask</td>
+                    <td>Start Date</td>
+                    <td>End Date</td>
+                    <td>Person Responsible</td>
+                    <td>Edit</td>
+                </tr>
+            </thead>
 	{% for task in task.task_set.all %}
-	    <li>
-	    <a href="{{task.get_absolute_url}}">{{task.name}}</a>
-	    </li>
+	    <tbody>
+            <tr class={% cycle "odd" "even" %}>
+	    <td><a href="{{task.get_absolute_url}}">{{task.name}}</a></td>
+            <td>{{task.expected_start_date|date}}</td>
+            <td>{{task.expected_start_date|date}}</td>
+            <td>{{task.user_responsible}}</td>
+            <td><a href="{{task.edit_url}}">Edit</a></td>
+            </tr>
+	    </tbody>
 	{% endfor %}
-	</ul>
+	</table>
     </div>
     {% endif %}
     
     {% if task.num_items %}
     <div id="taskitems">
 	<h3>Items for {{task.name}}</h3>
-	<ul>
+        <table>
+        <thead>
+            <tr>
+                <td>
+                    Item
+                </td>
+                <td>
+                    User
+                </td>
+                <td>
+                    Time
+                </td>
+            </tr>
+        </thead>
 	{% for item in task.taskitem_set.all %}
-	    <li>
-	    <a href="{{item.edit_url}}">{{item.name}}</a>
-	    </li>
+	    <tbody>
+            <tr class={% cycle "odd" "even" %}>
+	    <td><a href="{{item.edit_url}}">{{item.name}}</a></td>
+            <td>{{item.user}}</td>
+            <td>{{item.time_worked}}</td>
+            </tr>
+	    </tbody>
 	{% endfor %}
-	</ul>
+	</table>
     </div>
     {% endif %}
     </div>
@@ -35,28 +88,24 @@
     
     <div id="subtaskform">
 	<form action="." method="post">
+        <fieldset>
+        <legend>Add a sub task</legend>
 	{{addsubtaskform.as_p}}
 	<input type="SUBMIT" name="addsubtask" value="Add a subtask" />
+        </fieldset>
 	</form>
     </div>
     
     <div id="itemform">
 	<form action="." method="post">
+        <fieldset>
+        <legend>Add a task item</legend>            
 	{{additemform.as_p}}
 	<input type="SUBMIT" name="additem" value="Add a taskitem" />
+        </fieldset>
 	</form>
     </div>
     
-    <div id="notes">
-        {% if task.get_notes %}
-        <h3>Notes</h3>
-        <ul>
-        {% for note in task.get_notes %}
-            <li>{{note.text}} said by {{note.user.username}}</li>
-        {% endfor %}
-        </ul>
-        {% endif %}
-    </div>
 {% endblock %}
 
 {% block sidebar %}
@@ -72,7 +121,7 @@
 <ul>
     {% for version in task.get_old_versions %}
 	<li>
-	    <a href="{{version.revision_url}}">Versioned on {{version.effective_end_date}}</a>
+	     <a href="{{version.revision_url}}">Version number {{version.version_number}} Versioned on {{version.effective_start_date}}</a>
 	</li>
     {% endfor %}
 </ul>
@@ -81,4 +130,15 @@
  {% if task.expected_end_date %}
     You need to complete this by {{task.expected_end_date|date}}
  {% endif %}
+ 
+     <div id="notes">
+        {% if task.get_notes %}
+        <h3>Notes</h3>
+        <ul>
+        {% for note in task.get_notes %}
+            <li>{{note.text}} added by {{note.user.username}}</li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
 {% endblock %}
