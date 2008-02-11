@@ -2,13 +2,78 @@
 
 {% block sidebar %}
     <div id="projectinfo">
-        {{project.name}} has {{num_tasks}} tasks, and {{num_tasks_complete}} are complete.
-        Number of tasks:
-        Number of task items:
-        Users:
+        {{project.name}} has {{num_tasks}} tasks with {{num_taskitems}} task items, and {{num_tasks_complete}} tasks are complete.
+        The total effort required is {{time_str}}
         
     </div>
     
     <div id="graphs">
+        <div class="graph">
+            <img src="{{task_chart_url}}" alt="Task chart" />
+        </div>
+        <div class="graph">
+            <img src="{{deadl_chart_url}}" alt="Deadline status chart" />
+        </div>
     </div>
+    
+    <div id="monthlyview">
+        {% if start_month %}
+            <h3>Tasks staring this month</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <td>
+                            Month
+                        </td>
+                        <td>
+                            Starting this month.
+                        </td>
+                    </tr>
+                </thead>
+            {% for monthview in start_month %}
+                <tr>
+                <td>
+                    {{monthview.0}} {{monthview.1}}
+                </td>
+                <td>
+                    {{monthview.2}}
+                </td>
+                </tr>
+            {% endfor %}
+            </table>
+        {% endif %}
+        
+        {% if end_month %}
+            <h3>Tasks ending this month</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <td>
+                            Month
+                        </td>
+                        <td>
+                            Ending this month.
+                        </td>
+                    </tr>
+                </thead>
+            {% for monthview in end_month %}
+                <tr>
+                <td>
+                    {% if monthview.0 %}
+                    {{monthview.0}} {{monthview.1}}
+                    {% else %}
+                    Not specified
+                    {% endif %}
+                </td>
+                <td>
+                    {{monthview.2}}
+                </td>
+                </tr>
+            {% endfor %}
+            </table>
+        {% endif %}        
+    </div>
+    
+    
+    
 {% endblock %}

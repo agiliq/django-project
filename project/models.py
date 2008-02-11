@@ -76,13 +76,40 @@ class Project(models.Model):
         cursor = connection.cursor()
         cursor.execute('SELECT COUNT(id) FROM project_task WHERE expected_end_date < actual_end_date AND project_id = %s AND is_current = %s' % (self.id, True))
         data = cursor.fetchone()
-        print data
+        return data[0]
     
     def extra_hours(self):
         cursor = connection.cursor()
         cursor.execute('SELECT COUNT(project_taskitem.id) FROM project_task, project_taskitem WHERE project_task.id = project_taskitem.task_id AND project_taskitem.expected_time < project_taskitem.actual_time AND project_id = %s AND project_taskitem.is_current = %s' % (self.id, True))
         data = cursor.fetchone()
+        return data[0]
+    
+    def num_taskitems(self):
+        cursor = connection.cursor()
+        cursor.execute('SELECT COUNT(project_taskitem.id) FROM project_task, project_taskitem WHERE project_task.id = project_taskitem.task_id AND project_id = %s AND project_taskitem.is_current = %s' % (self.id, True))
+        data = cursor.fetchone()
+        return data[0]
+    
+    def sum_time(self):
+        cursor = connection.cursor()
+        cursor.execute('SELECT unit, sum(CASE WHEN project_taskitem.actual_time IS NULL THEN project_taskitem.expected_time ELSE project_taskitem.actual_time END) FROM project_task, project_taskitem WHERE project_task.id = project_taskitem.task_id AND project_id = %s AND project_taskitem.is_current = %s GROUP BY unit' % (self.id, True))
+        data = cursor.fetchall()
+        return data
+    
+    def start_month(self):
+        cursor = connection.cursor()
+        cursor.execute('SELECT monthname(expected_start_date), year(expected_start_date), count(id) FROM project_task WHERE project_id = %s AND is_current = %s GROUP BY month(expected_start_date), month(expected_start_date)' % (self.id, True))
+        data = cursor.fetchall()
         print data
+        return data
+    
+    def end_month(self):
+        cursor = connection.cursor()
+        cursor.execute('SELECT monthname(expected_end_date), year(expected_end_date), count(id) FROM project_task WHERE project_id = %s AND is_current = %s GROUP BY month(expected_end_date), month(expected_end_date)' % (self.id, True))
+        data = cursor.fetchall()
+        print data
+        return data
+        
         
     class Admin:
         pass
