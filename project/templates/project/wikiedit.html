@@ -1,5 +1,10 @@
 {% extends 'project/base.html' %}
 
+{% block title %}
+{{block.super}} - Edit {{page.title}}
+{% endblock %}
+
+
 {% block contents %}
     <form method="post" action=".">
         {{editform.as_p}}
@@ -8,7 +13,7 @@
 {% endblock %}
 
 {% block sidebar %}
-   You are editing {{page.name}}, a wiki page for {{project.name}}
+   You are editing {{page.title}}, a wiki page for {{project.name}}
     <h2>revisions</h2>
     <ul>
     {% for rev in page.wikipagerevision_set.all %}

@@ -1,5 +1,10 @@
 {% extends 'project/base.html' %}
 
+{% block title %}
+{{block.super}} - Tasks
+{% endblock %}
+
+
 {% block contents %}
     <h2>Tasks for project</h2>
     <ul>
@@ -65,7 +70,7 @@
     </div>
 {% endblock %}
 
-{% block siebar %}
+{% block sidebar %}
    You are looking at the tasks for {{project.name}}
    
    <h3>Meta</h3>

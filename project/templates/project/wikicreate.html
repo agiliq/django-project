@@ -1,5 +1,9 @@
 {% extends 'project/base.html' %}
 
+{% block title %}
+{{block.super}} - Create page
+{% endblock %}
+
 {% block contents %}
     <form method="post" action=".">
         {{wikiform.as_p}}

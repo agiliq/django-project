@@ -1,5 +1,9 @@
 {% extends 'project/base.html' %}
 
+{% block title %}
+{{block.super}} - Edit {{taskitem.name}}
+{% endblock %}
+
 {% block contents %}
     <form action="." method="POST">
         {{itemform.as_p}}

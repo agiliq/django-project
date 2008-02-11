@@ -1,11 +1,17 @@
 {% extends 'project/base.html' %}
 
+{% block title %}
+{{block.super}} - Todo
+{% endblock %}
+
+
 {% block contents %}
     <h2>Your Todo lists</h2>
-    <ul>
+    
+    <div dojoType="dijit.layout.AccordionContainer" duration="200"
+                style="margin-right: 30px; width: 500px; height: 300px; overflow: hidden">
     {% for list in lists %}
-	<li>
-        <h3>{{list.name}}</h3>
+	<div dojoType="dijit.layout.AccordionPane" selected="true" title="{{list.name}}">
         <div class="items">
             <table>
                 {% for item in list.todoitem_set.all %}
@@ -17,19 +23,25 @@
         </div>
 	<div class="itemcontrols">
 	<form action="." method="post" name="{{list.name}}">
+	<fieldset>
 	{{list.item_form}}
+	<legend>Add a todo item.</legend>
 	<input type="HIDDEN" name="id" value="{{list.id}}" />
 	<input type="submit" name="additem" value="Add todo item" />
+	</fieldset>
         </form>
-	<div>
-	</li>
+	</div>
+	</div>
     {% endfor %}
-    </ul>
+    </div>
     
     <div id="noticeform">
         <form action="." method="post">
+	<fieldset>
+	    <legend>Add a todo list.</legend>
             {{addlistform.as_p}}
 	<input type="submit" name="addlist" value="Add todo list" />
+	</fieldset>
         </form>
     </div>
 {% endblock %}

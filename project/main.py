@@ -9,7 +9,8 @@ def index(request):
     """If the user is not logged in, show him the login/register forms, with some blurb about the services. Else redirect to /dashboard/"""
     if request.user.is_authenticated():
         return HttpResponseRedirect('/dashboard/')
-    payload = {}
+    register_form = bforms.UserCreationForm(prefix='register')
+    payload = {'register_form':register_form, 'login_form':register_form}
     return render(request, 'project/index.html', payload)
 
 @login_required

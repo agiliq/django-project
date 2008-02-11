@@ -1,5 +1,10 @@
 {% extends 'project/base.html' %}
 
+{% block title %}
+{{block.super}} -Revision for  {{task.name}}
+{% endblock %}
+
+
 {% block contents %}
         <h2>{{task.name}}</h2>
     <div class="taskinfo">

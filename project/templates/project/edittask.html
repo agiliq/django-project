@@ -1,5 +1,10 @@
 {% extends 'project/base.html' %}
 
+{% block title %}
+{{block.super}} - Edit {{task.name}}
+{% endblock %}
+
+
 {% block contents %}
     <form action="." method="post">
 	<fieldset>

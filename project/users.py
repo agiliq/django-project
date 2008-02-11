@@ -9,6 +9,7 @@ import bforms
 
 
 def login(request):
+    print request.POST
     return auth_login(request)
     
 def logout(request):

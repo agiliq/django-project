@@ -1,5 +1,10 @@
 {% extends 'project/base.html' %}
 
+{% block title %}
+{{block.super}} - Details for {{task.name}}
+{% endblock %}
+
+
 
 {% block contents %}
     <h2>{{task.name}}</h2>
@@ -109,6 +114,7 @@
 {% endblock %}
 
 {% block sidebar %}
+You are looking at {{task.name}}, a task for {{project.name}}.
 <h3>Meta</h3>
 <ul> 
     <li><a href="{{task.edit_url}}">Edit this task</a></li>

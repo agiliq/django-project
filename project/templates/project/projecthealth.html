@@ -1,6 +1,11 @@
 {% extends 'project/base.html' %}
 
-{% block sidebar %}
+{% block title %}
+{{block.super}} - Metrics
+{% endblock %}
+
+
+{% block contents %}
     <div id="projectinfo">
         {{project.name}} has {{num_tasks}} tasks with {{num_taskitems}} task items, and {{num_tasks_complete}} tasks are complete.
         The total effort required is {{time_str}} and  {{time_str_complete}} work has been completed.

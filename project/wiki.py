@@ -51,7 +51,7 @@ def edit_wikipage(request, project_name, page_name=None):
     if request.method == 'GET':
         editform = bforms.EditWikiPageForm(request.user, page)
         
-    payload = {'project':project, 'editform':editform}
+    payload = {'project':project, 'editform':editform, 'page':page}
     return render(request, 'project/wikiedit.html', payload)
 
 def wiki_revision(request, project_name, page_name, revision_id):
