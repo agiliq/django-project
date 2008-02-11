@@ -9,3 +9,7 @@
     {% endfor %}
     </ul>
 {% endblock %}
+
+{% block sidebar %}
+   You are viewing logs for {{project.name}}. These are also available as RSS <a href="{{project.feed_url}}">feeds</a>
+{% endblock %}

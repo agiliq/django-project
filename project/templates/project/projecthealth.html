@@ -3,16 +3,29 @@
 {% block sidebar %}
     <div id="projectinfo">
         {{project.name}} has {{num_tasks}} tasks with {{num_taskitems}} task items, and {{num_tasks_complete}} tasks are complete.
-        The total effort required is {{time_str}}
+        The total effort required is {{time_str}} and  {{time_str_complete}} work has been completed.
         
     </div>
     
     <div id="graphs">
         <div class="graph">
             <img src="{{task_chart_url}}" alt="Task chart" />
+            <br />
+            Total tasks: {{num_tasks}}
+            Tasks complete: {{num_tasks_complete}}
         </div>
         <div class="graph">
             <img src="{{deadl_chart_url}}" alt="Deadline status chart" />
+            <br />
+            Total tasks: {{num_tasks}}
+            Missed deadlines: {{num_deadline_miss}}
+        </div>
+        item_chart_url
+        <div class="graph">
+            <img src="{{item_chart_url}}" alt="Taskitem status chart" />
+            <br />
+            Total tasksitems: {{num_taskitems}}
+            Extra hours: {{num_extra_hours}}
         </div>
     </div>
     
@@ -76,4 +89,8 @@
     
     
     
+{% endblock %}
+
+{% block sidebar %}
+  You are looking at the metrics for {{project.name}}.
 {% endblock %}

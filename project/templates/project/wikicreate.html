@@ -6,3 +6,13 @@
         <input type="SUBMIT" name="createpage" value="Create Page" />
     </form>
 {% endblock %}
+
+{% block sidebar %}
+   You are creating a new wiki page for {{project.name}}
+  <h3>Meta</h3>
+  <ul>
+    <li>
+	<a href="{{project.wiki_url}}">Wiki</a>
+    </li>
+    </ul>
+{% endblock %}

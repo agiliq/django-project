@@ -17,11 +17,18 @@ def project_health(request, project_name):
     num_extra_hours = project.extra_hours()
     num_taskitems = project.num_taskitems()
     time = project.sum_time()
+    time_complete = project.sum_time_complete()
     time_str = ''
     for el in time:
         time_str += '%s %s, ' % (el[1], el[0])
+    time_str_complete = ''
+    for el in time_complete:
+        time_str_complete += '%s %s, ' % (el[1], el[0])
+    if not time_str_complete:
+        time_str_complete = 'no'
     start_month = project.start_month()
     end_month = project.end_month()
+    project.user_timeload()
     #data for charts
     width = 200
     height = 70
@@ -35,6 +42,11 @@ def project_health(request, project_name):
     deadl_chart.add_data([num_tasks - num_deadline_miss, num_deadline_miss])
     deadl_chart.set_pie_labels(['Others', 'Deadline missees'])
     deadl_chart_url = deadl_chart.get_url()
+    
+    item_chart = pygooglechart.PieChart2D(width, height)
+    item_chart.add_data([num_taskitems - num_extra_hours, num_extra_hours])
+    item_chart.set_pie_labels(['Others', 'Tasks with exta hours'])
+    item_chart_url = item_chart.get_url()
     
     payload = locals()
     return render(request, 'project/projecthealth.html', payload)

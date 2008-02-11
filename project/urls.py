@@ -1,6 +1,8 @@
 from django.conf.urls.defaults import *
 from django.views.generic.simple import direct_to_template
 
+from rss import *
+
 urlpatterns = patterns('project.foo',
     (r'^foo/$', direct_to_template, {'template':'project/dummy.html'}),
     (r'^projson/(?P<project_name>\w+)/$', 'proj_json')
@@ -56,8 +58,17 @@ urlpatterns += patterns('project.users',
     (r'^accounts/register/$', 'register'),
     )
 
+feeds = {
+    'project': ProjectRss,
+}
+urlpatterns += patterns('',
+    (r'^feeds/(?P<url>.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': feeds}),
+    )
+
 urlpatterns += patterns('',
         (r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': 'G:/prajact/project/templates/site_media'}),
     )
+
+
 
 

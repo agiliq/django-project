@@ -69,6 +69,9 @@ class Project(models.Model):
     def overdue_tasks(self):
         return self.task_set.filter(expected_end_date__lt = datetime.datetime.today())
     
+    def feed_url(self):
+        return '/feeds/project/%s/' % self.shortname
+    
     def invited_users(self):
         return self.inviteduser_set.all()
     
@@ -96,6 +99,12 @@ class Project(models.Model):
         data = cursor.fetchall()
         return data
     
+    def sum_time_complete(self):
+        cursor = connection.cursor()
+        cursor.execute('SELECT unit, sum(CASE WHEN project_taskitem.actual_time IS NULL THEN project_taskitem.expected_time ELSE project_taskitem.actual_time END) FROM project_task, project_taskitem WHERE project_task.id = project_taskitem.task_id AND project_id = %s AND project_taskitem.is_current = %s AND project_taskitem.is_complete = %s GROUP BY unit' % (self.id, True, True))
+        data = cursor.fetchall()
+        return data
+    
     def start_month(self):
         cursor = connection.cursor()
         cursor.execute('SELECT monthname(expected_start_date), year(expected_start_date), count(id) FROM project_task WHERE project_id = %s AND is_current = %s GROUP BY month(expected_start_date), month(expected_start_date)' % (self.id, True))
@@ -107,8 +116,17 @@ class Project(models.Model):
         cursor = connection.cursor()
         cursor.execute('SELECT monthname(expected_end_date), year(expected_end_date), count(id) FROM project_task WHERE project_id = %s AND is_current = %s GROUP BY month(expected_end_date), month(expected_end_date)' % (self.id, True))
         data = cursor.fetchall()
-        print data
         return data
+    
+    def user_timeload(self):
+        """How much load does a user have."""
+        cursor = connection.cursor()
+        cursor.execute('SELECT auth_user.username, sum(expected_time), unit FROM auth_user, project_taskitem, project_task WHERE project_taskitem.task_id = project_task.id AND project_taskitem.user_id = auth_user.id AND project_taskitem.is_current = %s AND project_task.project_id = %s GROUP BY project_taskitem.user_id, project_taskitem.unit' % (True, self.id))
+        data = cursor.fetchall()
+        return data
+        
+        
+        
         
         
     class Admin:
@@ -234,8 +252,19 @@ class Task(models.Model):
             log.save()            
             super(Task, new_task).save()
         
-           
-            
+    def set_is_complete(self, value):
+        """If a task is marked as complete all its sub tasks and task items should be marked as complete."""
+        self.is_complete = value
+        #self.save()
+        if not value:
+            cursor = connection.cursor()
+            cursor.execute('UPDATE project_task SET is_complete = %s WHERE parent_task_id = %s' % (False, self.id))
+            cursor.execute('UPDATE project_taskitem SET is_complete = %s WHERE task_id = %s' % (self.id))
+    
+    def get_is_complete(self):
+        return self.is_complete
+    
+    #is_complete = property(get_is_complete, set_is_complete)            
             
     def get_old_versions(self):
         """Get all the versions of the this task."""
@@ -391,6 +420,12 @@ class Log(models.Model):
     text = models.CharField(max_length = 200)
     is_complete = models.BooleanField(default = False)
     created_on = models.DateTimeField(auto_now_add = 1)
+    
+    def get_absolute_url(self):
+        return '/%s/logs/' % self.project.shortname
+    
+    def __unicode__(self):
+        return self.text
     
     class Meta:
         ordering = ('-created_on', )

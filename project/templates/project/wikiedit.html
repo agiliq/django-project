@@ -6,3 +6,16 @@
         <input type="SUBMIT" name="createpage" value="Create Page" />
     </form>
 {% endblock %}
+
+{% block sidebar %}
+   You are editing {{page.name}}, a wiki page for {{project.name}}
+    <h2>revisions</h2>
+    <ul>
+    {% for rev in page.wikipagerevision_set.all %}
+	<li>
+	    <a href="{{rev.get_absolute_url}}">{{rev.created_on}}</a>
+	</li>
+    {% endfor %}
+    </ul>   
+   
+{% endblock %}

@@ -8,6 +8,7 @@
 {% endblock %}
 
 {% block sidebar %}
+    You are editing {{taskitem.name}}, a task item created for {{taskitem.task.name}}
     <ul>
     {% for item in taskitem.old_versions %}
 	<li>

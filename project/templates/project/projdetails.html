@@ -108,6 +108,7 @@
 {% endblock %}
 
 {% block sidebar %}
+    You are looking at details for project {{project.name}}.
     This project has {{project.task_set.all.count}} tasks.
     {% if project.invited_users %}
     <div><h3>Pending users.</h3>
