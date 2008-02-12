@@ -219,6 +219,7 @@ class Task(models.Model):
     
     def save(self):
         """If this is the firsts time populate required details, if this is update version it."""
+        print 1
         if not self.id:
             self.version_number = 1
             cursor = connection.cursor()

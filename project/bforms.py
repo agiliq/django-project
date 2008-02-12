@@ -250,7 +250,12 @@ class EditTaskForm(CreateTaskForm):
             self.fields['user_responsible'].initial = task.user_responsible
     
     def save(self):
-        task = self.save_without_db()
+        task = self.task
+        task.name = self.cleaned_data['name']
+        task.user_responsible = self.cleaned_data['user_responsible']
+        task.expected_start_date = self.cleaned_data['start_date']
+        if self.cleaned_data['end_date']:
+            task.expected_end_date = self.cleaned_data['end_date']
         if self.cleaned_data['actual_start_date']:
             task.actual_start_date = self.cleaned_data['actual_start_date']
         if self.cleaned_data['actual_end_date']:

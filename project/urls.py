@@ -47,9 +47,6 @@ urlpatterns += patterns('project.files',
     (r'^(?P<project_name>\w+)/files/$', 'files'),
     )
 
-urlpatterns += patterns('project.rss',
-    (r'^(?P<project_name>\w+)/.rss/$', 'project_rss'),
-    ) 
 
 urlpatterns += patterns('project.users',
     (r'^accounts/login/$', 'login'),
