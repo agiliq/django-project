@@ -26,6 +26,16 @@
             <input type="SUBMIT" name="addnotice" value="Add Notice" />
         </form>
     </div>
+    
+    <div id="pagination">
+        {% if page_data.has_next_page %}
+        <a href="./?page={{page_data.next_page}}">next</a>
+        {% endif %}
+        
+        {% if page_data.has_prev_page %}
+        <a href="./?page={{page_data.prev_page}}">prev</a>
+        {% endif %}
+    </div>
 {% endblock %}
 
 {% block sidebar %}

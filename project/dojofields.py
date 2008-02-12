@@ -28,6 +28,6 @@ class DojoChoiceField(forms.ChoiceField):
 class DojoTextArea(forms.CharField):
     def __init__(self, *args, **kwargs):
         if not kwargs.has_key('widget'):
-            kwargs.update({'widget' : forms.Textarea})
-            #kwargs.update({'widget' : forms.Textarea(attrs={'dojoType':'dijit.Editor', 'width':'300px'})})                          
+            #kwargs.update({'widget' : forms.Textarea})
+            kwargs.update({'widget' : forms.Textarea(attrs={'dojoType':'dijit.Editor', 'width':'300px'})})                          
         super(DojoTextArea, self).__init__(*args, **kwargs)          

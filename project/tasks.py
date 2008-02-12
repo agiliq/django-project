@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from helpers import *
 from models import *
 import bforms
+from defaults import *
 
 def project_tasks(request, project_name):
     """Displays all the top tasks and task items for a specific project.
@@ -13,17 +14,21 @@ def project_tasks(request, project_name):
     shows add a top task form
     """
     project = get_project(request, project_name)
-    tasks = project.task_set.filter(parent_task__isnull = True)
+    query_set = project.task_set.filter(parent_task__isnull = True)
+    tasks, page_data = get_paged_objects(query_set, request, tasks_on_tasks_page)
     
     if request.method == 'POST':
-        taskform = bforms.CreateTaskForm(project, request.POST)
-        if taskform.is_valid():
-            taskform.save()
-            return HttpResponseRedirect('.')
+        if request.POST.has_key('addtask'):
+            taskform = bforms.CreateTaskForm(project, request.POST)
+            if taskform.is_valid():
+                taskform.save()
+                return HttpResponseRedirect('.')
+        elif request.POST.has_key('markdone') or request.POST.has_key('markundone'):
+            return handle_task_status(request)
     if request.method == 'GET':
         taskform = bforms.CreateTaskForm(project)
         
-    payload = {'project':project, 'tasks':tasks, 'taskform':taskform}    
+    payload = {'project':project, 'tasks':tasks, 'taskform':taskform, 'page_data':page_data}    
     return render(request, 'project/projecttask.html', payload)
         
     
@@ -55,6 +60,10 @@ def task_details(request, project_name, task_num):
             if additemform.is_valid():
                 additemform.save()
                 return HttpResponseRedirect('.')
+        elif request.POST.has_key('markdone') or request.POST.has_key('markundone'):
+            return handle_task_status(request)
+        elif request.POST.has_key('itemmarkdone') or request.POST.has_key('itemmarkundone'):
+            return handle_taskitem_status(request)
     if request.method == 'GET':
         addsubtaskform = bforms.CreateSubTaskForm(project, task)
         additemform = bforms.CreateTaskItemForm(task)
@@ -113,7 +122,7 @@ def edit_task_item(request, project_name, taskitem_num):
         itemform = bforms.EditTaskItemForm(request.POST, instance = taskitem)
         if itemform.is_valid():
             item = itemform.save()
-        return HttpResponseRedirect(item.task.get_absolute_url())
+            return HttpResponseRedirect(item.task.get_absolute_url())
     elif request.method == 'GET':
         itemform = bforms.EditTaskItemForm(instance = taskitem)
     payload = {'project':project, 'taskitem':taskitem, 'itemform':itemform}

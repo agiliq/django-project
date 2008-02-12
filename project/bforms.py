@@ -237,6 +237,7 @@ class EditTaskForm(forms.ModelForm):
 class EditTaskForm(CreateTaskForm):
     actual_start_date = DojoDateField(required = False)
     actual_end_date = DojoDateField(required = False)
+    is_complete = forms.BooleanField()
     
     def __init__(self, project, task, *args, **kwargs):
         super(EditTaskForm, self).__init__(project, *args, **kwargs)
@@ -246,6 +247,7 @@ class EditTaskForm(CreateTaskForm):
         self.fields['end_date'].initial = task.expected_end_date
         self.fields['actual_start_date'].initial = task.actual_start_date
         self.fields['actual_end_date'].initial = task.actual_end_date
+        self.fields['is_complete'].initial = task.is_complete
         if task.user_responsible:
             self.fields['user_responsible'].initial = task.user_responsible
     
@@ -260,6 +262,7 @@ class EditTaskForm(CreateTaskForm):
             task.actual_start_date = self.cleaned_data['actual_start_date']
         if self.cleaned_data['actual_end_date']:
             task.actual_end_date = self.cleaned_data['actual_end_date']
+        task.is_complete = self.cleaned_data['is_complete']
         task.save()
         return task
             

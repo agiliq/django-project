@@ -20,15 +20,17 @@
                     <td>Person Responsible</td>
 		    <td>Details</td>
                     <td>Edit</td>
+                    <td>Mark Done</td>
                 </tr>
             </thead>
 	    <tbody>
             <tr>
             <td>{{task.expected_start_date|date}}</td>
-            <td>{{task.expected_start_date|date}}</td>
+            <td>{{task.expected_end_date|date}}</td>
             <td>{{task.user_responsible}}</td>
 	    <td><a href="{{task.get_absolute_url}}">Details</a></td>
             <td><a href="{{task.edit_url}}">Edit</a></td>
+            {% include 'project/markdone_controls.html' %}           
             </tr>
 	    </tbody>
 	</table> 
@@ -62,10 +64,26 @@
     {% endfor %}
     </ul>
     
+    <div id="pagination">
+        [Showing task {{page_data.first_on_page}} - {{page_data.last_on_page}} of {{page_data.total}} tasks]
+        {% if page_data.has_next_page %}
+        <a href="./?page={{page_data.next_page}}">next</a>
+        {% endif %}
+        
+        {% if page_data.has_prev_page %}
+        <a href="./?page={{page_data.prev_page}}">prev</a>
+        {% endif %}
+    </div>    
+    
     <div id="noticeform">
+        
         <form action="." method="post">
+            <fieldset>
+                <legend>Add a task
+                </legend>
             {{taskform.as_p}}
             <input type="SUBMIT" name="addtask" value="Add Task" />
+            </fieldset>
         </form>
     </div>
 {% endblock %}

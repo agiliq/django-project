@@ -32,6 +32,9 @@
             <td>
                 Edit
             </td>
+            <td>
+                Mark Done
+            </td>
             </tr>
         </thead>
         <tbody>
@@ -44,6 +47,7 @@
         <td>{{task.expected_end_date|date}}</td>
         <td>{{task.user_responsible}}</td>
         <td><a href="{{task.edit_url}}">Edit</a></td>
+        {% include 'project/markdone_controls.html' %}
         </tr>
         
     {% endfor %}
@@ -70,6 +74,9 @@
             <td>
                 Edit
             </td>
+            <td>
+                Mark Done
+            </td>           
             </tr>
         </thead>
         <tbody>
@@ -82,6 +89,7 @@
         <td>{{task.expected_end_date|date}}</td>
         <td>{{task.user_responsible}}</td>
         <td><a href="{{task.edit_url}}">Edit</a></td>
+        {% include 'project/markdone_controls.html' %}         
         </tr>
         
     {% endfor %}

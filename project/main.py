@@ -4,6 +4,8 @@ from django.contrib.auth.decorators import login_required
 from helpers import *
 from models import *
 import bforms
+from defaults import *
+from django.core.paginator import ObjectPaginator, InvalidPage
 
 def index(request):
     """If the user is not logged in, show him the login/register forms, with some blurb about the services. Else redirect to /dashboard/"""
@@ -68,6 +70,9 @@ def project_details(request, project_name):
             if taskform.is_valid():
                 taskform.save()
                 return HttpResponseRedirect('.')
+        elif request.POST.has_key('markdone') or request.POST.has_key('markundone'):
+            return handle_task_status(request)
+            
     if request.method == 'GET':
         inviteform = bforms.InviteUserForm()
         taskform = bforms.CreateTaskForm(project)
@@ -78,8 +83,9 @@ def project_details(request, project_name):
 @login_required
 def full_logs(request, project_name):
     project = get_project(request, project_name)
-    logs = Log.objects.filter(project = project)
-    payload = {'project':project, 'logs':logs}
+    query_set = Log.objects.filter(project = project)
+    logs, page_data = get_paged_objects(query_set, request, logs_per_page)
+    payload = {'project':project, 'logs':logs, 'page_data':page_data}
     return render(request, 'project/fulllogs.html', payload)
 
 @login_required
@@ -89,7 +95,8 @@ def noticeboard(request, project_name):
     Shows the add notice form.
     """
     project = get_project(request, project_name)
-    notices = Notice.objects.filter(project = project)
+    query_set = Notice.objects.filter(project = project)
+    notices, page_data = get_paged_objects(query_set, request, notices_per_page)
     if request.method == 'POST':
         addnoticeform = bforms.AddNoticeForm(project, request.user, request.POST)
         if addnoticeform.is_valid():
@@ -97,7 +104,7 @@ def noticeboard(request, project_name):
             return HttpResponseRedirect('.')
     if request.method == 'GET':        
         addnoticeform = bforms.AddNoticeForm()
-    payload = {'project':project, 'notices':notices, 'addnoticeform':addnoticeform}
+    payload = {'project':project, 'notices':notices, 'addnoticeform':addnoticeform, 'page_data':page_data}
     return render(request, 'project/noticeboard.html', payload)
 
 @login_required

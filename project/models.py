@@ -19,6 +19,18 @@ class AddTodoItemForm(forms.Form):
         todoitem = TodoItem(text = self.cleaned_data['text'], list = self.user)
         todoitem.save()
         return todoitem
+    
+class MarkDoneForm(forms.Form):
+    is_complete = forms.BooleanField()
+    
+    def __init__(self, task, *args, **kwargs):
+        kwargs.update({'prefix':task.id})
+        super(MarkDoneForm, self).super(*args, **kwargs)
+        self.task = task
+        self.fields['is_complete'].initial = task.is_complete
+    
+    def save(self):
+        pass
 
 class Project(models.Model):
     """Model for project.
@@ -67,7 +79,7 @@ class Project(models.Model):
         return self.task_set.all().order_by('-created_on')[:3]
     
     def overdue_tasks(self):
-        return self.task_set.filter(expected_end_date__lt = datetime.datetime.today())
+        return self.task_set.filter(expected_end_date__lt = datetime.datetime.today(), is_complete = False)
     
     def feed_url(self):
         return '/feeds/project/%s/' % self.shortname
@@ -219,7 +231,6 @@ class Task(models.Model):
     
     def save(self):
         """If this is the firsts time populate required details, if this is update version it."""
-        print 1
         if not self.id:
             self.version_number = 1
             cursor = connection.cursor()
@@ -298,6 +309,9 @@ class Task(models.Model):
     def get_notes(self):
         """Get notes for this task."""
         return TaskNote.objects.filter(task_num = self.number)
+    
+    class Meta:
+        ordering = ('-created_on',)
             
     class Admin:
         pass               

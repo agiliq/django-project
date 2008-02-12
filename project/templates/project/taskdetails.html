@@ -16,6 +16,7 @@
                     <td>End Date</td>
                     <td>Person Responsible</td>
                     <td>Edit</td>
+                    <td>Complete?</td>
                 </tr>
             </thead>
 	    <tbody>
@@ -24,6 +25,7 @@
             <td>{{task.expected_end_date|date}}</td>
             <td>{{task.user_responsible}}</td>
             <td><a href="{{task.edit_url}}">Edit</a></td>
+            {% include 'project/markdone_controls.html' %}
             </tr>
 	    </tbody>
 	</table>        
@@ -74,6 +76,9 @@
                 <td>
                     Time
                 </td>
+                <td>
+                    Complete?
+                </td>
             </tr>
         </thead>
 	{% for item in task.taskitem_set.all %}
@@ -82,6 +87,7 @@
 	    <td><a href="{{item.edit_url}}">{{item.name}}</a></td>
             <td>{{item.user}}</td>
             <td>{{item.time_worked}}</td>
+            {% include 'project/taskitem_done.html' %}
             </tr>
 	    </tbody>
 	{% endfor %}

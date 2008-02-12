@@ -1,0 +1,14 @@
+	    <td>
+            {% if task.is_complete %}
+            <form action="." method="post">
+                <input type="hidden" name="taskid" value="{{task.id}}" />
+		<input type="hidden" name="markundone" value="markundone" />
+		<input type="checkbox" name="markundone_check" value="{{task.is_complete}}" checked="checked" onchange="submit()" />
+            </form>
+            {% else %}
+            <form action="." method="post">
+                <input type="hidden" name="taskid" value="{{task.id}}" />
+		<input type="checkbox" name="markdone" value="{{task.is_complete}}" onchange="submit()"/>
+            </form>            
+            {% endif %}
+            </td>
