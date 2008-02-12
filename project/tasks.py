@@ -68,12 +68,12 @@ def edit_task(request, project_name, task_num):
     project = get_project(request, project_name)
     task = Task.objects.get(project = project, number = task_num)
     if request.method == 'POST':
-        editform = bforms.EditTaskForm(request.POST, instance = task)
+        editform = bforms.EditTaskForm(data = request.POST, task = task, project = project)
         if editform.is_valid():
             task = editform.save()
             return HttpResponseRedirect(task.get_absolute_url())
     if request.method == 'GET':        
-        editform = bforms.EditTaskForm(instance = task)
+        editform = bforms.EditTaskForm(project = project, task = task)
         
     payload = {'project':project, 'task':task, 'editform':editform}
     return render(request, 'project/edittask.html', payload)

@@ -6,8 +6,11 @@
 
 {% block contents %}
     <form method="post" action=".">
+        <fieldset>
+            <legend>Create a page</legend>
         {{wikiform.as_p}}
-        <input type="SUBMIT" name="createpage" value="Create Page" />
+        <input type="submit" name="save" value="Create Page" />
+        </fieldset>
     </form>
 {% endblock %}
 

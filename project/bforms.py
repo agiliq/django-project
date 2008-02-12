@@ -3,6 +3,7 @@ from django.newforms import ValidationError
 import re
 
 from models import *
+from django.utils.translation import ugettext as _ 
 
 class CreateProjectForm(forms.Form):
     #shortname = DojoCharField(max_length = 20, widget=forms.TextInput(attrs={'dojoType':'dijit.form.TextBox'}))
@@ -94,7 +95,7 @@ class CreateTaskForm(forms.Form):
     def save_without_db(self):
         task = Task(name = self.cleaned_data['name'], expected_start_date = self.cleaned_data['start_date'], )
         if self.cleaned_data['end_date']:
-            self.expected_end_date = self.cleaned_data['end_date']
+            task.expected_end_date = self.cleaned_data['end_date']
         if not self.cleaned_data['user_responsible'] == 'None':
             user = User.objects.get(username = self.cleaned_data['user_responsible'])
             task.user_responsible = user
@@ -175,7 +176,8 @@ class AddTodoListForm(forms.Form):
 
 class CreateWikiPageForm(forms.Form):
     title = DojoCharField()
-    text = DojoCharField(widget = forms.Textarea)
+    text = DojoTextArea()
+    #text = DojoCharField(widget = forms.Textarea)
     
     def __init__(self, project = None, user = None, *args, **kwargs):
         super(CreateWikiPageForm, self).__init__(*args, **kwargs)
@@ -197,7 +199,7 @@ class CreateWikiPageForm(forms.Form):
         return page
         
 class EditWikiPageForm(forms.Form):
-    text = DojoCharField(widget = forms.Textarea)
+    text = DojoTextArea()#DojoCharField(widget = forms.Textarea)
     
     def __init__(self, user = None, page = None, *args, **kwargs):
         super(EditWikiPageForm, self).__init__(*args, **kwargs)
@@ -215,6 +217,7 @@ class EditWikiPageForm(forms.Form):
         self.page.save()
 
 
+"""
 class EditTaskForm(forms.ModelForm):
     expected_end_date = DojoDateField(required = False)
     actual_start_date = DojoDateField(required = False)
@@ -230,13 +233,31 @@ class EditTaskForm(forms.ModelForm):
         model = Task
         exclude = ('number', 'project', 'parent_task', 'version_number', 'is_current', 'effective_end_date')
 """
-class EditTaskForm(CreateTaskForm):
-    actual_start_date = DojoDateField()
-    actual_end_date = DojoDateField()
-    def __init__(self, instance, *args, **kwargs):
-        super(EditTaskForm, self).__init__(*args, **kwargs)    
-    """
 
+class EditTaskForm(CreateTaskForm):
+    actual_start_date = DojoDateField(required = False)
+    actual_end_date = DojoDateField(required = False)
+    
+    def __init__(self, project, task, *args, **kwargs):
+        super(EditTaskForm, self).__init__(project, *args, **kwargs)
+        self.task = task
+        self.fields['name'].initial = task.name
+        self.fields['start_date'].initial = task.expected_start_date
+        self.fields['end_date'].initial = task.expected_end_date
+        self.fields['actual_start_date'].initial = task.actual_start_date
+        self.fields['actual_end_date'].initial = task.actual_end_date
+        if task.user_responsible:
+            self.fields['user_responsible'].initial = task.user_responsible
+    
+    def save(self):
+        task = self.save_without_db()
+        if self.cleaned_data['actual_start_date']:
+            task.actual_start_date = self.cleaned_data['actual_start_date']
+        if self.cleaned_data['actual_end_date']:
+            task.actual_end_date = self.cleaned_data['actual_end_date']
+        task.save()
+        return task
+            
 class EditTaskItemForm(forms.ModelForm):
     user = DojoChoiceField()
     

@@ -29,6 +29,7 @@ def create_wikipage(request, project_name, page_name=None):
     """Create a new wiki page."""
     project = get_project(request, project_name)
     if request.method == 'POST':
+        print request.POST
         wikiform = bforms.CreateWikiPageForm(project, request.user, request.POST)
         if wikiform.is_valid():
             page = wikiform.save()

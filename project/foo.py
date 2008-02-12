@@ -13,8 +13,6 @@ def proj_json(request, project_name):
             children.append({'_reference':subtask.name})
         task = {'name':task.name, 'type':'task', 'children':children}
         items.append(task)
-            
-        print items
     payload = { 'label': 'name',
     'identifier': 'name',
     'items': 

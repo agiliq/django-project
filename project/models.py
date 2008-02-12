@@ -109,7 +109,6 @@ class Project(models.Model):
         cursor = connection.cursor()
         cursor.execute('SELECT monthname(expected_start_date), year(expected_start_date), count(id) FROM project_task WHERE project_id = %s AND is_current = %s GROUP BY month(expected_start_date), month(expected_start_date)' % (self.id, True))
         data = cursor.fetchall()
-        print data
         return data
     
     def end_month(self):
@@ -425,7 +424,7 @@ class Log(models.Model):
         return '/%s/logs/' % self.project.shortname
     
     def __unicode__(self):
-        return self.text
+        return '%s (Logged on %s)' % (self.text, self.created_on)
     
     class Meta:
         ordering = ('-created_on', )

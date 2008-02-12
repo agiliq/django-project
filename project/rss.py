@@ -24,6 +24,7 @@ class ProjectRss(Feed):
     def description(self, obj):
         return 'Feed for project %s' % obj.name
     
+    
     def items(self, obj):
         return obj.log_set.all()[:30]     
         

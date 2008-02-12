@@ -10,7 +10,10 @@
     <ul>
     {% for log in logs %}
     
-        <li>{{log.text}}</li>
+        <li>{{log.text}}
+            <br />
+            Created on {{log.created_on|date}} {{log.created_on|time}}
+        </li>
     {% endfor %}
     </ul>
 {% endblock %}
