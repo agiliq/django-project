@@ -18,6 +18,8 @@ class AddTodoItemForm(forms.Form):
     def save(self):
         todoitem = TodoItem(text = self.cleaned_data['text'], list = self.user)
         todoitem.save()
+        
+        
         return todoitem
     
 class MarkDoneForm(forms.Form):
@@ -31,6 +33,33 @@ class MarkDoneForm(forms.Form):
     
     def save(self):
         pass
+
+
+"""
+class IsCompleteField(models.BooleanField):
+    "When this is set it must change the value for each sub tasks is complete."
+    
+    def contribute_to_class(self, cls, name):
+        super(IsCompleteField, self).contribute_to_class(cls, name)
+
+        # Make this object the descriptor for field access.
+        setattr(cls, self.name, self)
+       
+    def __set__(self, instance, value):
+        print 111, value
+        instance.value = value
+        if value:
+            print 222
+            sub_tasks = Task.objects.filter(parent_task = instance)
+            print sub_tasks
+            for task in sub_tasks:
+                task.is_complete = True
+                task.save()
+                
+    def __get__(self, instance, owner = None):
+        return instance.value
+"""
+
 
 class Project(models.Model):
     """Model for project.
@@ -218,6 +247,7 @@ class Task(models.Model):
     expected_end_date = models.DateField(null = True, blank = True)
     actual_start_date = models.DateField(null = True,  blank = True)
     actual_end_date = models.DateField(null = True,  blank = True)
+    #is_complete = IsCompleteField(default = False)
     is_complete = models.BooleanField(default = False)
     created_on = models.DateTimeField(auto_now_add = 1)
     #Versioning
@@ -269,13 +299,13 @@ class Task(models.Model):
         #self.save()
         if not value:
             cursor = connection.cursor()
-            cursor.execute('UPDATE project_task SET is_complete = %s WHERE parent_task_id = %s' % (False, self.id))
-            cursor.execute('UPDATE project_taskitem SET is_complete = %s WHERE task_id = %s' % (self.id))
+            cursor.execute('UPDATE project_task SET is_complete = %s WHERE parent_task_id = %s' % (True , self.id))
+            cursor.execute('UPDATE project_taskitem SET is_complete = %s WHERE task_id = %s' % (True, self.id))
     
     def get_is_complete(self):
         return self.is_complete
     
-    #is_complete = property(get_is_complete, set_is_complete)            
+    is_complete_prop = property(get_is_complete, set_is_complete)            
             
     def get_old_versions(self):
         """Get all the versions of the this task."""

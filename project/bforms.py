@@ -262,7 +262,7 @@ class EditTaskForm(CreateTaskForm):
             task.actual_start_date = self.cleaned_data['actual_start_date']
         if self.cleaned_data['actual_end_date']:
             task.actual_end_date = self.cleaned_data['actual_end_date']
-        task.is_complete = self.cleaned_data['is_complete']
+        task.is_complete_prop = self.cleaned_data['is_complete']
         task.save()
         return task
             

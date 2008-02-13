@@ -44,6 +44,7 @@
                     <td>End Date</td>
                     <td>Person Responsible</td>
                     <td>Edit</td>
+                    <td>Complete?</td>
                 </tr>
             </thead>
 	{% for task in task.task_set.all %}
@@ -54,6 +55,7 @@
             <td>{{task.expected_start_date|date}}</td>
             <td>{{task.user_responsible}}</td>
             <td><a href="{{task.edit_url}}">Edit</a></td>
+            {% include 'project/markdone_controls.html' %}
             </tr>
 	    </tbody>
 	{% endfor %}

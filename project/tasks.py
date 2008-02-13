@@ -25,8 +25,11 @@ def project_tasks(request, project_name):
                 return HttpResponseRedirect('.')
         elif request.POST.has_key('markdone') or request.POST.has_key('markundone'):
             return handle_task_status(request)
+        elif request.has_key('deletetask'):
+            return delete_task(request)
     if request.method == 'GET':
         taskform = bforms.CreateTaskForm(project)
+        
         
     payload = {'project':project, 'tasks':tasks, 'taskform':taskform, 'page_data':page_data}    
     return render(request, 'project/projecttask.html', payload)

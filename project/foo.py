@@ -7,7 +7,6 @@ def proj_json(request, project_name):
     tasks = project.task_set.filter()
     items = []
     for task in tasks:
-        print 'foo', task
         children = []
         for subtask in task.task_set.all():
             children.append({'_reference':subtask.name})
