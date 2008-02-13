@@ -72,6 +72,8 @@ def project_details(request, project_name):
                 return HttpResponseRedirect('.')
         elif request.POST.has_key('markdone') or request.POST.has_key('markundone'):
             return handle_task_status(request)
+        elif request.has_key('deletetask'):
+            return delete_task(request)
             
     if request.method == 'GET':
         inviteform = bforms.InviteUserForm()
@@ -126,6 +128,19 @@ def todo(request, project_name):
             if request.POST[text_id]:
                 item = TodoItem(list = list, text = request.POST[text_id])
                 item.save()
+        elif request.POST.has_key('listmarkdone'):
+            id = int(request.POST['id'])
+            list = TodoList.objects.get(id = id)
+            list.is_complete = True
+            list.save()
+            return HttpResponseRedirect('.')
+        elif request.POST.has_key('itemmarkdone'):
+            id = int(request.POST['id'])
+            todoitem = TodoItem.objects.get(id = id)
+            todoitem.is_complete = True
+            todoitem.save()
+            return HttpResponseRedirect('.')
+            
     if request.method == 'GET':
         addlistform = bforms.AddTodoListForm()
     payload = {'project':project, 'lists':lists, 'addlistform':addlistform}

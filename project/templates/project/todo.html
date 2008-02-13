@@ -12,11 +12,35 @@
                 style="margin-right: 30px; width: 500px; height: 300px; overflow: hidden">
     {% for list in lists %}
 	<div dojoType="dijit.layout.AccordionPane" selected="true" title="{{list.name}}">
+            <div class="listcontrols">
+                <form action='.' method="post">
+                    <label>Complete</label>
+                    {% if list.is_complete %}
+                        <input type="hidden" name="todoitemid" value="{{list.id}}" />
+                        <input type="checkbox" name="listmarkdone" value="" checked="checked" disabled="disabled" />  
+                    {% else %}
+                        <input type="hidden" name="id" value="{{list.id}}" />
+                        <input type="checkbox" name="listmarkdone" value="" onchange="submit()" />
+                    {% endif %}
+                </form>
+            </div>
         <div class="items">
             <table>
                 {% for item in list.todoitem_set.all %}
                 <tr>
-		    <td>{{item.text}}</td>
+		    <td class="{% cycle 'odd' 'even' %}">{{item.text}}</td>
+                    <td>
+                        <form action="." method="post">
+                            {% if item.is_complete %}
+                            <input type="hidden" name="todoitemid" value="{{item.id}}" />
+                            <input type="checkbox" name="itemmarkdone" value="" checked="checked" disabled="disabled" />
+                            {% else %}
+                            <input type="hidden" name="id" value="{{item.id}}" />
+                            <input type="checkbox" name="itemmarkdone" value="" onchange="submit()" />
+                            {% endif %}
+                            
+                        </form>
+                    </td>
 		</tr>
                 {% endfor %}
             </table>

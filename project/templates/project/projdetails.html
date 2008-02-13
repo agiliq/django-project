@@ -35,6 +35,9 @@
             <td>
                 Mark Done
             </td>
+            <td>
+                Delete
+            </td>
             </tr>
         </thead>
         <tbody>
@@ -48,6 +51,7 @@
         <td>{{task.user_responsible}}</td>
         <td><a href="{{task.edit_url}}">Edit</a></td>
         {% include 'project/markdone_controls.html' %}
+        {% include 'project/task_del_controls.html' %}
         </tr>
         
     {% endfor %}

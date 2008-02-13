@@ -8,6 +8,10 @@
          {{project.name}}
         {% endblock %}
     </title>
+    {% block feeds %}
+    <!--
+    <link rel="alternate" type="application/rss+xml" title="{{project.name}} logs RSS feeds" href="/feeds/project/{{project.shortname}}/" />
+    {% endblock %}
     <style type="text/css">
         @import "http://o.aolcdn.com/dojo/1.0.0/dijit/themes/tundra/tundra.css";
         @import "http://o.aolcdn.com/dojo/1.0.0/dojo/resources/dojo.css"
@@ -15,7 +19,9 @@
     <script type="text/javascript" src="http://o.aolcdn.com/dojo/1.0.0/dojo/dojo.xd.js"
         djConfig="parseOnLoad: true"></script>
     
+    -->
     {% block dojorequires %}
+    <!--
 <script type="text/javascript">
     dojo.require("dojo.parser");
     dojo.require("dijit.form.TextBox");
@@ -25,7 +31,8 @@
     dojo.require("dijit.Tree");
     dojo.require("dijit.layout.AccordionContainer");
     dojo.require('dijit.Editor');
-</script>    
+</script>
+-->
     {% endblock %}
     
     <link rel="stylesheet" type="text/css" href="/site_media/css/style.css" />

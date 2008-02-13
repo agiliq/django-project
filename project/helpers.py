@@ -62,3 +62,10 @@ def handle_taskitem_status(request):
         taskitem.is_complete = False
     taskitem.save()
     return HttpResponseRedirect('.')
+
+def delete_task(request):
+    taskid = request.POST['taskid']
+    print taskid
+    task = Task.objects.get(id = taskid)
+    task.delete()
+    return HttpResponseRedirect('.')
