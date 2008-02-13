@@ -1,66 +1,15 @@
 {% extends 'project/base.html' %}
 
 {% block title %}
-{{block.super}} -Revision for  {{task.name}}
+{{block.super}} -Revision for  {{taskitem.name}}
 {% endblock %}
 
 
 {% block contents %}
-        <h2>{{task.name}}</h2>
-    <div class="taskinfo">
-	<table>
-            <thead>
-                <tr>
-                    <td>Start Date</td>
-                    <td>End Date</td>
-                    <td>Person Responsible</td>
-                    <td>Edit</td>
-                </tr>
-            </thead>
-	    <tbody>
-            <tr>
-            <td>{{task.expected_start_date|date}}</td>
-            <td>{{task.expected_start_date|date}}</td>
-            <td>{{task.user_responsible}}</td>
-            <td><a href="{{task.edit_url}}">Edit</a></td>
-            </tr>
-	    </tbody>
-	</table>        
-    </div>
-    
-    <div id="taskdetails">
-	
-    {% if task.num_child_tasks %}
-    <div id="subtasks">
-	<h3>Subs tasks for {{task.name}}</h3>
-	<table>
-            <thead>
-                <tr>
-                    <td>Subtask</td>
-                    <td>Start Date</td>
-                    <td>End Date</td>
-                    <td>Person Responsible</td>
-                    <td>Edit</td>
-                </tr>
-            </thead>
-	{% for task in task.task_set.all %}
-	    <tbody>
-            <tr class={% cycle "odd" "even" %}>
-	    <td><a href="{{task.get_absolute_url}}">{{task.name}}</a></td>
-            <td>{{task.expected_start_date|date}}</td>
-            <td>{{task.expected_start_date|date}}</td>
-            <td>{{task.user_responsible}}</td>
-            <td><a href="{{task.edit_url}}">Edit</a></td>
-            </tr>
-	    </tbody>
-	{% endfor %}
-	</table>
-    </div>
-    {% endif %}
-    
-    {% if task.num_items %}
+        <h2>{{taskitem.name}}</h2>
+        
     <div id="taskitems">
-	<h3>Items for {{task.name}}</h3>
+	<h4>Items for task {{taskitem.task.name}}</h4>
         <table>
         <thead>
             <tr>
@@ -75,19 +24,16 @@
                 </td>
             </tr>
         </thead>
-	{% for item in task.taskitem_set.all %}
 	    <tbody>
             <tr class={% cycle "odd" "even" %}>
-	    <td><a href="{{item.edit_url}}">{{item.name}}</a></td>
-            <td>{{item.user}}</td>
-            <td>{{item.time_worked}}</td>
+	    <td><a href="{{taskitem.edit_url}}">{{taskitem.name}}</a></td>
+            <td>{{taskitem.user}}</td>
+            <td>{{taskitem.time_worked}}</td>
             </tr>
 	    </tbody>
-	{% endfor %}
 	</table>
     </div>
-    {% endif %}
-    </div>
+    
 {% endblock %}
 
 {% block sidebar %}

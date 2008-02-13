@@ -34,33 +34,6 @@ class MarkDoneForm(forms.Form):
     def save(self):
         pass
 
-
-"""
-class IsCompleteField(models.BooleanField):
-    "When this is set it must change the value for each sub tasks is complete."
-    
-    def contribute_to_class(self, cls, name):
-        super(IsCompleteField, self).contribute_to_class(cls, name)
-
-        # Make this object the descriptor for field access.
-        setattr(cls, self.name, self)
-       
-    def __set__(self, instance, value):
-        print 111, value
-        instance.value = value
-        if value:
-            print 222
-            sub_tasks = Task.objects.filter(parent_task = instance)
-            print sub_tasks
-            for task in sub_tasks:
-                task.is_complete = True
-                task.save()
-                
-    def __get__(self, instance, owner = None):
-        return instance.value
-"""
-
-
 class Project(models.Model):
     """Model for project.
     shortname: Shortname, can not contain spaces , special chars. Used in url
@@ -240,12 +213,7 @@ class ChildTaskItemManager(models.Manager):
         self.task = task
         
     def get_query_set(self):
-        print 2367
-        try:
-            qs = TaskItem.objects.filter(project = self.task.project, task_num = self.task.number, is_current = True)
-        except Exception, e:
-            print e
-        print qs
+        qs = TaskItem.objects.filter(project = self.task.project, task_num = self.task.number, is_current = True)
         return qs
     
 class Task(models.Model):
@@ -329,7 +297,7 @@ class Task(models.Model):
         if value:
             cursor = connection.cursor()
             cursor.execute('UPDATE project_task SET is_complete = %s WHERE parent_task_num = %s' % (True , self.number))
-            cursor.execute('UPDATE project_taskitem SET is_complete = %s WHERE task_id = %s' % (True, self.id))
+            cursor.execute('UPDATE project_taskitem SET is_complete = %s WHERE task_num = %s' % (True, self.number))
     
     def get_is_complete(self):
         return self.is_complete
@@ -395,6 +363,7 @@ class TaskItem(models.Model):
     is_complete: Has this todo item been completed.
     created_on: When was this todo created. AUto filled.
     """
+    number = models.IntegerField()
     project = models.ForeignKey(Project)
     task_num = models.IntegerField()
     name = models.CharField(max_length = 200)
@@ -419,8 +388,12 @@ class TaskItem(models.Model):
         if not self.id:
             self.version_number = 1
             self.number = -1
-            super(TaskItem, self).save()
-            self.number = self.id#Todo, make it use per project numbers.
+            cursor = connection.cursor()
+            cursor.execute('SELECT MAX(number) from project_taskitem WHERE project_id = %s' % self.project.id)
+            num = cursor.fetchone()[0]
+            if not num:
+                num = 0
+            self.number = num + 1
             super(TaskItem, self).save()
             log_text = 'Item %s created for task %s.' % (self.name, self.task.name)
             log = Log(project = self.task.project, text = log_text)
@@ -449,7 +422,7 @@ class TaskItem(models.Model):
     
     def old_versions(self):
         """return all versions of the taskitem."""
-        return TaskItem.all_objects.filter(task__project = self.task.project, number = self.number).order_by('-version_number')
+        return TaskItem.all_objects.filter(project = self.project, number = self.number).order_by('-version_number')
     
     def revision_url(self):
         return '/%s/itemrevision/%s/' % (self.task.project, self.id)

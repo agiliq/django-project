@@ -47,9 +47,9 @@ def handle_task_status(request):
     id = request.POST['taskid']
     task = Task.objects.get(id = id)
     if request.POST.has_key('markdone'):
-        task.is_complete = True
+        task.is_complete_prop = True
     else:
-        task.is_complete = False
+        task.is_complete_prop = False
     task.save()
     return HttpResponseRedirect('.')
 
