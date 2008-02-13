@@ -114,7 +114,7 @@ class CreateSubTaskForm(CreateTaskForm):
         self.parent_task = parent_task
     def save(self):
         task = self.save_without_db()
-        task.parent_task = self.parent_task
+        task.parent_task_num = self.parent_task.number
         task.save()
         return task
         
@@ -124,8 +124,10 @@ class CreateTaskItemForm(forms.Form):
     user = DojoChoiceField()
     time = DojoDecimalField()
     units = DojoChoiceField(choices = unit_choices)
-    def __init__(self, task = None, *args, **kwargs):
+    
+    def __init__(self, project, task, *args, **kwargs):
         super(CreateTaskItemForm, self).__init__(*args, **kwargs)
+        self.project = project
         self.task = task
         users = [subs.user for subs in task.project.subscribeduser_set.all()]
         self.fields['user'].choices = [('None','None')] + [(user.username, user.username) for user in users]
@@ -137,7 +139,8 @@ class CreateTaskItemForm(forms.Form):
         
     def save(self):
         item = TaskItem(name = self.cleaned_data['item_name'], )
-        item.task = self.task
+        item.project = self.project
+        item.task_num = self.task.number
         if not self.cleaned_data['user'] == 'None':
             user = User.objects.get(username = self.cleaned_data['user'])
             item.user = user

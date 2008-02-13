@@ -14,7 +14,7 @@ def project_tasks(request, project_name):
     shows add a top task form
     """
     project = get_project(request, project_name)
-    query_set = project.task_set.filter(parent_task__isnull = True)
+    query_set = project.task_set.filter(parent_task_num__isnull = True)
     tasks, page_data = get_paged_objects(query_set, request, tasks_on_tasks_page)
     
     if request.method == 'POST':
@@ -50,7 +50,7 @@ def task_details(request, project_name, task_num):
     task = Task.objects.get(project = project, number = task_num)
     
     addsubtaskform = bforms.CreateSubTaskForm(project, task)
-    additemform = bforms.CreateTaskItemForm(task)
+    additemform = bforms.CreateTaskItemForm(project, task)
     
     if request.method == 'POST':
         if request.POST.has_key('addsubtask'):
@@ -59,7 +59,7 @@ def task_details(request, project_name, task_num):
                 addsubtaskform.save()
                 return HttpResponseRedirect('.')
         elif request.POST.has_key('additem'):
-            additemform = bforms.CreateTaskItemForm(task, request.POST)
+            additemform = bforms.CreateTaskItemForm(project, task, request.POST)
             if additemform.is_valid():
                 additemform.save()
                 return HttpResponseRedirect('.')
@@ -69,7 +69,7 @@ def task_details(request, project_name, task_num):
             return handle_taskitem_status(request)
     if request.method == 'GET':
         addsubtaskform = bforms.CreateSubTaskForm(project, task)
-        additemform = bforms.CreateTaskItemForm(task)
+        additemform = bforms.CreateTaskItemForm(project, task)
     payload = {'project':project, 'task':task, 'addsubtaskform':addsubtaskform, 'additemform':additemform}
     return render(request, 'project/taskdetails.html', payload)
 

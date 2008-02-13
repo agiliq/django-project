@@ -227,6 +227,27 @@ class TaskManager(models.Manager):
         """Get all the rows, including the versioned with old ones."""
         return super(TaskManager, self).all()
     
+class SubtaskManager(models.Manager):
+    def __init__(self, task, *args, **kwargs):
+        super(SubtaskManager, self).__init__(*args, **kwargs)
+        self.task = task
+    def get_query_set(self):
+        return Task.objects.filter(project = self.task.project, parent_task_num = self.task.number, is_current = True)
+    
+class ChildTaskItemManager(models.Manager):
+    def __init__(self, task, *args, **kwargs):
+        super(ChildTaskItemManager, self).__init__(*args, **kwargs)
+        self.task = task
+        
+    def get_query_set(self):
+        print 2367
+        try:
+            qs = TaskItem.objects.filter(project = self.task.project, task_num = self.task.number, is_current = True)
+        except Exception, e:
+            print e
+        print qs
+        return qs
+    
 class Task(models.Model):
     """Model for task.
     number: of the task under the current project.
@@ -241,7 +262,8 @@ class Task(models.Model):
     number = models.IntegerField()
     name = models.CharField(max_length = 200)
     project = models.ForeignKey(Project)
-    parent_task = models.ForeignKey('Task', null = True, blank = True)
+    #parent_task = models.ForeignKey('Task', null = True, blank = True)
+    parent_task_num = models.IntegerField(null = True, blank = True)
     user_responsible = models.ForeignKey(User, null = True, blank = True)
     expected_start_date = models.DateField()
     expected_end_date = models.DateField(null = True, blank = True)
@@ -256,8 +278,16 @@ class Task(models.Model):
     version_number = models.IntegerField()
     is_current = models.BooleanField(default = True)
     
+    def get_sub_tasks(self):
+        return Task.objects.filter(project = self.project, parent_task_num = self.number)
+    
     objects = TaskManager()
     all_objects = models.Manager()
+    
+    def __init__(self, *args, **kwargs):
+        super(Task, self).__init__(*args, **kwargs)
+        self.task_set = SubtaskManager(self)
+        self.taskitem_set = ChildTaskItemManager(self)
     
     def save(self):
         """If this is the firsts time populate required details, if this is update version it."""
@@ -296,10 +326,9 @@ class Task(models.Model):
     def set_is_complete(self, value):
         """If a task is marked as complete all its sub tasks and task items should be marked as complete."""
         self.is_complete = value
-        #self.save()
-        if not value:
+        if value:
             cursor = connection.cursor()
-            cursor.execute('UPDATE project_task SET is_complete = %s WHERE parent_task_id = %s' % (True , self.id))
+            cursor.execute('UPDATE project_task SET is_complete = %s WHERE parent_task_num = %s' % (True , self.number))
             cursor.execute('UPDATE project_taskitem SET is_complete = %s WHERE task_id = %s' % (True, self.id))
     
     def get_is_complete(self):
@@ -344,12 +373,12 @@ class Task(models.Model):
         ordering = ('-created_on',)
             
     class Admin:
-        pass               
+        pass                  
+
 
 class TaskItemManager(models.Manager):
     def get_query_set(self):
-        return super(TaskItemManager, self).get_query_set().filter(is_current = True)    
-
+        return super(TaskItemManager, self).get_query_set().filter(is_current = True) 
 unit_choices = (
     ('Hours', 'Hours'),
     ('Days', 'Days'),
@@ -366,9 +395,10 @@ class TaskItem(models.Model):
     is_complete: Has this todo item been completed.
     created_on: When was this todo created. AUto filled.
     """
-    number = models.IntegerField()
+    project = models.ForeignKey(Project)
+    task_num = models.IntegerField()
     name = models.CharField(max_length = 200)
-    task = models.ForeignKey(Task)
+    #task = models.ForeignKey(Task)
     user = models.ForeignKey(User, null = True)
     expected_time = models.DecimalField(decimal_places = 2, max_digits = 10)
     actual_time = models.DecimalField(decimal_places = 2, max_digits = 10, null = True)
@@ -408,6 +438,11 @@ class TaskItem(models.Model):
             log_text = 'Item %s for taks %s has been updated.' % (self.name, self.task.name)
             log = Log(project = self.task.project, text = log_text)
             log.save()
+            
+    def get_task(self):
+        """Get the task from the taskitem"""
+        return Task.objects.get(project = self.project, number = self.task_num, is_current = True)
+    task = property(get_task, None, None)
             
     def edit_url(self):
         return '/%s/edititem/%s/' % (self.task.project, self.number)
