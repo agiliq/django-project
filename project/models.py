@@ -442,8 +442,19 @@ class TodoList(models.Model):
     name = models.CharField(max_length = 200)
     user = models.ForeignKey(User)
     project = models.ForeignKey(Project)
-    is_complete = models.BooleanField(default = False)
+    is_complete_attr = models.BooleanField(default = False)
     created_on = models.DateTimeField(auto_now_add = 1)
+    
+    def get_is_complete(self):
+        return self.is_complete_attr
+    
+    def set_is_complete(self, is_complete_attr):
+        self.is_complete_attr = is_complete_attr
+        self.save()
+        cursor = connection.cursor()
+        cursor.execute('UPDATE project_todoitem SET is_complete = %s WHERE list_id = %s', (True, self.id))
+        
+    is_complete = property(get_is_complete, set_is_complete, None)
     
     def get_item_form(self):
         return AddTodoItemForm(self)
