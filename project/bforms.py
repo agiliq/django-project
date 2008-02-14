@@ -6,9 +6,8 @@ from models import *
 from django.utils.translation import ugettext as _ 
 
 class CreateProjectForm(forms.Form):
-    #shortname = DojoCharField(max_length = 20, widget=forms.TextInput(attrs={'dojoType':'dijit.form.TextBox'}))
-    shortname = DojoCharField(max_length = 20)
-    name = DojoCharField(max_length = 200, widget=forms.TextInput(attrs={'dojoType':'dijit.form.TextBox'}))
+    shortname = DojoCharField(max_length = 20, help_text = 'Shortname for your project. Determines URL. Can not contain spaces/sepcial chars.')
+    name = DojoCharField(max_length = 200, widget=forms.TextInput(attrs={'dojoType':'dijit.form.TextBox'}), help_text='Name of the project.')
     
     def __init__(self, user = None, *args, **kwargs):
         super(CreateProjectForm, self).__init__(*args, **kwargs)
@@ -37,8 +36,8 @@ class CreateProjectForm(forms.Form):
         raise ValidationError('This project name is already taken. Please try another.')
     
 class InviteUserForm(forms.Form):
-    username = DojoCharField(max_length = 30)
-    group = DojoChoiceField(choices = options)
+    username = DojoCharField(max_length = 30, help_text = 'User name of the user to invite.')
+    group = DojoChoiceField(choices = options, help_text = 'Permissions available to this user.')
     
     def __init__(self, project = None, *args, **kwargs):
         super(InviteUserForm, self).__init__(*args, **kwargs)
@@ -77,10 +76,10 @@ class InviteUserForm(forms.Form):
         return invite
         
 class CreateTaskForm(forms.Form):
-    name = DojoCharField(max_length = 200)
-    start_date = DojoDateField()#forms.DateField(widget = forms.TextInput(attrs = {'dojoType':'dijit.form.DateTextBox'}))
-    end_date = DojoDateField(required = False)#forms.DateField(required = False)
-    user_responsible = DojoChoiceField()#forms.ChoiceField()
+    name = DojoCharField(max_length = 200, help_text='Name of the task')
+    start_date = DojoDateField(help_text = 'When will this task start?')
+    end_date = DojoDateField(required = False, help_text = 'When will this task end?')
+    user_responsible = DojoChoiceField(help_text = 'Who is reponsible for this task?')
     def __init__(self, project = None, *args, **kwargs):
         super(CreateTaskForm, self).__init__(*args, **kwargs)
         self.project = project
@@ -120,9 +119,9 @@ class CreateSubTaskForm(CreateTaskForm):
         
         
 class CreateTaskItemForm(forms.Form):
-    item_name = DojoCharField(max_length = 200)
-    user = DojoChoiceField()
-    time = DojoDecimalField()
+    item_name = DojoCharField(max_length = 200, help_text = 'Name of this task item.')
+    user = DojoChoiceField(help_text = 'Who is going to do this task item?')
+    time = DojoDecimalField(help_text = 'How long will this task item take?')
     units = DojoChoiceField(choices = unit_choices)
     
     def __init__(self, project, task, *args, **kwargs):
@@ -165,7 +164,7 @@ class AddNoticeForm(forms.Form):
         return notice
     
 class AddTodoListForm(forms.Form):
-    name = DojoCharField()
+    name = DojoCharField(help_text = 'Name of your todo list.')
     
     def __init__(self, project = None, user = None, *args, **kwargs):
         super(AddTodoListForm, self).__init__(*args, **kwargs)
@@ -178,7 +177,7 @@ class AddTodoListForm(forms.Form):
         return list
 
 class CreateWikiPageForm(forms.Form):
-    title = DojoCharField()
+    title = DojoCharField(help_text = 'Name of the wiki page.')
     text = DojoTextArea()
     #text = DojoCharField(widget = forms.Textarea)
     
@@ -238,9 +237,9 @@ class EditTaskForm(forms.ModelForm):
 """
 
 class EditTaskForm(CreateTaskForm):
-    actual_start_date = DojoDateField(required = False)
-    actual_end_date = DojoDateField(required = False)
-    is_complete = forms.BooleanField()
+    actual_start_date = DojoDateField(required = False, help_text='When did this task start?')
+    actual_end_date = DojoDateField(required = False, help_text='When did this task end?')
+    is_complete = forms.BooleanField(help_text = 'Is this task complete?')
     
     def __init__(self, project, task, *args, **kwargs):
         super(EditTaskForm, self).__init__(project, *args, **kwargs)
@@ -282,7 +281,7 @@ class EditTaskItemForm(forms.ModelForm):
         exclude = ('task', 'version_number', 'is_current', 'effective_end_date')
         
 class AddTaskNoteForm(forms.Form):
-    text = DojoCharField(widget = forms.Textarea)
+    text = DojoCharField(widget = forms.Textarea, help_text = 'Add a note to this task')
     
     def __init__(self, task, user, *args, **kwargs):
         super(AddTaskNoteForm, self).__init__(*args, **kwargs)
@@ -296,7 +295,7 @@ class AddTaskNoteForm(forms.Form):
     
 class UserCreationForm(forms.Form):
     """A form that creates a user, with no privileges, from the given username and password."""
-    username = DojoCharField(max_length = 30, required = True)
+    username = DojoCharField(max_length = 30, required = True, help_text = '')
     password1 = DojoCharField(max_length = 30, required = True, widget = forms.PasswordInput)
     password2 = DojoCharField(max_length = 30, required = True, widget = forms.PasswordInput)
     project_name = DojoCharField(max_length = 20, required = False)

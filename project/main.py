@@ -23,7 +23,10 @@ def dashboard(request):
     Shows very critical information about available projects.
     """
     user = request.user
-    subs = user.subscribeduser_set.all()
+    if request.GET.get('includeinactive', 0):
+        subs = user.subscribeduser_set.all()
+    else:
+        subs = user.subscribeduser_set.filter(project__is_active = True)
     invites = user.inviteduser_set.filter(rejected = False)
     createform = bforms.CreateProjectForm()
     if request.method == 'POST':
@@ -39,6 +42,17 @@ def dashboard(request):
             subscribe.save()
             invite.delete()
             return HttpResponseRedirect('.')
+        elif request.POST.has_key('activestatus'):
+            print request.POST
+            projid = request.POST['projectid']
+            project = Project.objects.get(id = projid)
+            if request.POST['activestatus'] == 'true':
+                project.is_active = False
+            elif request.POST['activestatus'] == 'false':
+                project.is_active = True
+            project.save()
+            return HttpResponseRedirect('.')
+            
     elif request.method == 'GET':
         createform = bforms.CreateProjectForm()
     
@@ -57,6 +71,7 @@ def project_details(request, project_name):
     project = get_project(request, project_name)
     inviteform = bforms.InviteUserForm()
     taskform = bforms.CreateTaskForm(project)
+    new_tasks = project.new_tasks()
     new_tasks = project.new_tasks()
     overdue_tasks = project.overdue_tasks()
     if request.method == 'POST':
@@ -113,7 +128,10 @@ def noticeboard(request, project_name):
 def todo(request, project_name):    
     """Allows to create a new todolist and todoitems."""
     project = get_project(request, project_name)
-    lists = TodoList.objects.filter(user = request.user, project = project)
+    if request.GET.get('includecomplete', 0):
+        lists = TodoList.objects.filter(user = request.user, project = project)
+    else:
+        lists = TodoList.objects.filter(user = request.user, project = project, is_complete_attr = False)
     addlistform = bforms.AddTodoListForm()
     if request.method == 'POST':
         if request.POST.has_key('addlist'):

@@ -14,7 +14,10 @@ def project_tasks(request, project_name):
     shows add a top task form
     """
     project = get_project(request, project_name)
-    query_set = project.task_set.filter(parent_task_num__isnull = True)
+    if request.GET.get('includecomplete', 0):
+        query_set = project.task_set.filter(parent_task_num__isnull = True)
+    else:
+        query_set = project.task_set.filter(parent_task_num__isnull = True, is_complete = False)
     tasks, page_data = get_paged_objects(query_set, request, tasks_on_tasks_page)
     
     if request.method == 'POST':

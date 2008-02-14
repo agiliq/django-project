@@ -8,10 +8,9 @@
 {% block contents %}
     <h2>Your Todo lists</h2>
     
-    <div dojoType="dijit.layout.AccordionContainer" duration="200"
-                style="margin-right: 30px; width: 500px; height: 300px; overflow: hidden">
+    <div dojoType="dijit.layout.AccordionContainer" style="margin-right: 30px; width: 400px; height: 300px; overflow: hidden">
     {% for list in lists %}
-	<div dojoType="dijit.layout.AccordionPane" selected="true" title="{{list.name}}">
+	<div dojoType="dijit.layout.AccordionPane" selected="true" title="{{list.name}}" id={{list.id}}>
             <div class="listcontrols">
                 <form action='.' method="post">
                     <label>Complete</label>
@@ -71,5 +70,9 @@
 {% endblock %}
 
 {% block sidebar %}
+    <h3>Meta</h3>
+    <ul>
+    <li><a href="./?includecomplete=1">Display completed lists</a></li>
+    </ul>
    You are looking at your todo items created for {{project.name}}
 {% endblock %}

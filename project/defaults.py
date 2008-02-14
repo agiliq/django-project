@@ -1,3 +1,3 @@
-notices_per_page = 2
-logs_per_page = 2
-tasks_on_tasks_page = 2
+notices_per_page = 10
+logs_per_page = 30
+tasks_on_tasks_page = 10

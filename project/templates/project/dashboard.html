@@ -22,6 +22,17 @@
     {% for sub in subs %}
         <li>
         <h3><a href="{{sub.project.get_absolute_url}}">{{sub.project.name}}</a></h3>
+        <form action="." method="post">
+            <label>Active</label>
+            <input type="hidden" name="projectid" value="{{sub.project.id}}" />
+            {% if sub.project.is_active %}
+            <input type="hidden" name="activestatus" value="true" />
+            <input type="checkbox" name="inactivate" value="" onchange="submit()" checked="checked" />
+            {% else %}
+            <input type="hidden" name="activestatus" value="false" />
+            <input type="checkbox" name="activate" value="" onchange="submit()"/>
+            {% endif %}
+        </form>
         {% if sub.project.overdue_tasks %}
             <h4>Critical Tasks</h4>
             <table>
@@ -71,8 +82,25 @@
                 Create a new project.
             </legend>
         <form action="." method="POST">
-            {{createform.as_p}}
+            <div id="formfield">
+            {% for field in createform %}
+            <p>
+            {% if field.field.required %}<span class="requiredfield">{% endif %}
+            {{ field.label_tag }}
+            {% if field.field.required %}</span>{% endif %}
+            <div id="{{field.id}}">
+            {{ field }}
+            </div>
+            {% if field.help_text %}
+            <div dojoType="dijit.Tooltip" connectId="{{field.id}}">
+            {{ field.help_text }}
+            </div>
+            {% endif %}
+            {% if field.errors %}{{ field.errors }}{% endif %}
+            </p>
+            {% endfor %}
             <input type="SUBMIT" name="createproject" value="Create new project" />
+            </div>
         </form>
         </fieldset>
     </div>
@@ -80,5 +108,9 @@
 
 
 {% block sidebar %}
-   Your dashboard has <<23>> projects.
+    <h3>Meta</h3>
+    <ul>
+        <li><a href="./?includeinactive=1">Show inactive projects</a></li>
+    </ul>
+   Your dashboard has {{subs.count}} projects.
 {% endblock %}
