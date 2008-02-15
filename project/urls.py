@@ -55,6 +55,10 @@ urlpatterns += patterns('project.users',
     (r'^accounts/register/$', 'register'),
     )
 
+urlpatterns += patterns('project.json.task',
+    (r'json/(?P<project_name>\w+)/task/show/(?P<task_id>\d+)/$', 'show_task'),                        
+    )
+
 feeds = {
     'project': ProjectRss,
 }

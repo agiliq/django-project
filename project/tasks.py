@@ -33,7 +33,6 @@ def project_tasks(request, project_name):
     if request.method == 'GET':
         taskform = bforms.CreateTaskForm(project)
         
-        
     payload = {'project':project, 'tasks':tasks, 'taskform':taskform, 'page_data':page_data}    
     return render(request, 'project/projecttask.html', payload)
         
@@ -66,6 +65,11 @@ def task_details(request, project_name, task_num):
             if additemform.is_valid():
                 additemform.save()
                 return HttpResponseRedirect('.')
+        elif request.POST.has_key('addnote'):
+            noteform = bforms.AddTaskNoteForm(task, request.user, request.POST)
+            if noteform.is_valid():
+                noteform.save()
+                return HttpResponseRedirect('.')
         elif request.POST.has_key('markdone') or request.POST.has_key('markundone'):
             return handle_task_status(request)
         elif request.POST.has_key('itemmarkdone') or request.POST.has_key('itemmarkundone'):
@@ -73,7 +77,8 @@ def task_details(request, project_name, task_num):
     if request.method == 'GET':
         addsubtaskform = bforms.CreateSubTaskForm(project, task)
         additemform = bforms.CreateTaskItemForm(project, task)
-    payload = {'project':project, 'task':task, 'addsubtaskform':addsubtaskform, 'additemform':additemform}
+        noteform = bforms.AddTaskNoteForm(task, request.user)
+    payload = {'project':project, 'task':task, 'addsubtaskform':addsubtaskform, 'additemform':additemform, 'noteform':noteform}
     return render(request, 'project/taskdetails.html', payload)
 
 def edit_task(request, project_name, task_num):

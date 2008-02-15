@@ -10,7 +10,8 @@ class DojoCharField(forms.CharField):
 class DojoDateField(forms.CharField):
     def __init__(self, *args, **kwargs):
         if not kwargs.has_key('widget'):
-            kwargs.update({'widget' : forms.TextInput(attrs={'dojoType':'dijit.form.DateTextBox'})})                          
+            #kwargs.update({'widget' : forms.TextInput(attrs={'dojoType':'dijit.form.DateTextBox'})})
+            kwargs.update({'widget' : forms.TextInput(attrs={'class':'datefield'})})                          
         super(DojoDateField, self).__init__(*args, **kwargs)
         
 class DojoDecimalField(forms.DecimalField):
@@ -30,4 +31,10 @@ class DojoTextArea(forms.CharField):
         if not kwargs.has_key('widget'):
             #kwargs.update({'widget' : forms.Textarea})
             kwargs.update({'widget' : forms.Textarea(attrs={'dojoType':'dijit.Editor', 'width':'300px'})})                          
-        super(DojoTextArea, self).__init__(*args, **kwargs)          
+        super(DojoTextArea, self).__init__(*args, **kwargs)
+class MarkedForm(forms.Form):
+    """A form with a little more markup."""
+    def as_p(self):
+        "Returns this form rendered as HTML <p>s."
+        return self._html_output(u'<p>%(label)s %(field)s<span class="help_text">%(help_text)s</span></p>', u'%s', '</p>', u' %s', True)
+        

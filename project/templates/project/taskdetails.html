@@ -5,6 +5,53 @@
 {% endblock %}
 
 
+{% block jqueryarea %}
+<script>
+ $(document).ready(function() {
+    console.log(2222)
+    $('.datefield').hide();
+    //Hide all the forms.
+    $('#subtaskform').hide();
+    $('#itemform').hide();
+    $('#noteform').hide();
+    
+    $('#notes').hide();
+    $('#itemformshow').click(
+        function(){
+            $('#itemform').show('slow');
+            $('#noteform').hide();
+            $('#subtaskform').hide();
+        }
+        );
+    $('#taskformshow').click(
+        function(){
+            $('#subtaskform').show('slow');
+            $('#itemform').hide();
+            $('#noteform').hide();
+        }
+        );
+    $('#shownotes').click(
+        function(){
+            $('#notes').show('slow');
+        }
+        );
+    $('#shownotesform').click(
+        function(){
+            alert(1);
+            $('#noteform').show('slow');
+            $('#subtaskform').hide('slow');
+            $('#itemform').hide('slow');
+        }
+    )
+    
+ });
+   $(document).ready(function() {
+        consloe.log(11)
+        
+        init_help();
+    });
+ </script>
+{% endblock %}
 
 {% block contents %}
     <h2>{{task.name}}</h2>
@@ -32,6 +79,17 @@
     </div>
     
     <div id="taskdetails">
+    
+        <div id="notes">
+        {% if task.get_notes %}
+        <h3>Notes</h3>
+        <ul>
+        {% for note in task.get_notes %}
+            <li>{{note.text}} added by {{note.user.username}}</li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
 	
     {% if task.num_child_tasks %}
     <div id="subtasks">
@@ -47,8 +105,9 @@
                     <td>Complete?</td>
                 </tr>
             </thead>
+        <tbody>
 	{% for task in task.task_set.all %}
-	    <tbody>
+	    
             <tr class={% cycle "odd" "even" %}>
 	    <td><a href="{{task.get_absolute_url}}">{{task.name}}</a></td>
             <td>{{task.expected_start_date|date}}</td>
@@ -57,8 +116,8 @@
             <td><a href="{{task.edit_url}}">Edit</a></td>
             {% include 'project/markdone_controls.html' %}
             </tr>
-	    </tbody>
 	{% endfor %}
+        </tbody>
 	</table>
     </div>
     {% endif %}
@@ -119,14 +178,28 @@
 	</form>
     </div>
     
+    <div id="noteform">
+        <form action="." method="post">
+            {{noteform.as_p}}
+            <input type="submit" name="addnote" value="Add Note" />
+        </form>
+    </div>
+    
 {% endblock %}
 
 {% block sidebar %}
 You are looking at {{task.name}}, a task for {{project.name}}.
+<h3>Actions</h3>
+<ul>
+    <li><a href="#tasks" id="taskformshow">Add a task.</a></li>
+    <li><a href="#items" id="itemformshow">Add an item.</a></li>
+    <li><a href="#notes" id="shownotes">Show notes</a></li>
+    <li><a href="#shownotesform">Add a note</a></li>
+</ul>
+
 <h3>Meta</h3>
 <ul> 
     <li><a href="{{task.edit_url}}">Edit this task</a></li>
-    <li><a href="{{task.add_note_url}}">Add a note</a></li>
 </ul>
 
 <h3>
@@ -144,15 +217,4 @@ You are looking at {{task.name}}, a task for {{project.name}}.
  {% if task.expected_end_date %}
     You need to complete this by {{task.expected_end_date|date}}
  {% endif %}
- 
-     <div id="notes">
-        {% if task.get_notes %}
-        <h3>Notes</h3>
-        <ul>
-        {% for note in task.get_notes %}
-            <li>{{note.text}} added by {{note.user.username}}</li>
-        {% endfor %}
-        </ul>
-        {% endif %}
-    </div>
 {% endblock %}

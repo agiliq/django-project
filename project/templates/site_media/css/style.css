@@ -46,3 +46,12 @@ thead tr{
 #topbar strong{
     display: inline;
 }
+a img{
+    text-decoration: none;
+    border: none;
+}
+tr{
+    margin-bottom: 5px;
+    margin-top: 5px;
+    color: red;
+}

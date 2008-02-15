@@ -4,6 +4,41 @@
 {{block.super}} - Project details
 {% endblock %}
 
+{% block jqueryarea %}
+<script>
+ $(document).ready(function() {
+    $('#inviteform').hide();
+    $('#taskform').hide();
+    
+    
+    $('#inviteshow').click(function(){
+        $('#inviteform').show('slow');
+        $('#taskform').hide('fast');
+        init_help(this);
+        });
+    $('#taskshow').click(function(){
+        $('#taskform').show('slow');
+        $('#inviteform').hide('fast');
+        init_help(this);
+        });
+    //Hide controls on tasks
+    $('td.taskcontrol').hide();
+    $('tr.taskrow').mouseover(function(){
+            id = this.id.split('-')[this.id.split('-').length - 1];
+            taskcontrol = '#task-'+id+' .taskcontrol';
+            console.log(taskcontrol)
+            $(taskcontrol).show();
+        });
+    $('tr.taskrow').mouseout(function(){
+            id = this.id.split('-')[this.id.split('-').length - 1];
+            taskcontrol = '#task-'+id+' .taskcontrol';
+            console.log(taskcontrol)
+            $(taskcontrol).hide();
+        });
+    
+ });
+ </script>
+{% endblock %}
 
 {% block contents %}
     <h2>{{project.name}}</h2>
@@ -30,6 +65,9 @@
                 User Responsible
             </td>
             <td>
+                Details
+            </td>
+            <td>
                 Edit
             </td>
             <td>
@@ -40,25 +78,15 @@
             </td>
             </tr>
         </thead>
-        <tbody>
+        <tbody class="recenttasks">
     {% for task in new_tasks %}
         
-        <tr class={% cycle "odd" "even" %}>
-        
-        <td><a href="{{task.get_absolute_url}}">{{task.name}}</a></td>
-        <td>{{task.expected_start_date|date}}</td>
-        <td>{{task.expected_end_date|date}}</td>
-        <td>{{task.user_responsible}}</td>
-        <td><a href="{{task.edit_url}}">Edit</a></td>
-        {% include 'project/markdone_controls.html' %}
-        {% include 'project/task_del_controls.html' %}
-        </tr>
+        {% include 'project/taskrow.html' %}
         
     {% endfor %}
         </tbody>
     </table>
     {% endif %}
-    
     
     {% if overdue_tasks %}
     <h3>Overdue tasks</h3>
@@ -75,6 +103,9 @@
             <td>
                 User Responsible
             </td>
+             <td>
+                Details
+            </td>
             <td>
                 Edit
             </td>
@@ -86,15 +117,7 @@
         <tbody>
     {% for task in overdue_tasks %}
         
-        <tr class={% cycle "odd" "even" %}>
-        
-        <td><a href="{{task.get_absolute_url}}">{{task.name}}</a></td>
-        <td>{{task.expected_start_date|date}}</td>
-        <td>{{task.expected_end_date|date}}</td>
-        <td>{{task.user_responsible}}</td>
-        <td><a href="{{task.edit_url}}">Edit</a></td>
-        {% include 'project/markdone_controls.html' %}         
-        </tr>
+        {% include 'project/taskrow.html' %}
         
     {% endfor %}
         </tbody>
@@ -106,26 +129,30 @@
     <div id="inviteform">
         <form action="." method="POST">
             <fieldset>
-                <legend>Invite a User</legend>
+                <legend class="collapasble">Invite a User</legend>
             {{inviteform.as_p}}
             <input type="SUBMIT" name="invite" value="Invite User" />
             </fieldset>
         </form>
     </div>
-    
     <div id="taskform">
         <form action="." method="POST">
             <fieldset>
-                <legend>Add a task</legend>
+                <legend class="collapasble">Add a task</legend>
             {{taskform.as_p}}
             <input type="SUBMIT" name="task" value="Add a task" />
             </fieldset>
         </form>
-    </div>    
+    </div>
+
 {% endblock %}
 
 {% block sidebar %}
-    
+    <h3>Actions</h3>
+    <ul>
+    <li><a href="#" id="taskshow">Add a task</a></li>
+    <li><a href="#" id="inviteshow">Invite a user</a></li>
+    </ul>
     You are looking at details for project {{project.name}}.
     This project has {{project.task_set.all.count}} tasks.
     {% if project.invited_users %}

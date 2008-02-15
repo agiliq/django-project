@@ -43,7 +43,7 @@ def get_paged_objects(query_set, request, obj_per_page):
     page_data = get_pagination_data(object_page, page)
     return object, page_data
 
-def handle_task_status(request):
+def handle_task_status(request, is_xhr = False):
     id = request.POST['taskid']
     task = Task.objects.get(id = id)
     if request.POST.has_key('markdone'):
@@ -51,6 +51,8 @@ def handle_task_status(request):
     else:
         task.is_complete_prop = False
     task.save()
+    if is_xhr:
+        return task.id
     return HttpResponseRedirect('.')
 
 def handle_taskitem_status(request):

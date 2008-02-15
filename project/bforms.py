@@ -3,9 +3,10 @@ from django.newforms import ValidationError
 import re
 
 from models import *
-from django.utils.translation import ugettext as _ 
+from django.utils.translation import ugettext as _
+from dojofields import *
 
-class CreateProjectForm(forms.Form):
+class CreateProjectForm(MarkedForm):
     shortname = DojoCharField(max_length = 20, help_text = 'Shortname for your project. Determines URL. Can not contain spaces/sepcial chars.')
     name = DojoCharField(max_length = 200, widget=forms.TextInput(attrs={'dojoType':'dijit.form.TextBox'}), help_text='Name of the project.')
     
@@ -35,7 +36,7 @@ class CreateProjectForm(forms.Form):
             return
         raise ValidationError('This project name is already taken. Please try another.')
     
-class InviteUserForm(forms.Form):
+class InviteUserForm(MarkedForm):
     username = DojoCharField(max_length = 30, help_text = 'User name of the user to invite.')
     group = DojoChoiceField(choices = options, help_text = 'Permissions available to this user.')
     
@@ -75,7 +76,7 @@ class InviteUserForm(forms.Form):
         invite.save()
         return invite
         
-class CreateTaskForm(forms.Form):
+class CreateTaskForm(MarkedForm):
     name = DojoCharField(max_length = 200, help_text='Name of the task')
     start_date = DojoDateField(help_text = 'When will this task start?')
     end_date = DojoDateField(required = False, help_text = 'When will this task end?')
@@ -118,7 +119,7 @@ class CreateSubTaskForm(CreateTaskForm):
         return task
         
         
-class CreateTaskItemForm(forms.Form):
+class CreateTaskItemForm(MarkedForm):
     item_name = DojoCharField(max_length = 200, help_text = 'Name of this task item.')
     user = DojoChoiceField(help_text = 'Who is going to do this task item?')
     time = DojoDecimalField(help_text = 'How long will this task item take?')
@@ -150,7 +151,7 @@ class CreateTaskItemForm(forms.Form):
         
 
 
-class AddNoticeForm(forms.Form):
+class AddNoticeForm(MarkedForm):
     text = DojoCharField(widget = forms.Textarea)
     
     def __init__(self, project = None, user = None, *args, **kwargs):
@@ -163,7 +164,7 @@ class AddNoticeForm(forms.Form):
         notice.save()
         return notice
     
-class AddTodoListForm(forms.Form):
+class AddTodoListForm(MarkedForm):
     name = DojoCharField(help_text = 'Name of your todo list.')
     
     def __init__(self, project = None, user = None, *args, **kwargs):
@@ -176,7 +177,7 @@ class AddTodoListForm(forms.Form):
         list.save()
         return list
 
-class CreateWikiPageForm(forms.Form):
+class CreateWikiPageForm(MarkedForm):
     title = DojoCharField(help_text = 'Name of the wiki page.')
     text = DojoTextArea()
     #text = DojoCharField(widget = forms.Textarea)
@@ -200,7 +201,7 @@ class CreateWikiPageForm(forms.Form):
         page.save()
         return page
         
-class EditWikiPageForm(forms.Form):
+class EditWikiPageForm(MarkedForm):
     text = DojoTextArea()#DojoCharField(widget = forms.Textarea)
     
     def __init__(self, user = None, page = None, *args, **kwargs):
@@ -280,7 +281,7 @@ class EditTaskItemForm(forms.ModelForm):
         model = TaskItem
         exclude = ('task', 'version_number', 'is_current', 'effective_end_date')
         
-class AddTaskNoteForm(forms.Form):
+class AddTaskNoteForm(MarkedForm):
     text = DojoCharField(widget = forms.Textarea, help_text = 'Add a note to this task')
     
     def __init__(self, task, user, *args, **kwargs):
@@ -293,7 +294,7 @@ class AddTaskNoteForm(forms.Form):
         return note
     
     
-class UserCreationForm(forms.Form):
+class UserCreationForm(MarkedForm):
     """A form that creates a user, with no privileges, from the given username and password."""
     username = DojoCharField(max_length = 30, required = True, help_text = '')
     password1 = DojoCharField(max_length = 30, required = True, widget = forms.PasswordInput)
@@ -310,7 +311,7 @@ class UserCreationForm(forms.Form):
     def clean (self):
         if self.cleaned_data['password1'] != self.cleaned_data['password2']:
             raise ValidationError(_("The two password fields didn't match."))
-        return super(forms.Form, self).clean()
+        return super(MarkedForm, self).clean()
         
     def isValidUsername(self):
         try:

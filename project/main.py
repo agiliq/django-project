@@ -86,6 +86,8 @@ def project_details(request, project_name):
                 taskform.save()
                 return HttpResponseRedirect('.')
         elif request.POST.has_key('markdone') or request.POST.has_key('markundone'):
+            if request.POST.has_key('xhr'):
+                return handle_task_status(request, True)
             return handle_task_status(request)
         elif request.has_key('deletetask'):
             return delete_task(request)

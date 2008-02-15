@@ -3,6 +3,17 @@
 {% block feeds %}
 {% endblock %}
 
+{% block jqueryarea %}
+<script>
+ $(document).ready(function() {
+   $('.projstatus').change(function(){
+        return false;
+   });
+    });
+
+ </script>
+{% endblock %}
+
 {% block title %}
    Dashboard
 {% endblock %}
@@ -27,10 +38,10 @@
             <input type="hidden" name="projectid" value="{{sub.project.id}}" />
             {% if sub.project.is_active %}
             <input type="hidden" name="activestatus" value="true" />
-            <input type="checkbox" name="inactivate" value="" onchange="submit()" checked="checked" />
+            <input type="checkbox" name="inactivate" value="" onchange="submit()" checked="checked" class="projstatus" />
             {% else %}
             <input type="hidden" name="activestatus" value="false" />
-            <input type="checkbox" name="activate" value="" onchange="submit()"/>
+            <input type="checkbox" name="activate" value="" onchange="submit()" class="projstatus" />
             {% endif %}
         </form>
         {% if sub.project.overdue_tasks %}
@@ -83,23 +94,8 @@
             </legend>
         <form action="." method="POST">
             <div id="formfield">
-            {% for field in createform %}
-            <p>
-            {% if field.field.required %}<span class="requiredfield">{% endif %}
-            {{ field.label_tag }}
-            {% if field.field.required %}</span>{% endif %}
-            <div id="{{field.id}}">
-            {{ field }}
-            </div>
-            {% if field.help_text %}
-            <div dojoType="dijit.Tooltip" connectId="{{field.id}}">
-            {{ field.help_text }}
-            </div>
-            {% endif %}
-            {% if field.errors %}{{ field.errors }}{% endif %}
-            </p>
-            {% endfor %}
-            <input type="SUBMIT" name="createproject" value="Create new project" />
+            {{createform.as_p}}
+            <input type="SUBMIT" name="createproject" value="Create new project" id="createproject" />
             </div>
         </form>
         </fieldset>
