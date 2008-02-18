@@ -11,7 +11,7 @@ class AddTodoItemForm(forms.Form):
     text = DojoCharField()
     
     def __init__(self, list = None, *args, **kwargs):
-        kwargs.update({'prefix':list.name})
+        kwargs.update({'prefix':list.id})
         super(AddTodoItemForm, self).__init__(*args, ** kwargs)
         self.list = list
         
@@ -97,25 +97,25 @@ class Project(models.Model):
     
     def extra_hours(self):
         cursor = connection.cursor()
-        cursor.execute('SELECT COUNT(project_taskitem.id) FROM project_task, project_taskitem WHERE project_task.id = project_taskitem.task_id AND project_taskitem.expected_time < project_taskitem.actual_time AND project_id = %s AND project_taskitem.is_current = %s' % (self.id, True))
+        cursor.execute('SELECT COUNT(project_taskitem.id) FROM project_task, project_taskitem WHERE project_task.number = project_taskitem.task_num AND project_taskitem.expected_time < project_taskitem.actual_time AND project_task.project_id = %s AND project_taskitem.is_current = %s' % (self.id, True))
         data = cursor.fetchone()
         return data[0]
     
     def num_taskitems(self):
         cursor = connection.cursor()
-        cursor.execute('SELECT COUNT(project_taskitem.id) FROM project_task, project_taskitem WHERE project_task.id = project_taskitem.task_id AND project_id = %s AND project_taskitem.is_current = %s' % (self.id, True))
+        cursor.execute('SELECT COUNT(project_taskitem.id) FROM project_task, project_taskitem WHERE project_task.number = project_taskitem.task_num AND project_task.project_id = %s AND project_taskitem.is_current = %s' % (self.id, True))
         data = cursor.fetchone()
         return data[0]
     
     def sum_time(self):
         cursor = connection.cursor()
-        cursor.execute('SELECT unit, sum(CASE WHEN project_taskitem.actual_time IS NULL THEN project_taskitem.expected_time ELSE project_taskitem.actual_time END) FROM project_task, project_taskitem WHERE project_task.id = project_taskitem.task_id AND project_id = %s AND project_taskitem.is_current = %s GROUP BY unit' % (self.id, True))
+        cursor.execute('SELECT unit, sum(CASE WHEN project_taskitem.actual_time IS NULL THEN project_taskitem.expected_time ELSE project_taskitem.actual_time END) FROM project_task, project_taskitem WHERE project_task.number = project_taskitem.task_num AND project_task.project_id = %s AND project_taskitem.is_current = %s GROUP BY unit' % (self.id, True))
         data = cursor.fetchall()
         return data
     
     def sum_time_complete(self):
         cursor = connection.cursor()
-        cursor.execute('SELECT unit, sum(CASE WHEN project_taskitem.actual_time IS NULL THEN project_taskitem.expected_time ELSE project_taskitem.actual_time END) FROM project_task, project_taskitem WHERE project_task.id = project_taskitem.task_id AND project_id = %s AND project_taskitem.is_current = %s AND project_taskitem.is_complete = %s GROUP BY unit' % (self.id, True, True))
+        cursor.execute('SELECT unit, sum(CASE WHEN project_taskitem.actual_time IS NULL THEN project_taskitem.expected_time ELSE project_taskitem.actual_time END) FROM project_task, project_taskitem WHERE project_task.number = project_taskitem.task_num AND project_task.project_id = %s AND project_taskitem.is_current = %s AND project_taskitem.is_complete = %s GROUP BY unit' % (self.id, True, True))
         data = cursor.fetchall()
         return data
     
@@ -134,7 +134,7 @@ class Project(models.Model):
     def user_timeload(self):
         """How much load does a user have."""
         cursor = connection.cursor()
-        cursor.execute('SELECT auth_user.username, sum(expected_time), unit FROM auth_user, project_taskitem, project_task WHERE project_taskitem.task_id = project_task.id AND project_taskitem.user_id = auth_user.id AND project_taskitem.is_current = %s AND project_task.project_id = %s GROUP BY project_taskitem.user_id, project_taskitem.unit' % (True, self.id))
+        cursor.execute('SELECT auth_user.username, sum(expected_time), unit FROM auth_user, project_taskitem, project_task WHERE project_taskitem.task_num = project_task.number AND project_taskitem.user_id = auth_user.id AND project_taskitem.is_current = %s AND project_task.project_id = %s GROUP BY project_taskitem.user_id, project_taskitem.unit' % (True, self.id))
         data = cursor.fetchall()
         return data
         

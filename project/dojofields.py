@@ -2,23 +2,41 @@ import django.newforms as forms
 
 class DojoCharField(forms.CharField):
     def __init__(self, *args, **kwargs):
-        if not kwargs.has_key('widget'):
-            kwargs.update({'widget' : forms.TextInput(attrs={'dojoType':'dijit.form.TextBox'})})                          
+        if kwargs.get('required', True):
+            if not kwargs.has_key('widget'):
+                #kwargs.update({'widget' : forms.TextInput(attrs={'dojoType':'dijit.form.DateTextBox'})})
+                kwargs.update({'widget' : forms.TextInput(attrs={'class':'textfield required'})})
+        else:
+            if not kwargs.has_key('widget'):
+                #kwargs.update({'widget' : forms.TextInput(attrs={'dojoType':'dijit.form.DateTextBox'})})
+                kwargs.update({'widget' : forms.TextInput(attrs={'class':'textfield'})})
         super(DojoCharField, self).__init__(*args, **kwargs)
         
         
 class DojoDateField(forms.CharField):
     def __init__(self, *args, **kwargs):
-        if not kwargs.has_key('widget'):
-            #kwargs.update({'widget' : forms.TextInput(attrs={'dojoType':'dijit.form.DateTextBox'})})
-            kwargs.update({'widget' : forms.TextInput(attrs={'class':'datefield'})})                          
+        if kwargs.get('required', True):
+            if not kwargs.has_key('widget'):
+                #kwargs.update({'widget' : forms.TextInput(attrs={'dojoType':'dijit.form.DateTextBox'})})
+                kwargs.update({'widget' : forms.TextInput(attrs={'class':'datefield required date'})})
+        else:
+            if not kwargs.has_key('widget'):
+                #kwargs.update({'widget' : forms.TextInput(attrs={'dojoType':'dijit.form.DateTextBox'})})
+                kwargs.update({'widget' : forms.TextInput(attrs={'class':'datefield date'})})
+        
         super(DojoDateField, self).__init__(*args, **kwargs)
         
 class DojoDecimalField(forms.DecimalField):
     def __init__(self, *args, **kwargs):
-        if not kwargs.has_key('widget'):
-            kwargs.update({'widget' : forms.TextInput(attrs={'dojoType':'dijit.form.NumberTextBox'})})                          
-        super(DojoDecimalField, self).__init__(*args, **kwargs)    
+        if kwargs.get('required', True):
+            if not kwargs.has_key('widget'):
+                #kwargs.update({'widget' : forms.TextInput(attrs={'dojoType':'dijit.form.DateTextBox'})})
+                kwargs.update({'widget' : forms.TextInput(attrs={'class':'required number'})})
+        else:
+            if not kwargs.has_key('widget'):
+                #kwargs.update({'widget' : forms.TextInput(attrs={'dojoType':'dijit.form.DateTextBox'})})
+                kwargs.update({'widget' : forms.TextInput(attrs={'class':'number'})})
+        super(DojoDecimalField, self).__init__(*args, **kwargs)
 
 class DojoChoiceField(forms.ChoiceField):
     def __init__(self, *args, **kwargs):

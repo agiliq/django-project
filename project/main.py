@@ -144,7 +144,7 @@ def todo(request, project_name):
         elif request.POST.has_key('additem'):
             id = int(request.POST['id'])
             list = TodoList.objects.get(id = id)
-            text_id = '%s-text'%list.name            
+            text_id = '%s-text'%list.id            
             if request.POST[text_id]:
                 item = TodoItem(list = list, text = request.POST[text_id])
                 item.save()

@@ -50,8 +50,16 @@ a img{
     text-decoration: none;
     border: none;
 }
-tr{
-    margin-bottom: 5px;
-    margin-top: 5px;
-    color: red;
+
+.focusfield{
+    border: 1px solid blue;
+}
+.collapsed{
+    background-color: Grey;
+    color:white;
+}
+.uncollapsed{
+    background-color: Grey;
+    color:yellow;
+    
 }
