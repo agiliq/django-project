@@ -53,6 +53,7 @@ urlpatterns += patterns('project.users',
     (r'^accounts/logout/$', 'logout'),
     (r'^accounts/profile/$', 'profile'),
     (r'^accounts/register/$', 'register'),
+    (r'^(?P<project_name>\w+)/user/(?P<username>\w+)/$', 'user_details'),
     )
 
 urlpatterns += patterns('project.json.task',

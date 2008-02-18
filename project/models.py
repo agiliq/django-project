@@ -588,6 +588,8 @@ class ProjectFile(models.Model):
     file: the file."""
     project = models.ForeignKey(Project)
     file = models.FileField(upload_to = '/files/')
+    
+
 
     
     

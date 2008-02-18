@@ -166,3 +166,9 @@ def todo(request, project_name):
     payload = {'project':project, 'lists':lists, 'addlistform':addlistform}
     return render(request, 'project/todo.html', payload)
 
+def project_as_ul(request, project_name):
+    project = get_project(request, project_name)
+    top_tasks = project.task_set.filter(parent_task__is_null = True)
+    for task in top_task:
+        pass
+

@@ -80,7 +80,11 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'prajact.project',
+    'prajact.prefs',
 )
 
 SESSION_COOKIE_DOMAIN = '.shabda.tld'
 LOGIN_REDIRECT_URL = '/dashboard/'
+SMTP_HOST = 'localhost'
+SMTP_PORT = 25
+AUTH_PROFILE_MODULE = 'prefs.userprofile'

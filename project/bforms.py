@@ -5,6 +5,7 @@ import re
 from models import *
 from django.utils.translation import ugettext as _
 from dojofields import *
+from prefs.models import UserProfile
 
 class CreateProjectForm(MarkedForm):
     shortname = DojoCharField(max_length = 20, help_text = 'Shortname for your project. Determines URL. Can not contain spaces/sepcial chars.')
@@ -257,7 +258,8 @@ class EditTaskForm(CreateTaskForm):
     def save(self):
         task = self.task
         task.name = self.cleaned_data['name']
-        task.user_responsible = self.cleaned_data['user_responsible']
+        user = User.objects.get(username = self.cleaned_data['user_responsible'])
+        task.user_responsible = user
         task.expected_start_date = self.cleaned_data['start_date']
         if self.cleaned_data['end_date']:
             task.expected_end_date = self.cleaned_data['end_date']
@@ -335,7 +337,10 @@ class UserCreationForm(MarkedForm):
         raise ValidationError('This project name is already taken. Please try another.')
     
     def save(self):
-        return User.objects.create_user(self.cleaned_data['username'], '', self.cleaned_data['password1'])
+        user = User.objects.create_user(self.cleaned_data['username'], '', self.cleaned_data['password1'])
+        profile = UserProfile(user = user)
+        profile.save()
+        return user
 
      
     

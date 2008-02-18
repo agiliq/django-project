@@ -22,9 +22,21 @@ def register(request):
     if request.method == 'POST':
         form = bforms.UserCreationForm(request.POST)
         if form.is_valid():
-            print form.save()
+            form.save()
             return HttpResponseRedirect('/accounts/login/')
     if request.method == 'GET':
         form = bforms.UserCreationForm()
     payload = {'form':form}
     return render(request, 'registration/create_user.html', payload)
+
+def user_details(request, project_name, username):
+    project = get_project(request, project_name)
+    user = User.objects.get(username = username)
+    tasks = project.task_set.filter(user_responsible = user)
+    items = project.taskitem_set.filter(user = user)
+    if request.POST.has_key('markdone') or request.POST.has_key('markundone'):
+        if request.POST.has_key('xhr'):
+            return handle_task_status(request, True)
+        return handle_task_status(request)
+    payload = locals()
+    return render(request, 'project/userdetails.html', payload)

@@ -8,9 +8,6 @@
 {% block jqueryarea %}
 <script>
  $(document).ready(function() {
-    console.log(2222)
-    $('.datefield').hide();
-    //Hide all the forms.
     $('#subtaskform').hide();
     $('#itemform').hide();
     $('#noteform').hide();
@@ -32,22 +29,24 @@
         );
     $('#shownotes').click(
         function(){
-            $('#notes').show('slow');
+            $(this).toggle(
+                //Todo
+                function(){$(this).html('Show notes')},
+                function(){$(this).html('Hide notes')}
+                
+            )
+            $('#notes').toggle('slow');
         }
         );
     $('#shownotesform').click(
         function(){
-            alert(1);
             $('#noteform').show('slow');
-            $('#subtaskform').hide('slow');
-            $('#itemform').hide('slow');
+            $('#subtaskform').hide();
+            $('#itemform').hide();
         }
     )
     
  });
-   $(document).ready(function() {        
-        init_help();
-    });
  </script>
 {% endblock %}
 
@@ -99,21 +98,15 @@
                     <td>Start Date</td>
                     <td>End Date</td>
                     <td>Person Responsible</td>
+                    <td>Details</td>
                     <td>Edit</td>
                     <td>Complete?</td>
+                    <td>Delete</td>
                 </tr>
             </thead>
         <tbody>
 	{% for task in task.task_set.all %}
-	    
-            <tr class={% cycle "odd" "even" %}>
-	    <td><a href="{{task.get_absolute_url}}">{{task.name}}</a></td>
-            <td>{{task.expected_start_date|date}}</td>
-            <td>{{task.expected_start_date|date}}</td>
-            <td>{{task.user_responsible}}</td>
-            <td><a href="{{task.edit_url}}">Edit</a></td>
-            {% include 'project/markdone_controls.html' %}
-            </tr>
+	    {% include 'project/taskrow.html' %}
 	{% endfor %}
         </tbody>
 	</table>
@@ -192,7 +185,7 @@ You are looking at {{task.name}}, a task for {{project.name}}.
     <li><a href="#tasks" id="taskformshow">Add a task.</a></li>
     <li><a href="#items" id="itemformshow">Add an item.</a></li>
     <li><a href="#notes" id="shownotes">Show notes</a></li>
-    <li><a href="#shownotesform">Add a note</a></li>
+    <li><a href="#shownotesform" id="shownotesform">Add a note</a></li>
 </ul>
 
 <h3>Meta</h3>
