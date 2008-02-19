@@ -1,5 +1,7 @@
             <tr class="{% cycle "odd" "even" %} taskrow" id="task-{{task.id}}">
-            <td title="Name of the project">{{task.name}}</td>
+            <td title="Name of the project">
+                <a class="showtaskdetails" href="#">{{task.name}}</a>
+            </td>
             <td>{{task.expected_start_date|date}}</td>
             <td>{{task.expected_end_date|date}}</td>
             <td>{{task.user_responsible}}</td>
@@ -27,4 +29,13 @@
                 <input type="image" src="/site_media/images/delete.png" name="deletetask" value="Delete" />
             </form>
             </td>
+            </tr>
+            
+            <tr class="taskrowdetail">
+                <td>Actual start date</td>
+                <td>{{task.actual_start_date|date}}</td>
+            </tr>
+            <tr class="taskrowdetail">
+                <td>Actual end date</td>
+                <td>{{task.actual_end_date|date}}</td>
             </tr>

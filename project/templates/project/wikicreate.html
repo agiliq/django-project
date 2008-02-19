@@ -4,6 +4,13 @@
 {{block.super}} - Create page
 {% endblock %}
 
+{% block jqueryarea %}
+    <script src="http://js.nicedit.com/nicEdit.js" type="text/javascript"></script>
+<script type="text/javascript">
+bkLib.onDomLoaded(nicEditors.allTextAreas);
+</script>
+{% endblock %}
+
 {% block contents %}
     <form method="post" action=".">
         <fieldset>

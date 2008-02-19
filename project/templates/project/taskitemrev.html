@@ -20,7 +20,10 @@
                     User
                 </td>
                 <td>
-                    Time
+                    Estimated Time
+                </td>
+                <td>
+                    Actual Time
                 </td>
             </tr>
         </thead>
@@ -28,10 +31,15 @@
             <tr class={% cycle "odd" "even" %}>
 	    <td><a href="{{taskitem.edit_url}}">{{taskitem.name}}</a></td>
             <td>{{taskitem.user}}</td>
-            <td>{{taskitem.time_worked}}</td>
+            <td>{{taskitem.expected_time}}</td>
+            <td>{{taskitem.actual_time}}</td>
             </tr>
 	    </tbody>
 	</table>
+    <form action="." method="post">
+        <input type="hidden" name="taskitemrev" value="{{taskitem.id}}" />
+        <input type="submit" name="rollback" value="rollback" />
+    </form>
     </div>
     
 {% endblock %}

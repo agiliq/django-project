@@ -128,7 +128,7 @@ def add_task_note(request, project_name, task_num):
 def edit_task_item(request, project_name, taskitem_num):
     """Edit a task item."""
     project = get_project(request, project_name)
-    taskitem = TaskItem.objects.get(project = project, number = taskitem_num, is_current = True)
+    taskitem = TaskItem.objects.get(project = project, number = taskitem_num)
     if request.method == 'POST':
         itemform = bforms.EditTaskItemForm(request.POST, instance = taskitem)
         if itemform.is_valid():
@@ -145,6 +145,16 @@ def taskitem_revision(request, project_name, taskitem_id):
     Allows to rollback to a specific version."""
     project = get_project(request, project_name)
     taskitem = TaskItem.all_objects.get(project = project, id = taskitem_id)
+    if request.method == 'POST':
+        print request.POST
+        from copy import copy
+        id = int(request.POST['taskitemrev'])
+        newtaskitem = TaskItem.all_objects.get(id = id)
+        prevlatest = TaskItem.objects.get(project = newtaskitem.project, number = newtaskitem.number)
+        newtaskitem.save()
+        prevlatest.is_current = False
+        prevlatest.save_without_versioning()
+        return HttpResponseRedirect(taskitem.task.get_absolute_url())
     payload = {'project':project, 'taskitem':taskitem,}
     return render(request, 'project/taskitemrev.html', payload)
     

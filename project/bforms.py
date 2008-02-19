@@ -281,7 +281,7 @@ class EditTaskItemForm(forms.ModelForm):
     
     class Meta:
         model = TaskItem
-        exclude = ('task', 'version_number', 'is_current', 'effective_end_date')
+        exclude = ('task', 'task_num', 'version_number', 'is_current', 'effective_end_date')
         
 class AddTaskNoteForm(MarkedForm):
     text = DojoCharField(widget = forms.Textarea, help_text = 'Add a note to this task')

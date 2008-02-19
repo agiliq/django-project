@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block jqueryarea %}
+<script type="text/javascript" src="/site_media/js/projectdetails.js"></script>
 {% endblock %}
 
 {% block contents %}
@@ -96,7 +97,7 @@
     <ul>
         <h3>Details for:</h3>
         {% for user in project.subscribeduser_set.all %}
-          <a href="/{{project.shortname}}/user/{{user.user}}/">{{user.user.username}}</a>
+          <a href="{{user.get_absolute_url}}">{{user.user.username}}</a>
         {% endfor %}
     </ul>
     

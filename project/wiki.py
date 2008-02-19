@@ -1,4 +1,4 @@
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 
 from helpers import *
@@ -68,7 +68,9 @@ def wiki_revision(request, project_name, page_name, revision_id):
         newrevision.save()
         newrevision.wiki_page.current_revision = newrevision
         newrevision.wiki_page.save()
-        return HttpResponseRedirect('.')
+        return HttpResponseRedirect(newrevision.wiki_page.get_absolute_url())
+    if request.method == 'GET':
+        pass
     payload = {'project':project, 'page':page, 'revision':revision}
     return render(request, 'project/wikirevision.html', payload)
     

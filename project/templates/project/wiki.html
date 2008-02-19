@@ -12,7 +12,7 @@
             <li>
                 <a href="{{page.get_absolute_url}}">{{page.title}}</a>
 		<div class="wikipageblurb">
-		{{page.current_revision.html_text|truncatewords_html:30}}
+		{{page.current_revision.html_text|safe|truncatewords_html:30}}
 		</div>
             </li>
             {% endfor %}

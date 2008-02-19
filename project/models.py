@@ -167,6 +167,9 @@ class SubscribedUser(models.Model):
         log.save()
         super(SubscribedUser, self).save()
         
+    def get_absolute_url(self):
+        return '/%s/user/%s/' % (self.project.shortname, self.user.username)
+        
     
     class Admin:
         pass    
@@ -367,7 +370,6 @@ class TaskItem(models.Model):
     project = models.ForeignKey(Project)
     task_num = models.IntegerField()
     name = models.CharField(max_length = 200)
-    #task = models.ForeignKey(Task)
     user = models.ForeignKey(User, null = True)
     expected_time = models.DecimalField(decimal_places = 2, max_digits = 10)
     actual_time = models.DecimalField(decimal_places = 2, max_digits = 10, null = True)
@@ -405,12 +407,24 @@ class TaskItem(models.Model):
             self.is_current = False
             self.effective_end_date = datetime.datetime.now()
             super(TaskItem, self).save()
-            new_item.version_number = self.version_number + 1
+            cursor = connection.cursor()
+            foo = 'SELECT MAX(version_number) from project_taskitem WHERE project_id = %s AND number = %s' % (self.project.id, self.number)
+            print foo
+            cursor.execute(foo)
+            num = cursor.fetchone()[0]
+            if not num:
+                num = 0
+            new_item.version_number = num + 1
+            new_item.is_current = True
             new_item.id = None
             super(TaskItem, new_item).save()
+            print new_item.version_number
             log_text = 'Item %s for taks %s has been updated.' % (self.name, self.task.name)
             log = Log(project = self.task.project, text = log_text)
             log.save()
+            
+    def save_without_versioning(self):
+        super(TaskItem, self).save()
             
     def get_task(self):
         """Get the task from the taskitem"""

@@ -34,52 +34,15 @@
         });
     $('td.taskcontrol').hide();
     $('li.taskrow').mouseover(function(){
-            id = this.id.split('-')[this.id.split('-').length - 1];
-            taskcontrol = '#task-'+id+' .taskcontrol';
-            $(taskcontrol).show();
+            $('li.taskrow').children().children().children().children().filter('.taskcontrols').show()
+            
         });
     $('li.taskrow').mouseout(function(){
-            id = this.id.split('-')[this.id.split('-').length - 1];
-            taskcontrol = '#task-'+id+' td.taskcontrol';
-            $(taskcontrol).hide();
+            $('li.taskrow').children().children().children().children().filter('.taskcontrols').hide()
+            
         });
  });
- 
- /*Handle the project details page.*/
- $(document).ready(function() {
-    $('#inviteform').hide();
-    $('#taskform').hide();
-    
-    
-    $('#inviteshow').click(function(){
-        $('#inviteform').show('slow');
-        $('#taskform').hide('fast');
-        init_help(this);
-        });
-    $('#taskshow').click(function(){
-        $('#taskform').show('slow');
-        $('#inviteform').hide('fast');
-        init_help(this);
-        });
-    //Hide controls on tasks
-    $('td.taskcontrol').hide();
-    $('tr.taskrow').mouseover(function(){
-            /*id = this.id.split('-')[this.id.split('-').length - 1];
-            taskcontrol = '#task-'+id+' .taskcontrol';
-            console.log(taskcontrol)
-            $(taskcontrol).show();*/
-            $(this).children().filter('.taskcontrol').show()
-        });
-    $('tr.taskrow').mouseout(function(){
-            /*id = this.id.split('-')[this.id.split('-').length - 1];
-            taskcontrol = '#task-'+id+' .taskcontrol';
-            console.log(taskcontrol)
-            $(taskcontrol).hide();*/
-            $(this).children().filter('.taskcontrol').hide()
-        });
-    
- });
- 
+
  /*Handle the todo page accordian, and contexual menu.*/
  $(document).ready(function(){
     var handle_accordion = function(){
