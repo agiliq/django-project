@@ -69,3 +69,19 @@ tr {
     margin: 5px;
     border: 1px solid red;
 }
+
+table.calendar .date{
+    font-size: 120%;
+    font-weight: bold;
+}
+
+table.calendar a{
+    display: block;
+}
+
+table.calendar div.starttasks a{
+    background-color: #ffe;
+}
+table.calendar div.endtasks a{
+    background-color: #fef;
+}

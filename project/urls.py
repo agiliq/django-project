@@ -4,7 +4,6 @@ from django.views.generic.simple import direct_to_template
 from rss import *
 
 urlpatterns = patterns('project.foo',
-    (r'^foo/$', direct_to_template, {'template':'project/dummy.html'}),
     (r'^projson/(?P<project_name>\w+)/$', 'proj_json')
     )
 
@@ -49,6 +48,7 @@ urlpatterns += patterns('project.files',
 
 urlpatterns += patterns('project.pcalendar',
     (r'^(?P<project_name>\w+)/calendar/$', 'index'),
+    (r'^(?P<project_name>\w+)/calendar/(?P<year>\d+)/(?P<month>\d+)/$', 'month_cal'),
     )
 
 

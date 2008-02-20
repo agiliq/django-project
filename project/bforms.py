@@ -6,18 +6,23 @@ from models import *
 from django.utils.translation import ugettext as _
 from dojofields import *
 from prefs.models import UserProfile
+import datetime
 
 class CreateProjectForm(MarkedForm):
     shortname = DojoCharField(max_length = 20, help_text = 'Shortname for your project. Determines URL. Can not contain spaces/sepcial chars.')
     name = DojoCharField(max_length = 200, widget=forms.TextInput(attrs={'dojoType':'dijit.form.TextBox'}), help_text='Name of the project.')
+    start_date = DojoDateField()
+    end_date = DojoDateField(required = False)
     
     def __init__(self, user = None, *args, **kwargs):
         super(CreateProjectForm, self).__init__(*args, **kwargs)
         self.user = user
+        self.fields['start_date'].initial = datetime.date.today()
     
     def save(self):
         project = Project(name = self.cleaned_data['name'], shortname=self.cleaned_data['shortname'])
         project.owner = self.user
+        project.start_date = self.cleaned_data['start_date']
         project.save()
         subscribe = SubscribedUser(user = self.user, project = project, group = 'OWN')
         subscribe.save()
