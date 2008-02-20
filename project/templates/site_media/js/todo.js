@@ -3,8 +3,18 @@
     var handle_accordion = function(){
         $('.accordionitem').hide()
         $('#accordion a').addClass('collapsed')
-        $(this).show()
-        $(this).prev().addClass('uncollapsed')
+        
+        if ($.cookie('openacc')){
+         $('#'+$.cookie('openacc')).next().show()
+         $('#'+$.cookie('openacc')).removeClass('collapsed')
+         $('#'+$.cookie('openacc')).addClass('uncollapsed')
+        }
+        else{
+           $(this).show()
+           $(this).prev().removeClass('collapsed')
+           $(this).prev().addClass('uncollapsed')         
+        }
+        
         }
     var handle_acc_click = function(){
         $('#accordion a').removeClass('collapsed')
@@ -13,6 +23,7 @@
         $('#accordion a').addClass('collapsed')
         $(this).addClass('uncollapsed')
         $(this).next().show()
+        $.cookie('openacc', this.id)
         }
     $('#accordion .accordionitem:first').each(handle_accordion)
     $('#accordion a').click(handle_acc_click);
@@ -24,7 +35,6 @@
         }
     var showlistcontrols = function(){
         $(this).children().filter('.listcontrols').show()
-        console.log(11)
         }
     $('.listcontrols').hide();
     $('#accordion .accordionitem,#accordion a').mouseover(showlistcontrols)

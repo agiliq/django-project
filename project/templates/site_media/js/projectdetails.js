@@ -18,19 +18,17 @@
     $('tr.taskrow').mouseover(function(){
             $(this).children().filter('.taskcontrol').show()
         });
-    $('tr.taskrow').mouseout(function(){
-            $(this).children().filter('.taskcontrol').hide()
+    $('table').mouseout(function(){
+            console.log(this)
+            $(this).children().children().children().filter('.taskcontrol').hide()
         });
-    
-    /*$('tbody:first').mouseout(function(){
-        $(this).children().children().filter('.taskcontrol').hide()        
-        })*/
     
  });
  
  $(document).ready(function() {
     $('.taskrowdetail').hide()
     $('.showtaskdetails').click(function(){
+        $(this).parent().parent().parent().children().filter('.taskrowdetail').toggle()
         $(this).parent().parent().parent().children().filter('.taskrowdetail').toggle()
         })
      });

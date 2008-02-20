@@ -196,13 +196,8 @@ You are looking at {{task.name}}, a task for {{project.name}}.
 <h3>
     Older Versions
 </h3>
-<ul>
-    {% for version in task.get_old_versions %}
-	<li>
-	     <a href="{{version.revision_url}}">Version number {{version.version_number}} Versioned on {{version.effective_start_date}}</a>
-	</li>
-    {% endfor %}
-</ul>
+
+{% include 'project/taskversions.html' %}
 
  Task {{task.name}} was created on {{task.created_on|date}}. It has {{task.num_child_tasks}} sub tasks and {{task.num_items}} task items.
  {% if task.expected_end_date %}

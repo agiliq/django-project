@@ -12,6 +12,7 @@
             </a></td>
             <td class="taskcontrol">
             <form action="." method="post" id="markdone-{{task.id}}" class="markdone">
+		<div>
             {% if task.is_complete %}
                 <input type="hidden" name="taskid" value="{{task.id}}" />
 		<input type="hidden" name="markundone" value="markundone" />
@@ -21,12 +22,15 @@
                 <input type="hidden" name="taskid" value="{{task.id}}" />
 		<input type="checkbox" name="markdone" value="{{task.is_complete}}" onchange="submit()"/>         
             {% endif %}
+		</div>
             </form>
             </td>            
             <td class="taskcontrol">
             <form action="." method="post" id="deletetask-{{task.id}}" class="deletetask">
+		<div>
                 <input type="hidden" name="taskid" value="{{task.id}}" />
                 <input type="image" src="/site_media/images/delete.png" name="deletetask" value="Delete" />
+		</div>
             </form>
             </td>
             </tr>

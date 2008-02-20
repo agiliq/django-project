@@ -47,6 +47,10 @@ urlpatterns += patterns('project.files',
     (r'^(?P<project_name>\w+)/files/$', 'files'),
     )
 
+urlpatterns += patterns('project.pcalendar',
+    (r'^(?P<project_name>\w+)/calendar/$', 'index'),
+    )
+
 
 urlpatterns += patterns('project.users',
     (r'^accounts/login/$', 'login'),

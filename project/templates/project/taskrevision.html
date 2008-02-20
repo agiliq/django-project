@@ -27,7 +27,14 @@
             <td><a href="{{task.edit_url}}">Edit</a></td>
             </tr>
 	    </tbody>
-	</table> 
+	</table>
+        
+        <form action="."  method="post">
+        <input type="hidden" name="taskid" value="{{task.id}}" \>
+        <input type="submit" name="rollback" value="rollback" \>
+        </form>
+        
+        
     {% if task.num_child_tasks %}	
     <div id="subtasks">
 	<h3>Subs tasks for {{task.name}}</h3>

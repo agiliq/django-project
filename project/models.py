@@ -285,6 +285,7 @@ class Task(models.Model):
             self.effective_end_date = datetime.datetime.now()
             super(Task, self).save()
             new_task.id = None
+            new_task.is_current = True
             new_task.version_number = self.version_number + 1
             if self.user_responsible:
                 log_text = 'Task %s for %s has been updated.  ' % (self.name, self.user_responsible)
@@ -293,6 +294,8 @@ class Task(models.Model):
             log = Log(project = self.project, text=log_text)
             log.save()            
             super(Task, new_task).save()
+    def save_without_versioning(self):
+        super(Task, self).save()
         
     def set_is_complete(self, value):
         """If a task is marked as complete all its sub tasks and task items should be marked as complete."""
@@ -602,6 +605,14 @@ class ProjectFile(models.Model):
     file: the file."""
     project = models.ForeignKey(Project)
     file = models.FileField(upload_to = '/files/')
+    
+    """def __init__(self, *args, **kwargs):
+        super(ProjectFile, self).__init__(*args, **kwargs)
+        #self.file.upload_to = '/%/%s/' % (self.project.shortname, self.file.upload_to)
+    """
+    
+    class Admin:
+        pass
     
 
 

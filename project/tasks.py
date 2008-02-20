@@ -106,6 +106,12 @@ def task_revision(request, project_name, task_id):
     """
     project = get_project(request, project_name)
     task = Task.all_objects.get(project = project, id = task_id)
+    if request.method == 'POST':
+        print request.POST
+        prevlatest = Task.objects.get(project = project, number = task.number)
+        task.save()
+        prevlatest.is_current = False
+        prevlatest.save_without_versioning()
     payload = {'project':project, 'task':task,}
     return render(request, 'project/taskrevision.html', payload)
 
@@ -146,11 +152,7 @@ def taskitem_revision(request, project_name, taskitem_id):
     project = get_project(request, project_name)
     taskitem = TaskItem.all_objects.get(project = project, id = taskitem_id)
     if request.method == 'POST':
-        print request.POST
-        from copy import copy
-        id = int(request.POST['taskitemrev'])
-        newtaskitem = TaskItem.all_objects.get(id = id)
-        prevlatest = TaskItem.objects.get(project = newtaskitem.project, number = newtaskitem.number)
+        prevlatest = TaskItem.objects.get(project = taskitem.project, number = taskitem.number)
         newtaskitem.save()
         prevlatest.is_current = False
         prevlatest.save_without_versioning()

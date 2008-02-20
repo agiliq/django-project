@@ -27,13 +27,6 @@ You are editing {{task.name}}.
 <h3>
     Older Versions
 </h3>
-<ul>
-    {% for version in task.get_old_versions %}
-	<li>
-	    <a href="{{version.revision_url}}">Versioned on {{version.effective_end_date}}</a>
-	</li>
-    {% endfor %}
-</ul>
-              
+{% include 'project/taskversions.html' %}
        
 {% endblock %}

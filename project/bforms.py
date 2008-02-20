@@ -258,7 +258,10 @@ class EditTaskForm(CreateTaskForm):
     def save(self):
         task = self.task
         task.name = self.cleaned_data['name']
-        user = User.objects.get(username = self.cleaned_data['user_responsible'])
+        if not self.cleaned_data['user_responsible'] == 'None':
+            user = User.objects.get(username = self.cleaned_data['user_responsible'])
+        else:
+            user = None
         task.user_responsible = user
         task.expected_start_date = self.cleaned_data['start_date']
         if self.cleaned_data['end_date']:
@@ -341,6 +344,12 @@ class UserCreationForm(MarkedForm):
         profile = UserProfile(user = user)
         profile.save()
         return user
+    
+class AddFileForm(forms.Form):
+    filename = forms.FileField()
+    
+    def save(self):
+        pass
 
      
     
