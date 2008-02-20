@@ -9,6 +9,6 @@ def files(request, project_name):
     project = get_project(request, project_name)
     addfileform = bforms.AddFileForm()
     if request.method == 'POST':
-        
+        pass
     payload = {'project':project, 'addfileform':addfileform}
     return render(request, 'project/files.html', payload)

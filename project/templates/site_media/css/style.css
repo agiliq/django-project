@@ -79,9 +79,9 @@ table.calendar a{
     display: block;
 }
 
-table.calendar div.starttasks a{
+table.calendar div.starttasks{
     background-color: #ffe;
 }
-table.calendar div.endtasks a{
+table.calendar div.endtasks{
     background-color: #fef;
 }

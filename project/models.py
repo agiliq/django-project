@@ -73,6 +73,10 @@ class Project(models.Model):
     def todo_url(self):
         return '/%s/todo/' % self.shortname
     
+    def calendar_url(self):
+        return '/%s/calendar/' % self.shortname
+    
+    
     def metrics_url(self):
         return '/%s/health/' % self.shortname
     
@@ -90,7 +94,7 @@ class Project(models.Model):
     def get_interesting_months(self):
         """Get interesting months for this project. Interesting months"""
         cursor = connection.cursor()
-        stmt = 'SELECT DISTINCT year( expected_start_date ) , month( expected_start_date ) FROM project_task UNION SELECT DISTINCT year( expected_end_date ) , month( expected_end_date ) FROM project_project, project_task WHERE project_project.id = project_task.project_id AND project_project.id = %s' % self.id
+        stmt = 'SELECT DISTINCT year( expected_start_date ) , month( expected_start_date ), 1 FROM project_task UNION SELECT DISTINCT year( expected_end_date ) , month( expected_end_date ), 1 FROM project_project, project_task WHERE project_project.id = project_task.project_id AND project_project.id = %s' % self.id
         cursor.execute(stmt)
         data = cursor.fetchall()
         print data
@@ -158,17 +162,24 @@ class Project(models.Model):
         data = cursor.fetchall()
         return data
         
-    def task_dates(self):
+    def start_task_dates(self):
         """Number of tasks per day."""
         cursor = connection.cursor()
         cursor.execute('SELECT expected_start_date, count(expected_start_date) FROM project_task WHERE project_id = %s AND is_current = %s GROUP BY expected_start_date' % (self.id, True))
         data = cursor.fetchall()
         return data
         
-    def task_dates_month(self, year, month):
+    def task_start_dates_month(self, year, month):
         """Number of tasks per day."""
         cursor = connection.cursor()
         cursor.execute('SELECT expected_start_date, count(expected_start_date) FROM project_task WHERE project_id = %s AND is_current = %s AND year(expected_start_date) = %s AND month(expected_start_date) = %s GROUP BY expected_start_date' % (self.id, True, year, month))
+        data = cursor.fetchall()
+        return data
+    
+    def task_end_dates_month(self, year, month):
+        """Number of tasks per day."""
+        cursor = connection.cursor()
+        cursor.execute('SELECT expected_end_date, count(expected_end_date) FROM project_task WHERE project_id = %s AND is_current = %s AND year(expected_start_date) = %s AND month(expected_start_date) = %s GROUP BY expected_start_date' % (self.id, True, year, month))
         data = cursor.fetchall()
         return data    
         
