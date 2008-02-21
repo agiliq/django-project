@@ -12,6 +12,11 @@
 {% endblock %}
 
 {% block sidebar %}
+    <h3>Meta</h3>
+    <ul>
+        <li><a href="{{taskitem.task.get_absolute_url}}">See task</a></li>
+        <li><a href="{{taskitem.version_url}}">See previous versions</a></li>
+    </ul>
     You are editing {{taskitem.name}}, a task item created for {{taskitem.task.name}}
     <ul>
     {% for item in taskitem.old_versions %}

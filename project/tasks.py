@@ -1,10 +1,11 @@
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 
 from helpers import *
 from models import *
 import bforms
 from defaults import *
+import diff_match_patch
 
 def project_tasks(request, project_name):
     """Displays all the top tasks and task items for a specific project.
@@ -22,7 +23,7 @@ def project_tasks(request, project_name):
     
     if request.method == 'POST':
         if request.POST.has_key('addtask'):
-            taskform = bforms.CreateTaskForm(project, request.POST)
+            taskform = bforms.CreateTaskForm(project, request.user, request.POST)
             if taskform.is_valid():
                 taskform.save()
                 return HttpResponseRedirect('.')
@@ -31,7 +32,7 @@ def project_tasks(request, project_name):
         elif request.has_key('deletetask'):
             return delete_task(request)
     if request.method == 'GET':
-        taskform = bforms.CreateTaskForm(project)
+        taskform = bforms.CreateTaskForm(project, request.user)
         
     payload = {'project':project, 'tasks':tasks, 'taskform':taskform, 'page_data':page_data}    
     return render(request, 'project/projecttask.html', payload)
@@ -52,16 +53,16 @@ def task_details(request, project_name, task_num):
     task = Task.objects.get(project = project, number = task_num)
     
     addsubtaskform = bforms.CreateSubTaskForm(project, task)
-    additemform = bforms.CreateTaskItemForm(project, task)
+    additemform = bforms.CreateTaskItemForm(project, request.user, task)
     
     if request.method == 'POST':
         if request.POST.has_key('addsubtask'):
-            addsubtaskform = bforms.CreateSubTaskForm(project, task, request.POST)
+            addsubtaskform = bforms.CreateSubTaskForm(project, request.user, task, request.POST)
             if addsubtaskform.is_valid():
                 addsubtaskform.save()
                 return HttpResponseRedirect('.')
         elif request.POST.has_key('additem'):
-            additemform = bforms.CreateTaskItemForm(project, task, request.POST)
+            additemform = bforms.CreateTaskItemForm(project, request.user, task, request.POST)
             if additemform.is_valid():
                 additemform.save()
                 return HttpResponseRedirect('.')
@@ -75,8 +76,8 @@ def task_details(request, project_name, task_num):
         elif request.POST.has_key('itemmarkdone') or request.POST.has_key('itemmarkundone'):
             return handle_taskitem_status(request)
     if request.method == 'GET':
-        addsubtaskform = bforms.CreateSubTaskForm(project, task)
-        additemform = bforms.CreateTaskItemForm(project, task)
+        addsubtaskform = bforms.CreateSubTaskForm(project, request.user, task)
+        additemform = bforms.CreateTaskItemForm(project, request.user, task)
         noteform = bforms.AddTaskNoteForm(task, request.user)
     payload = {'project':project, 'task':task, 'addsubtaskform':addsubtaskform, 'additemform':additemform, 'noteform':noteform}
     return render(request, 'project/taskdetails.html', payload)
@@ -88,12 +89,12 @@ def edit_task(request, project_name, task_num):
     project = get_project(request, project_name)
     task = Task.objects.get(project = project, number = task_num)
     if request.method == 'POST':
-        editform = bforms.EditTaskForm(data = request.POST, task = task, project = project)
+        editform = bforms.EditTaskForm(data = request.POST, user = request.user, task = task, project = project)
         if editform.is_valid():
             task = editform.save()
             return HttpResponseRedirect(task.get_absolute_url())
     if request.method == 'GET':        
-        editform = bforms.EditTaskForm(project = project, task = task)
+        editform = bforms.EditTaskForm(project, request.user, task)
         
     payload = {'project':project, 'task':task, 'editform':editform}
     return render(request, 'project/edittask.html', payload)
@@ -159,9 +160,48 @@ def taskitem_revision(request, project_name, taskitem_id):
         return HttpResponseRedirect(taskitem.task.get_absolute_url())
     payload = {'project':project, 'taskitem':taskitem,}
     return render(request, 'project/taskitemrev.html', payload)
-    
 
+def difftask(request, project_name, task_num):
+    pass
+
+def task_history(request, project_name, task_num):
+    """Shows taskitem history for a given item.
+    Allows to rollback to a specific version.
+    Allows didding between versions"""
+    project = get_project(request, project_name)
+    task = Task.objects.get(project = project, number = task_num)
+    version1 = int(request.GET.get('version1', 0))
+    version2 = int(request.GET.get('version2', 0))
+    if version1 and version2:
+        taskver1 = Task.all_objects.get(project = project, id = version1)
+        taskver2 = Task.all_objects.get(project = project, id = version2)
+        app = diff_match_patch.diff_match_patch()
+        diff = app.diff_main(taskver1.as_text(), taskver2.as_text())
+        app.diff_cleanupSemantic(diff)
+        htmldiff = app.diff_prettyHtml(diff)
+        payload = {'project':project, 'task':task,'ver1':taskver1, 'ver2':taskver2, 'diff':htmldiff}
+        return render(request, 'project/taskdiffresults.html', payload)
+    else:
+        payload = {'project':project, 'task':task}
+        return render(request, 'project/taskhistory.html', payload)
+    
 def taskitem_history(request, project_name, taskitem_num):
     """Shows taskitem history for a given item.
-    Allows to rollback to a specific version."""
-    pass
+    Allows to rollback to a specific version.
+    Allows didding between versions"""
+    project = get_project(request, project_name)
+    taskitem = TaskItem.objects.get(project = project, number = taskitem_num)
+    version1 = int(request.GET.get('version1', 0))
+    version2 = int(request.GET.get('version2', 0))
+    if version1 and version2:
+        taskitemver1 = Task.all_objects.get(project = project, id = version1)
+        taskitemver2 = Task.all_objects.get(project = project, id = version2)
+        app = diff_match_patch.diff_match_patch()
+        diff = app.diff_main(taskitemver1.as_text(), taskitemver2.as_text())
+        app.diff_cleanupSemantic(diff)
+        htmldiff = app.diff_prettyHtml(diff)
+        payload = {'project':project, 'task':taskitem,'ver1':taskitemver1, 'ver2':taskitemver2, 'diff':htmldiff}
+        return render(request, 'project/taskdiffresults.html', payload)
+    else:
+        payload = {'project':project, 'taskitem':taskitem}
+        return render(request, 'project/taskitemhist.html', payload)    

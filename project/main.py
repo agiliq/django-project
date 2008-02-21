@@ -70,7 +70,7 @@ def project_details(request, project_name):
     user = request.user
     project = get_project(request, project_name)
     inviteform = bforms.InviteUserForm()
-    taskform = bforms.CreateTaskForm(project)
+    taskform = bforms.CreateTaskForm(project, user)
     new_tasks = project.new_tasks()
     new_tasks = project.new_tasks()
     overdue_tasks = project.overdue_tasks()
@@ -81,7 +81,7 @@ def project_details(request, project_name):
                 inviteform.save()
                 return HttpResponseRedirect('.')
         elif request.POST.has_key('task'):
-            taskform = bforms.CreateTaskForm(project, request.POST)
+            taskform = bforms.CreateTaskForm(project, user, request.POST)
             if taskform.is_valid():
                 taskform.save()
                 return HttpResponseRedirect('.')
@@ -94,7 +94,7 @@ def project_details(request, project_name):
             
     if request.method == 'GET':
         inviteform = bforms.InviteUserForm()
-        taskform = bforms.CreateTaskForm(project)
+        taskform = bforms.CreateTaskForm(project, request.user)
     payload = {'project':project, 'inviteform':inviteform, 'taskform':taskform, 'new_tasks':new_tasks, 'overdue_tasks':overdue_tasks,}
     return render(request, 'project/projdetails.html', payload)
 

@@ -4,6 +4,8 @@ from django.contrib.auth.decorators import login_required
 from helpers import *
 from models import *
 import bforms
+import diff_match_patch
+from html2text import html2text
 
 def wiki(request, project_name):
     """Shows recently created pages.
@@ -73,4 +75,26 @@ def wiki_revision(request, project_name, page_name, revision_id):
         pass
     payload = {'project':project, 'page':page, 'revision':revision}
     return render(request, 'project/wikirevision.html', payload)
+
+def wikipage_diff(request, project_name, page_name):
+    project = get_project(request, project_name)
+    page = WikiPage.objects.get(name = page_name, project = project)
+    version1 = int(request.GET.get('version1', 0))
+    version2 = int(request.GET.get('version2', 0))
+    if version1 and version2:
+        rev1 = WikiPageRevision.objects.get(wiki_page = page, id = version1)
+        rev2 = WikiPageRevision.objects.get(wiki_page = page, id = version2)
+        print rev1.id
+        print rev1.wiki_page
+        print 111, rev1.html_text
+        print 111, rev1.wiki_text
+        app = diff_match_patch.diff_match_patch()
+        diff = app.diff_main(html2text(rev1.html_text), html2text(rev2.html_text))
+        app.diff_cleanupSemantic(diff)
+        htmldiff = app.diff_prettyHtml(diff)
+        payload = {'project':project, 'page':page, 'revision1':rev1, 'revision2':rev2, 'htmldiff': htmldiff}
+        return render(request, 'project/wikidiffresult.html', payload)
+    else:
+        payload = {'project':project, 'page':page,}
+        return render(request, 'project/wikidiff.html', payload)
     

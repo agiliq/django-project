@@ -87,9 +87,10 @@ class CreateTaskForm(MarkedForm):
     start_date = DojoDateField(help_text = 'When will this task start?')
     end_date = DojoDateField(required = False, help_text = 'When will this task end?')
     user_responsible = DojoChoiceField(help_text = 'Who is reponsible for this task?')
-    def __init__(self, project = None, *args, **kwargs):
+    def __init__(self, project , user, *args, **kwargs):
         super(CreateTaskForm, self).__init__(*args, **kwargs)
         self.project = project
+        self.user = user
         users = [subs.user for subs in project.subscribeduser_set.all()]
         self.fields['user_responsible'].choices = [('None','None')] + [(user.username, user.username) for user in users]
         
@@ -106,17 +107,20 @@ class CreateTaskForm(MarkedForm):
             user = User.objects.get(username = self.cleaned_data['user_responsible'])
             task.user_responsible = user
         task.project = self.project
+        task.created_by = self.user
+        task.last_updated_by = self.user
         return task        
         
     def save(self):
+        print 'xxx1'
         task = self.save_without_db()
         task.save()
         return task
 
 
 class CreateSubTaskForm(CreateTaskForm):
-    def __init__(self, project = None, parent_task = None, *args, **kwargs):
-        super(CreateSubTaskForm, self).__init__(project, *args, **kwargs)
+    def __init__(self, project, user, parent_task = None, *args, **kwargs):
+        super(CreateSubTaskForm, self).__init__(project, user, *args, **kwargs)
         self.parent_task = parent_task
     def save(self):
         task = self.save_without_db()
@@ -131,9 +135,10 @@ class CreateTaskItemForm(MarkedForm):
     time = DojoDecimalField(help_text = 'How long will this task item take?')
     units = DojoChoiceField(choices = unit_choices)
     
-    def __init__(self, project, task, *args, **kwargs):
+    def __init__(self, project, user, task, *args, **kwargs):
         super(CreateTaskItemForm, self).__init__(*args, **kwargs)
         self.project = project
+        self.user = user
         self.task = task
         users = [subs.user for subs in task.project.subscribeduser_set.all()]
         self.fields['user'].choices = [('None','None')] + [(user.username, user.username) for user in users]
@@ -146,6 +151,8 @@ class CreateTaskItemForm(MarkedForm):
     def save(self):
         item = TaskItem(name = self.cleaned_data['item_name'], )
         item.project = self.project
+        item.created_by = self.user
+        item.last_updated_by = self.user
         item.task_num = self.task.number
         if not self.cleaned_data['user'] == 'None':
             user = User.objects.get(username = self.cleaned_data['user'])
@@ -248,8 +255,8 @@ class EditTaskForm(CreateTaskForm):
     actual_end_date = DojoDateField(required = False, help_text='When did this task end?')
     is_complete = forms.BooleanField(help_text = 'Is this task complete?')
     
-    def __init__(self, project, task, *args, **kwargs):
-        super(EditTaskForm, self).__init__(project, *args, **kwargs)
+    def __init__(self, project, user, task, *args, **kwargs):
+        super(EditTaskForm, self).__init__(project, user, *args, **kwargs)
         self.task = task
         self.fields['name'].initial = task.name
         self.fields['start_date'].initial = task.expected_start_date
@@ -276,6 +283,7 @@ class EditTaskForm(CreateTaskForm):
         if self.cleaned_data['actual_end_date']:
             task.actual_end_date = self.cleaned_data['actual_end_date']
         task.is_complete_prop = self.cleaned_data['is_complete']
+        task.updated_by = self.user
         task.save()
         return task
             

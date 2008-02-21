@@ -14,21 +14,20 @@
         $('#inviteform').hide('fast');
         });
     //Hide controls on tasks
-    $('td.taskcontrol').hide();
+    /*$('td.taskcontrol').hide();
     $('tr.taskrow').mouseover(function(){
             $(this).children().filter('.taskcontrol').show()
         });
-    $('table').mouseout(function(){
-            console.log(this)
-            $(this).children().children().children().filter('.taskcontrol').hide()
-        });
+    $('tbody').mouseout(function(){
+            $(this).children().children().filter('.taskcontrol').hide()
+        });*/
     
  });
  
  $(document).ready(function() {
     $('.taskrowdetail').hide()
     $('.showtaskdetails').click(function(){
-        $(this).parent().parent().parent().children().filter('.taskrowdetail').toggle()
+         console.log($(this).parent().parent().parent().children().filter('.taskrowdetail'))
         $(this).parent().parent().parent().children().filter('.taskrowdetail').toggle()
         })
      });

@@ -6,7 +6,9 @@
         <tr>
             {% for day in weekheader %}
             <td>
+                
                 {{day}}
+                
             </td>
             {% endfor %}
         </tr>
@@ -16,9 +18,12 @@
         <tr>
         {% for day in week %}
         <td>
+            {% if day.0 %}
             <div class="date">
+            
             {{day.0}}
             </div>
+            {% endif %}
         <div class="starttasks">
         {% for task in  day.1 %}
            <a href="{{task.get_absolute_url}}">{{task.name}}</a>

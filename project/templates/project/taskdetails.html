@@ -6,47 +6,8 @@
 
 
 {% block jqueryarea %}
-<script>
- $(document).ready(function() {
-    $('#subtaskform').hide();
-    $('#itemform').hide();
-    $('#noteform').hide();
-    
-    $('#notes').hide();
-    $('#itemformshow').click(
-        function(){
-            $('#itemform').show('slow');
-            $('#noteform').hide();
-            $('#subtaskform').hide();
-        }
-        );
-    $('#taskformshow').click(
-        function(){
-            $('#subtaskform').show('slow');
-            $('#itemform').hide();
-            $('#noteform').hide();
-        }
-        );
-    $('#shownotes').click(
-        function(){
-            $(this).toggle(
-                //Todo
-                function(){$(this).html('Show notes')},
-                function(){$(this).html('Hide notes')}
-                
-            )
-            $('#notes').toggle('slow');
-        }
-        );
-    $('#shownotesform').click(
-        function(){
-            $('#noteform').show('slow');
-            $('#subtaskform').hide();
-            $('#itemform').hide();
-        }
-    )
-    
- });
+<script type="text/javascript" src="/site_media/js/taskdetails.js">
+
  </script>
 {% endblock %}
 
@@ -85,6 +46,8 @@
             <li>{{note.text}} added by {{note.user.username}}</li>
         {% endfor %}
         </ul>
+        {% else %}
+        No notes on this task.
         {% endif %}
     </div>
 	
@@ -104,11 +67,13 @@
                     <td>Delete</td>
                 </tr>
             </thead>
-        <tbody>
+        
 	{% for task in task.task_set.all %}
+        <tbody>
 	    {% include 'project/taskrow.html' %}
-	{% endfor %}
         </tbody>
+	{% endfor %}
+        
 	</table>
     </div>
     {% endif %}
@@ -191,6 +156,7 @@ You are looking at {{task.name}}, a task for {{project.name}}.
 <h3>Meta</h3>
 <ul> 
     <li><a href="{{task.edit_url}}">Edit this task</a></li>
+    <li><a href="{{task.version_url}}">See previous versions</a></li>
 </ul>
 
 <h3>

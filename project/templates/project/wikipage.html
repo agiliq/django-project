@@ -17,13 +17,14 @@
     <ul>
     <li><a href="/{{project.shortname}}/wiki/new/">Create new page</a></li>
     <li><a href="{{page.edit_url}}">Edit this page</a></li>
+    <li><a href="{{page.version_url}}">See previous versions</a></li>
     </ul>
     
     <h2>revisions</h2>
     <ul>
     {% for rev in page.wikipagerevision_set.all %}
 	<li>
-	    <a href="{{rev.get_absolute_url}}">{{rev.created_on}}</a>
+	    <a href="{{rev.get_absolute_url}}">Version {{rev.version_number}} created on {{rev.created_on}}</a>
 	</li>
     {% endfor %}
     </ul>

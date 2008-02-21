@@ -12,6 +12,10 @@
     
         <li>{{log.text}}
             <br />
+            {% if log.description %}
+            {{log.description}}
+            {% endif %}
+            <br />
             Created on {{log.created_on|date}} {{log.created_on|time}}
         </li>
     {% endfor %}

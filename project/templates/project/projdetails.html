@@ -40,13 +40,13 @@
             </td>
             </tr>
         </thead>
-        <tbody class="recenttasks">
+        
     {% for task in new_tasks %}
-        
+        <tbody class="recenttasks">
         {% include 'project/taskrow.html' %}
-        
-    {% endfor %}
         </tbody>
+    {% endfor %}
+        
     </table>
     {% endif %}
     
@@ -76,13 +76,13 @@
             </td>           
             </tr>
         </thead>
-        <tbody>
+        
     {% for task in overdue_tasks %}
-        
+        <tbody>
         {% include 'project/taskrow.html' %}
-        
-    {% endfor %}
         </tbody>
+    {% endfor %}
+        
     </table>
     {% endif %}   
     

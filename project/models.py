@@ -6,6 +6,7 @@ import datetime
 from dojofields import *
 from django.db import connection
 
+import time
 
 class AddTodoItemForm(forms.Form):
     text = DojoCharField()
@@ -179,7 +180,7 @@ class Project(models.Model):
     def task_end_dates_month(self, year, month):
         """Number of tasks per day."""
         cursor = connection.cursor()
-        cursor.execute('SELECT expected_end_date, count(expected_end_date) FROM project_task WHERE project_id = %s AND is_current = %s AND year(expected_start_date) = %s AND month(expected_start_date) = %s GROUP BY expected_start_date' % (self.id, True, year, month))
+        cursor.execute('SELECT expected_end_date, count(expected_end_date) FROM project_task WHERE project_id = %s AND is_current = %s AND year(expected_end_date) = %s AND month(expected_end_date) = %s GROUP BY expected_end_date' % (self.id, True, year, month))
         data = cursor.fetchall()
         return data    
         
@@ -284,6 +285,9 @@ class Task(models.Model):
     #is_complete = IsCompleteField(default = False)
     is_complete = models.BooleanField(default = False)
     created_on = models.DateTimeField(auto_now_add = 1)
+    is_deleted = models.BooleanField(default = False)
+    created_by = models.ForeignKey(User, related_name = 'created_tasks')
+    last_updated_by = models.ForeignKey(User, related_name = 'updated_tasks')
     #Versioning
     effective_start_date = models.DateTimeField(auto_now_add = True)
     effective_end_date = models.DateTimeField(null = True, auto_now = True)
@@ -315,16 +319,18 @@ class Task(models.Model):
                 log_text = 'Task %s has for %s been created.  ' % (self.name, self.user_responsible)
             else:
                 log_text = 'Task %s has been created.  ' % self.name
-            log = Log(project = self.project, text=log_text)
+            log_description = 'Task was created by %s on %s' % (self.created_by.username, time.strftime('%d %B %y'))
+            log = Log(project = self.project, text=log_text, description = log_description)
             log.save()             
             super(Task, self).save()
         else:
             #Version it
             import copy
             new_task = copy.copy(self)
-            self.is_current = False
+            """self.is_current = False
             self.effective_end_date = datetime.datetime.now()
-            super(Task, self).save()
+            super(Task, self).save()"""
+            self.update_field('is_current', False)
             new_task.id = None
             new_task.is_current = True
             new_task.version_number = self.version_number + 1
@@ -332,11 +338,25 @@ class Task(models.Model):
                 log_text = 'Task %s for %s has been updated.  ' % (self.name, self.user_responsible)
             else:
                 log_text = 'Task %s has been updated' % (self.name)
-            log = Log(project = self.project, text=log_text)
+            log_description = 'Task was updated by %s on %s' % (self.last_updated_by.username, time.strftime('%d %B %y'))
+            log = Log(project = self.project, text=log_text, description = log_description)
             log.save()            
             super(Task, new_task).save()
+            
     def save_without_versioning(self):
         super(Task, self).save()
+        
+    def update_field(self, field, value):
+        """Update a field without updating any other field. We need this when we are versioing a Task and we want to save
+        the objects to set its is_current, but not modify any other field."""
+        cursor = connection.cursor()
+        stmt = 'UPDATE project_task SET %s = %s WHERE id = %s' % (field, value, self.id)
+        cursor.execute(stmt)
+        
+        
+    def as_text(self):
+        txt = 'Name: %s \n Start Date: %s \n End Date: %s \n Person responsible: %s \n Is Complete?: %s \n Actual start date: %s \n Actual end date: %s' % (self.name, self.expected_start_date, self.expected_end_date, self.user_responsible, self.is_complete, self.actual_start_date, self.actual_end_date)
+        return txt
         
     def set_is_complete(self, value):
         """If a task is marked as complete all its sub tasks and task items should be marked as complete."""
@@ -363,6 +383,9 @@ class Task(models.Model):
     
     def get_absolute_url(self):
         return '/%s/taskdetails/%s/' % (self.project.shortname, self.number)
+    
+    def version_url(self):
+        return '/%s/taskhistory/%s/' % (self.project.shortname, self.number)
     
     def revision_url(self):
         return '/%s/taskrevision/%s/' % (self.project.shortname, self.id)
@@ -420,6 +443,9 @@ class TaskItem(models.Model):
     unit = models.CharField(max_length = 20, choices = unit_choices)
     is_complete = models.BooleanField(default = False)
     created_on = models.DateTimeField(auto_now_add = 1)
+    is_deleted = models.BooleanField(default = False)
+    created_by = models.ForeignKey(User, related_name = 'created_taskitems')
+    last_updated_by = models.ForeignKey(User,  related_name = 'updated_taskitems')   
     #Versioning
     effective_start_date = models.DateTimeField(auto_now_add = 1)
     effective_end_date = models.DateTimeField(null = True)
@@ -442,7 +468,8 @@ class TaskItem(models.Model):
             self.number = num + 1
             super(TaskItem, self).save()
             log_text = 'Item %s created for task %s.' % (self.name, self.task.name)
-            log = Log(project = self.task.project, text = log_text)
+            log_description = 'Item was created by %s on %s' % (self.created_by.username, time.strftime('%d %B %y'))
+            log = Log(project = self.task.project, text = log_text, description = log_description)
             log.save()
         else:
             #Version it
@@ -464,19 +491,28 @@ class TaskItem(models.Model):
             super(TaskItem, new_item).save()
             print new_item.version_number
             log_text = 'Item %s for taks %s has been updated.' % (self.name, self.task.name)
-            log = Log(project = self.task.project, text = log_text)
+            log_description = 'Task was updated by %s on %s' % (self.last_updated_by.username, time.strftime('%d %B %y'))
+            log = Log(project = self.task.project, text = log_text, description = log_description)
             log.save()
             
     def save_without_versioning(self):
         super(TaskItem, self).save()
+        
+    def as_text(self):
+        txt = 'Name: %s \n Task: %s \n Expected time: %s %s \n Actual time: %s %s User: %s' % (self.name, self.task.name, self.expected_time, self.unit, self.actual_time, self.unit, self.user)
+        return txt
             
     def get_task(self):
         """Get the task from the taskitem"""
         return Task.objects.get(project = self.project, number = self.task_num, is_current = True)
     task = property(get_task, None, None)
+    
+    def version_url(self):
+        return '/%s/taskitemhist/%s/' % (self.project, self.number)
             
     def edit_url(self):
-        return '/%s/edititem/%s/' % (self.task.project, self.number)
+        return '/%s/edititem/%s/' % (self.project, self.number)
+        
     
     def old_versions(self):
         """return all versions of the taskitem."""
@@ -539,6 +575,7 @@ class Log(models.Model):
     created_on: When was this log created."""
     project = models.ForeignKey(Project)
     text = models.CharField(max_length = 200)
+    description = models.CharField(max_length = 200, null = True)
     is_complete = models.BooleanField(default = False)
     created_on = models.DateTimeField(auto_now_add = 1)
     
@@ -584,9 +621,16 @@ class WikiPage(models.Model):
     project = models.ForeignKey(Project)
     current_revision = models.ForeignKey('WikiPageRevision', null = True)
     created_on = models.DateTimeField(auto_now_add = 1)
+    is_deleted = models.BooleanField(default = True)
     
     def edit_url(self):
         return '/%s/wiki/%s/edit/' % (self.project.shortname, self.name)
+    
+    def get_absolute_url(self):
+        return '/%s/wiki/%s/' % (self.project.shortname, self.name)
+    
+    def version_url(self):
+        return '/%s/wiki/%s/revisions/' % (self.project.shortname, self.name)
     
     def save(self):
         if not self.name:
@@ -596,10 +640,18 @@ class WikiPage(models.Model):
                 name = '%s_%s' % (name, count)
             name = name[:19]
             self.name = name
+        log_text = 'Wiki page %s has been created.' % self.title
+        log_description = None#'Page was created by %s on %s' % (self.current_revision.user.username, time.strftime('%d %B %y'))
+        log = Log(project = self.project, text = log_text, description = log_description)
+        log.save()
         super(WikiPage, self).save()
         
-    def get_absolute_url(self):
-        return '/%s/wiki/%s/' % (self.project.shortname, self.name)
+    
+    
+    def delete(self):
+        """Wiki pages can not be deleted. If a delete request comes, the is_deleted flag is set to true."""
+        is_deleted = True
+        self.save()
         
     class Admin:
         pass
@@ -616,9 +668,16 @@ class WikiPageRevision(models.Model):
     wiki_text = models.TextField()
     html_text = models.TextField()
     created_on = models.DateTimeField(auto_now_add = 1)
+    version_number = models.IntegerField(default = 0)
     
     def save(self):
         self.html_text = self.wiki_text
+        log_text = 'A revision for wiki page %s has been created.' % self.wiki_page.title
+        log_description = 'Revision was created by %s on %s.' % (self.user.username, time.strftime('%d %B %y'))
+        log = Log(project = self.wiki_page.project, text = log_text, description = log_description)
+        last_version = WikiPageRevision.objects.filter(wiki_page = self.wiki_page).count()
+        self.version_number = last_version + 1
+        log.save()
         super(WikiPageRevision, self).save()
         
     def get_absolute_url(self):
