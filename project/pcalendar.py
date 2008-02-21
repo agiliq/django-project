@@ -11,7 +11,11 @@ import calendar as cal
 import datetime
 
 def index(request, project_name):
+    """The calendars index page. Shows calendars for intersting months. (Months in which a task stars or ends.)
+    Actions available:
+    None"""
     project = get_project(request, project_name)
+    access = get_access(project, request.user)
     interesting_months = project.get_interesting_months()
     month_data = []
     for month in interesting_months:
@@ -40,7 +44,12 @@ def index(request, project_name):
     return render(request, 'project/calendarindex.html', payload,)
 
 def month_cal(request, project_name, year, month):
+    """Shows a large calendar with details for a month.
+    Actions available:
+    None
+    """
     project = get_project(request, project_name)
+    access = get_access(project, request.user)
     year = int(year)
     month = int(month)
     interesting_months = project.get_interesting_months()
@@ -80,11 +89,3 @@ def flatten(arr):
 def unflatten(arr):
     """Unflatten a calendar array flattened using flatten."""
     return [arr[7*i: 7*i+7] for i in range(len(arr)/7)]
-    
-
-def append_to_arr(arr, task):
-    day = task.expected_start_date.day
-    for i, el in enumerate(month_dates):
-        for j, el2 in enumerate(month_dates[i]):
-            if day == month_dates[i][j][0]:
-                pass

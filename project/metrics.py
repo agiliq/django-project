@@ -8,7 +8,11 @@ import bforms
 import pygooglechart
 
 def project_health(request, project_name):
+    """Shows the over all progress report of the Project.
+    Actions available:
+    None"""
     project = get_project(request, project_name)
+    access = get_access(project, request.user)
     num_tasks = project.task_set.filter(is_current = True).count()
     num_tasks_complete = project.task_set.filter(is_current = True, is_complete = True).count()
     users = project.subscribeduser_set.all()
@@ -52,4 +56,7 @@ def project_health(request, project_name):
     return render(request, 'project/projecthealth.html', payload)
 
 def user_stats(request, project_name):
+    """Shows the per user account od the task/task items.
+    Actions available: None
+    """
     pass

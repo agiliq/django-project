@@ -13,8 +13,13 @@ def project_tasks(request, project_name):
     shows sub tasks name for top tasks
     shows task items for the top tasks
     shows add a top task form
+    Actions available here:
+    Create a new task: Owner Participant
+    Mark task as done: Owner Participant
+    Delete Task: Owner Participant
     """
     project = get_project(request, project_name)
+    access = get_access(project, request.user)
     if request.GET.get('includecomplete', 0):
         query_set = project.task_set.filter(parent_task_num__isnull = True)
     else:
@@ -47,9 +52,16 @@ def task_details(request, project_name, task_num):
     Shows form to add sub task.
     Shows form to add task items.
     Shows notes on taskitems.(?)
+    Actions available here:
+    Create a new subtask task: Owner Participant
+    Create a new taskitem: Owner Participant
+    Add note to task: Owner Participant
+    Mark item done: Owner Participant
+    Mar item undone: Owner Participant 
     """
     
     project = get_project(request, project_name)
+    access = get_access(project, request.user)
     task = Task.objects.get(project = project, number = task_num)
     
     addsubtaskform = bforms.CreateSubTaskForm(project, task)
@@ -84,9 +96,12 @@ def task_details(request, project_name, task_num):
 
 def edit_task(request, project_name, task_num):
     """
-    Edit a given task
+    Edit a given task.
+    Actions avialble here:
+    Edit Task: Owner Participant
     """
     project = get_project(request, project_name)
+    access = get_access(project, request.user)
     task = Task.objects.get(project = project, number = task_num)
     if request.method == 'POST':
         editform = bforms.EditTaskForm(data = request.POST, user = request.user, task = task, project = project)
@@ -104,8 +119,11 @@ def edit_task(request, project_name, task_num):
 def task_revision(request, project_name, task_id):
     """
     Shows a specific revision of the code.
+    Actions available here.
+    Rollback task to a revision.  Owner Participant
     """
     project = get_project(request, project_name)
+    access = get_access(project, request.user)
     task = Task.all_objects.get(project = project, id = task_id)
     if request.method == 'POST':
         print request.POST
@@ -119,8 +137,11 @@ def task_revision(request, project_name, task_id):
 def add_task_note(request, project_name, task_num):
     """
     Add notes to a task.
+    Actions available here:
+    Add a note:  Owner Participant
     """
     project = get_project(request, project_name)
+    access = get_access(project, request.user)
     task = Task.objects.get(project = project, number = task_num)
     if request.method == 'POST':
         noteform = bforms.AddTaskNoteForm(task, request.user, request.POST)
@@ -133,8 +154,12 @@ def add_task_note(request, project_name, task_num):
     return render(request, 'project/addtasknote.html', payload)
 
 def edit_task_item(request, project_name, taskitem_num):
-    """Edit a task item."""
+    """Edit a task item.
+    Action available here:
+    Edit a task item:  Owner Participant
+    """
     project = get_project(request, project_name)
+    access = get_access(project, request.user)
     taskitem = TaskItem.objects.get(project = project, number = taskitem_num)
     if request.method == 'POST':
         itemform = bforms.EditTaskItemForm(request.POST, instance = taskitem)
@@ -149,8 +174,11 @@ def edit_task_item(request, project_name, taskitem_num):
 
 def taskitem_revision(request, project_name, taskitem_id):
     """Shows taskitem history for a given item.
-    Allows to rollback to a specific version."""
+    Actions available here:
+    Rollback taskitem to a specific version:  Owner Participant
+    """
     project = get_project(request, project_name)
+    access = get_access(project, request.user)
     taskitem = TaskItem.all_objects.get(project = project, id = taskitem_id)
     if request.method == 'POST':
         prevlatest = TaskItem.objects.get(project = taskitem.project, number = taskitem.number)
@@ -161,14 +189,14 @@ def taskitem_revision(request, project_name, taskitem_id):
     payload = {'project':project, 'taskitem':taskitem,}
     return render(request, 'project/taskitemrev.html', payload)
 
-def difftask(request, project_name, task_num):
-    pass
-
 def task_history(request, project_name, task_num):
     """Shows taskitem history for a given item.
-    Allows to rollback to a specific version.
-    Allows didding between versions"""
+    Shows summary of each revision.
+    Actions available here:
+    Diffing between versions:  Owner Participant Viewer
+    """
     project = get_project(request, project_name)
+    access = get_access(project, request.user)
     task = Task.objects.get(project = project, number = task_num)
     version1 = int(request.GET.get('version1', 0))
     version2 = int(request.GET.get('version2', 0))
@@ -187,9 +215,11 @@ def task_history(request, project_name, task_num):
     
 def taskitem_history(request, project_name, taskitem_num):
     """Shows taskitem history for a given item.
-    Allows to rollback to a specific version.
-    Allows didding between versions"""
+    Actions available here:
+    Diffing between versions:  Owner Participant Viewer
+    """
     project = get_project(request, project_name)
+    access = get_access(project, request.user)
     taskitem = TaskItem.objects.get(project = project, number = taskitem_num)
     version1 = int(request.GET.get('version1', 0))
     version2 = int(request.GET.get('version2', 0))

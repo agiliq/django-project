@@ -16,6 +16,10 @@ def get_project(request, project_name):
         raise Http404
     return project
 
+def get_access(project, user):
+    """Returns the access of the user passed for the project passed."""
+    return SubscribedUser.objects.get(project = project, user = user).group
+
 def render(request, template, payload):
     """This populates the site wide template context in the payload passed to the template"""
     return render_to_response(template, payload, RequestContext(request))
@@ -44,6 +48,7 @@ def get_paged_objects(query_set, request, obj_per_page):
     return object, page_data
 
 def handle_task_status(request, is_xhr = False):
+    """Handle changes to status for a task. (Is_complete status toggle)."""
     id = request.POST['taskid']
     task = Task.objects.get(id = id)
     if request.POST.has_key('markdone'):
@@ -56,6 +61,7 @@ def handle_task_status(request, is_xhr = False):
     return HttpResponseRedirect('.')
 
 def handle_taskitem_status(request):
+    """Handle changes to status for a taskitem. (Is_complete status toggle)."""
     id = request.POST['taskitemid']
     taskitem = TaskItem.objects.get(id = id)
     if request.POST.has_key('itemmarkdone'):
@@ -66,8 +72,8 @@ def handle_taskitem_status(request):
     return HttpResponseRedirect('.')
 
 def delete_task(request):
+    """Delete a task."""
     taskid = request.POST['taskid']
-    print taskid
     task = Task.objects.get(id = taskid)
     task.delete()
     return HttpResponseRedirect('.')

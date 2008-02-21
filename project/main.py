@@ -1,4 +1,4 @@
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 
 from helpers import *
@@ -66,9 +66,14 @@ def project_details(request, project_name):
     Shows the important information for a project.
     Shows form to invite an user.
     Form to create a new top task.
+    Actions available here:
+    Invite: Owner
+    New Top Task: Owner Participant
+    Mark Done: Owner Participant
     """
     user = request.user
     project = get_project(request, project_name)
+    access = get_access(project, request.user)
     inviteform = bforms.InviteUserForm()
     taskform = bforms.CreateTaskForm(project, user)
     new_tasks = project.new_tasks()
@@ -76,16 +81,22 @@ def project_details(request, project_name):
     overdue_tasks = project.overdue_tasks()
     if request.method == 'POST':
         if request.POST.has_key('invite'):
+            if not (access == 'Owner'):
+                return HttpResponseForbidden('%s(%s) does not have enough rights' % (request.user.username, access))
             inviteform = bforms.InviteUserForm(project, request.POST)
             if inviteform.is_valid():
                 inviteform.save()
                 return HttpResponseRedirect('.')
         elif request.POST.has_key('task'):
+            if not (access in ('Owner', 'Participant')):
+                return HttpResponseForbidden('%s(%s) does not have enough rights' % (request.user.username, access))
             taskform = bforms.CreateTaskForm(project, user, request.POST)
             if taskform.is_valid():
                 taskform.save()
                 return HttpResponseRedirect('.')
         elif request.POST.has_key('markdone') or request.POST.has_key('markundone'):
+            if not (access in ('Owner', 'Participant')):
+                return HttpResponseForbidden('%s(%s) does not have enough rights' % (request.user.username, access))
             if request.POST.has_key('xhr'):
                 return handle_task_status(request, True)
             return handle_task_status(request)
@@ -101,7 +112,11 @@ def project_details(request, project_name):
 
 @login_required
 def full_logs(request, project_name):
+    """Shows the logs for a project.
+    Actions available here:
+    None"""
     project = get_project(request, project_name)
+    access = get_access(project, request.user)
     query_set = Log.objects.filter(project = project)
     logs, page_data = get_paged_objects(query_set, request, logs_per_page)
     payload = {'project':project, 'logs':logs, 'page_data':page_data}
@@ -112,8 +127,11 @@ def noticeboard(request, project_name):
     """A noticeboard for the project.
     Shows the notices posted by the users.
     Shows the add notice form.
+    Actions available here:
+    Add a notice: Owner Participant Viewer (All)
     """
     project = get_project(request, project_name)
+    access = get_access(project, request.user)
     query_set = Notice.objects.filter(project = project)
     notices, page_data = get_paged_objects(query_set, request, notices_per_page)
     if request.method == 'POST':
@@ -128,8 +146,13 @@ def noticeboard(request, project_name):
 
 @login_required
 def todo(request, project_name):    
-    """Allows to create a new todolist and todoitems."""
+    """Allows to create a new todolist and todoitems.
+    Actions available here:
+    Add a todolist: Owner Participant
+    Add a todoitem: Owner Participant
+    """
     project = get_project(request, project_name)
+    access = get_access(project, request.user)
     if request.GET.get('includecomplete', 0):
         lists = TodoList.objects.filter(user = request.user, project = project)
     else:
@@ -168,6 +191,7 @@ def todo(request, project_name):
 
 def project_as_ul(request, project_name):
     project = get_project(request, project_name)
+    access = get_access(project, request.user)
     top_tasks = project.task_set.filter(parent_task__is_null = True)
     for task in top_task:
         pass

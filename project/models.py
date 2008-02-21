@@ -9,6 +9,7 @@ from django.db import connection
 import time
 
 class AddTodoItemForm(forms.Form):
+    """A form to add a todo item to a todo list."""
     text = DojoCharField()
     
     def __init__(self, list = None, *args, **kwargs):
@@ -24,6 +25,7 @@ class AddTodoItemForm(forms.Form):
         return todoitem
     
 class MarkDoneForm(forms.Form):
+    """A form to mark the task as done."""
     is_complete = forms.BooleanField()
     
     def __init__(self, task, *args, **kwargs):
@@ -40,6 +42,8 @@ class Project(models.Model):
     shortname: Shortname, can not contain spaces , special chars. Used in url
     name: Name of the project
     owner: The user who has all the rights for the project.
+    start_date: When does this project start?
+    end_date: When does this project end?
     is_active: Is this project active?
     """
     shortname = models.CharField(max_length = 20)
@@ -50,39 +54,53 @@ class Project(models.Model):
     is_active = models.BooleanField(default = True)
     created_on = models.DateTimeField(auto_now_add = 1)
     
-    def get_absolute_url(self):
-        return '/%s/' % self.shortname
-    
     def __unicode__(self):
         return self.shortname
     
+    def get_absolute_url(self):
+        """Tte absolute url for project."""
+        return '/%s/' % self.shortname
+    
     def tasks_url(self):
+        """Url to the tasks page."""
         return '/%s/tasks/' % self.shortname
     
     def noticeboard_url(self):
+        """Urls to the noticeboard."""
         return '/%s/noticeboard/' % self.shortname
     
     def wiki_url(self):
+        """Url to the project wiki."""
         return '/%s/wiki/' % self.shortname
     
     def new_wikipage_url(self):
+        """Url to create a new wiki page."""
         return '/%s/wiki/new/' % self.shortname
     
     def files_url(self):
+        """Url to files page."""
         return '/%s/files/' % self.shortname
     
     def todo_url(self):
+        """Url to the todo page."""
         return '/%s/todo/' % self.shortname
     
     def calendar_url(self):
+        """Url to the calendars page."""
         return '/%s/calendar/' % self.shortname
     
     
     def metrics_url(self):
+        """Url to the metrics page."""
         return '/%s/health/' % self.shortname
     
     def logs_url(self):
+        """Url to the logs page."""
         return '/%s/logs/' % self.shortname
+    
+    def feed_url(self):
+        """Url to the rss for this project."""
+        return '/feeds/project/%s/' % self.shortname
     
     def get_last_date(self):
         """Returns a reasonable last date even if the end date for the project is null."""
@@ -93,7 +111,7 @@ class Project(models.Model):
         return data[0]
     
     def get_interesting_months(self):
-        """Get interesting months for this project. Interesting months"""
+        """Get interesting months for this project. Interesting months are those month in which either a task started or a task ended."""
         cursor = connection.cursor()
         stmt = 'SELECT DISTINCT year( expected_start_date ) , month( expected_start_date ), 1 FROM project_task UNION SELECT DISTINCT year( expected_end_date ) , month( expected_end_date ), 1 FROM project_project, project_task WHERE project_project.id = project_task.project_id AND project_project.id = %s' % self.id
         cursor.execute(stmt)
@@ -103,15 +121,15 @@ class Project(models.Model):
         return data
     
     def new_tasks(self):
+        """Shows the three recemtly created tasks."""
         return self.task_set.all().order_by('-created_on')[:3]
     
     def overdue_tasks(self):
+        """Shows all the tasks which are over due."""
         return self.task_set.filter(expected_end_date__lt = datetime.datetime.today(), is_complete = False)
     
-    def feed_url(self):
-        return '/feeds/project/%s/' % self.shortname
-    
     def invited_users(self):
+        """Shows the users which have been invited, but have not accepted the invitation."""
         return self.inviteduser_set.all()
     
     def num_deadline_miss(self):
@@ -238,7 +256,9 @@ class InvitedUser(models.Model):
         pass    
 
 class TaskManager(models.Manager):
+    """Manager for model Task. It get only those rows which are current."""
     def get_query_set(self):
+        """Modify the queryset returned by this, so we only get the curent tasks."""
         return super(TaskManager, self).get_query_set().filter(is_current = True)
     
     def all_include_old(self):
@@ -246,6 +266,7 @@ class TaskManager(models.Manager):
         return super(TaskManager, self).all()
     
 class SubtaskManager(models.Manager):
+    """Manager for model Task. Used to get the subtasks for a task. Only gets the current subtasks."""
     def __init__(self, task, *args, **kwargs):
         super(SubtaskManager, self).__init__(*args, **kwargs)
         self.task = task
@@ -253,6 +274,7 @@ class SubtaskManager(models.Manager):
         return Task.objects.filter(project = self.task.project, parent_task_num = self.task.number, is_current = True)
     
 class ChildTaskItemManager(models.Manager):
+    """Manager for model Task. Used to get the task items for a task. Only gets the current task items."""
     def __init__(self, task, *args, **kwargs):
         super(ChildTaskItemManager, self).__init__(*args, **kwargs)
         self.task = task
@@ -270,19 +292,30 @@ class Task(models.Model):
     user_responsible: who is the person who is responsible for completing this task.
     dates: excpected, and actual dates for this task.
     is_complete: has this task been completed? Defaults to false.
-    created_on: when was this task created. Auto filled."""
+    
+    created_on: when was this task created. Auto filled.
+    is_delted: On deletion the task is not deleted, rather it is marked as deleted.
+    created_by: The user who created this task.
+    last_updated_by: The user who last updated this task item.
+    
+    effective_start_date: Since when is this version of the task in effect.
+    effective_end_date: Till when was this version of the task in effect.
+    version_number: What is the version number of the task. Starts at 1. Increments at each new version there after.
+    is_current: Is this the current version of the task?
+    
+    objects: Modify to use a custom manager, so that we can get only the current task, and not the old versioned ones.
+    all_objects: But have the old manager, when we want access to the old tasks as well, fo eg on history page.
+    """
     
     number = models.IntegerField()
     name = models.CharField(max_length = 200)
     project = models.ForeignKey(Project)
-    #parent_task = models.ForeignKey('Task', null = True, blank = True)
     parent_task_num = models.IntegerField(null = True, blank = True)
     user_responsible = models.ForeignKey(User, null = True, blank = True)
     expected_start_date = models.DateField()
     expected_end_date = models.DateField(null = True, blank = True)
     actual_start_date = models.DateField(null = True,  blank = True)
     actual_end_date = models.DateField(null = True,  blank = True)
-    #is_complete = IsCompleteField(default = False)
     is_complete = models.BooleanField(default = False)
     created_on = models.DateTimeField(auto_now_add = 1)
     is_deleted = models.BooleanField(default = False)
@@ -294,13 +327,15 @@ class Task(models.Model):
     version_number = models.IntegerField()
     is_current = models.BooleanField(default = True)
     
-    def get_sub_tasks(self):
-        return Task.objects.filter(project = self.project, parent_task_num = self.number)
-    
     objects = TaskManager()
     all_objects = models.Manager()
     
+    def get_sub_tasks(self):
+        """Get subtasks for this task."""
+        return Task.objects.filter(project = self.project, parent_task_num = self.number)
+    
     def __init__(self, *args, **kwargs):
+        """Update the details managers to show only the current objects, and drop old versioned ones."""
         super(Task, self).__init__(*args, **kwargs)
         self.task_set = SubtaskManager(self)
         self.taskitem_set = ChildTaskItemManager(self)
@@ -344,6 +379,7 @@ class Task(models.Model):
             super(Task, new_task).save()
             
     def save_without_versioning(self):
+        """Have a way to Save without versioning, as we overriden save()"""
         super(Task, self).save()
         
     def update_field(self, field, value):
@@ -355,6 +391,7 @@ class Task(models.Model):
         
         
     def as_text(self):
+        """Return a summary textual representation of the task."""
         txt = 'Name: %s \n Start Date: %s \n End Date: %s \n Person responsible: %s \n Is Complete?: %s \n Actual start date: %s \n Actual end date: %s' % (self.name, self.expected_start_date, self.expected_end_date, self.user_responsible, self.is_complete, self.actual_start_date, self.actual_end_date)
         return txt
         
@@ -369,28 +406,35 @@ class Task(models.Model):
     def get_is_complete(self):
         return self.is_complete
     
+    """Expose this as a property."""
     is_complete_prop = property(get_is_complete, set_is_complete)            
             
     def get_old_versions(self):
-        """Get all the versions of the this task."""
+        """Get all the versions of this task."""
         return Task.all_objects.filter(number = self.number, project  = self.project).order_by('-created_on')
             
     def num_child_tasks(self):
+        """Get number of subtasks for this task."""
         return self.task_set.all().count()
     
     def num_items(self):
+        """Get number of taskitems for this task."""
         return self.taskitem_set.all().count()
     
     def get_absolute_url(self):
+        """Get url to details for this task."""
         return '/%s/taskdetails/%s/' % (self.project.shortname, self.number)
     
     def version_url(self):
+        """Get url to old versions for this task."""
         return '/%s/taskhistory/%s/' % (self.project.shortname, self.number)
     
     def revision_url(self):
+        """Get url to details for this task."""
         return '/%s/taskrevision/%s/' % (self.project.shortname, self.id)
     
     def edit_url(self):
+        """Get url to editing for this task."""
         return '/%s/edittask/%s/' % (self.project.shortname, self.number)
     
     def add_note_url(self):
@@ -424,14 +468,28 @@ unit_choices = (
     )    
 class TaskItem(models.Model):
     """A task item for a task.
-    number: of the task under the current project.
-    name: name of the todo item.
-    user: user who needs to do this todo.
+    number: Number of the taskitem. This remains same across versions, (But the ids change).
+    project: Project which this task item is created for.
+    task_num: number of the task for which this is a taskitem.
+    name: name of the taskitem.
+    user: user who needs to do this taskitem.
     expected time: How much time this todo should take.
     actual_time: How much time this todo actually took.
-    the unit in which you want to measure the time. Can be hours, days or months.
+    unit: the unit in which you want to measure the time. Can be hours, days or months.
     is_complete: Has this todo item been completed.
+    
     created_on: When was this todo created. AUto filled.
+    created_by: Who was the user who created this task.
+    last_updated_by: Who was the user who last updated this taskitem.
+    is_delted: When a taskitem is marked as deleted, it is not acually deleted but rather the flag is set, to mark its delted status.
+    
+    effective_start_date: Since when is this version of the task in effect.
+    effective_end_date: Till when was this version of the task in effect.
+    version_number: What is the version number of the task. Starts at 1. Increments at each new version there after.
+    is_current: Is this the current version of the task?
+    
+    objects: Modify to use a custom manager, so that we can get only the current taskitem, and not the old versioned ones.
+    all_objects: But have the old manager, when we want access to the old taskitems as well, for eg on history page.
     """
     number = models.IntegerField()
     project = models.ForeignKey(Project)
@@ -442,10 +500,11 @@ class TaskItem(models.Model):
     actual_time = models.DecimalField(decimal_places = 2, max_digits = 10, null = True)
     unit = models.CharField(max_length = 20, choices = unit_choices)
     is_complete = models.BooleanField(default = False)
+    
     created_on = models.DateTimeField(auto_now_add = 1)
-    is_deleted = models.BooleanField(default = False)
     created_by = models.ForeignKey(User, related_name = 'created_taskitems')
-    last_updated_by = models.ForeignKey(User,  related_name = 'updated_taskitems')   
+    last_updated_by = models.ForeignKey(User,  related_name = 'updated_taskitems')
+    is_deleted = models.BooleanField(default = False)
     #Versioning
     effective_start_date = models.DateTimeField(auto_now_add = 1)
     effective_end_date = models.DateTimeField(null = True)
@@ -496,32 +555,40 @@ class TaskItem(models.Model):
             log.save()
             
     def save_without_versioning(self):
+        """But we migth want the old save which we have overriden. So provide a method which does not version."""
         super(TaskItem, self).save()
         
     def as_text(self):
+        """Summary representation of the taskitem."""
         txt = 'Name: %s \n Task: %s \n Expected time: %s %s \n Actual time: %s %s User: %s' % (self.name, self.task.name, self.expected_time, self.unit, self.actual_time, self.unit, self.user)
         return txt
             
     def get_task(self):
-        """Get the task from the taskitem"""
+        """Get the task from the taskitem. This is not a direct FK reference as the tasks may be versioned."""
         return Task.objects.get(project = self.project, number = self.task_num, is_current = True)
     task = property(get_task, None, None)
     
     def version_url(self):
+        """The url to see old versions for the taskitem."""
         return '/%s/taskitemhist/%s/' % (self.project, self.number)
             
     def edit_url(self):
+        """The url to edit the taskitem."""
         return '/%s/edititem/%s/' % (self.project, self.number)
+    
+    def revision_url(self):
+        """The url where a previous revision can be seen."""
+        return '/%s/itemrevision/%s/' % (self.task.project, self.id)
         
     
     def old_versions(self):
         """return all versions of the taskitem."""
         return TaskItem.all_objects.filter(project = self.project, number = self.number).order_by('-version_number')
     
-    def revision_url(self):
-        return '/%s/itemrevision/%s/' % (self.task.project, self.id)
+    
     
     def time_worked(self):
+        """Get the time worked."""
         if self.actual_time:
             time = self.actual_time
         else:
@@ -532,7 +599,13 @@ class TaskItem(models.Model):
         pass
     
 class TodoList(models.Model):
-    """A todo list of a user of the project"""
+    """A todo list of a user of the project.
+    name: name of the todo list.
+    user: User for which this todo list is created.
+    project: Project under which this list is created.
+    is_complete_attr: Is this list complete?
+    created_on: When was this list created?
+    """
     name = models.CharField(max_length = 200)
     user = models.ForeignKey(User)
     project = models.ForeignKey(Project)
@@ -540,19 +613,25 @@ class TodoList(models.Model):
     created_on = models.DateTimeField(auto_now_add = 1)
     
     def get_is_complete(self):
+        """Get if list is complete."""
         return self.is_complete_attr
     
     def set_is_complete(self, is_complete_attr):
+        """Get if list is complete.
+        When it is, mark all todo items as done too."""
         self.is_complete_attr = is_complete_attr
         self.save()
         cursor = connection.cursor()
         cursor.execute('UPDATE project_todoitem SET is_complete = %s WHERE list_id = %s', (True, self.id))
-        
+    
+    """Expose the previous two method as a property."""    
     is_complete = property(get_is_complete, set_is_complete, None)
     
     def get_item_form(self):
+        """Get the form to add an item."""
         return AddTodoItemForm(self)
     
+    """And expose it as a property."""
     item_form = property(get_item_form, None, None)
     
     class Admin:

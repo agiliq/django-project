@@ -9,16 +9,26 @@ import bforms
 
 
 def login(request):
-    print request.POST
+    """Login a user.
+    Actions avialable:
+    Login: Anyone"""
     return auth_login(request)
     
 def logout(request):
+    """Logout a user.
+    Actions available:
+    Logout: Anyone"""
     return auth_logout(request, template_name='registration/logout.html')
     
 def profile(request):
+    """Show the profile for a user."""
     pass
     
 def register(request):
+    """Register a new user.
+    Actions available:
+    Register: Anyone
+    """
     if request.method == 'POST':
         form = bforms.UserCreationForm(request.POST)
         if form.is_valid():
@@ -30,6 +40,7 @@ def register(request):
     return render(request, 'registration/create_user.html', payload)
 
 def user_details(request, project_name, username):
+    """Shows the details for a user. (Pening tasks/taskitems)."""
     project = get_project(request, project_name)
     user = User.objects.get(username = username)
     tasks = project.task_set.filter(user_responsible = user)

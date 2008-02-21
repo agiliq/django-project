@@ -9,6 +9,13 @@ from prefs.models import UserProfile
 import datetime
 
 class CreateProjectForm(MarkedForm):
+    """Create a new project.
+    Writes to model project
+    Short name: Only alphanumeric chars allowed. Length = 20
+    Name: Name of project. Length = 200
+    Start_date: Start date for project. Defaults to today.
+    End_date: End date ofr the project.
+    """
     shortname = DojoCharField(max_length = 20, help_text = 'Shortname for your project. Determines URL. Can not contain spaces/sepcial chars.')
     name = DojoCharField(max_length = 200, widget=forms.TextInput(attrs={'dojoType':'dijit.form.TextBox'}), help_text='Name of the project.')
     start_date = DojoDateField()
@@ -24,7 +31,7 @@ class CreateProjectForm(MarkedForm):
         project.owner = self.user
         project.start_date = self.cleaned_data['start_date']
         project.save()
-        subscribe = SubscribedUser(user = self.user, project = project, group = 'OWN')
+        subscribe = SubscribedUser(user = self.user, project = project, group = 'Owner')
         subscribe.save()
         return project
     
@@ -43,6 +50,10 @@ class CreateProjectForm(MarkedForm):
         raise ValidationError('This project name is already taken. Please try another.')
     
 class InviteUserForm(MarkedForm):
+    """Invite a user to the project.
+    Username: username of the user to invite.
+    Group: The group in which to put the invited user.
+    """
     username = DojoCharField(max_length = 30, help_text = 'User name of the user to invite.')
     group = DojoChoiceField(choices = options, help_text = 'Permissions available to this user.')
     
@@ -83,6 +94,7 @@ class InviteUserForm(MarkedForm):
         return invite
         
 class CreateTaskForm(MarkedForm):
+    """Create a top level task."""
     name = DojoCharField(max_length = 200, help_text='Name of the task')
     start_date = DojoDateField(help_text = 'When will this task start?')
     end_date = DojoDateField(required = False, help_text = 'When will this task end?')
@@ -119,6 +131,7 @@ class CreateTaskForm(MarkedForm):
 
 
 class CreateSubTaskForm(CreateTaskForm):
+    """Create a sub task for task."""
     def __init__(self, project, user, parent_task = None, *args, **kwargs):
         super(CreateSubTaskForm, self).__init__(project, user, *args, **kwargs)
         self.parent_task = parent_task
@@ -130,6 +143,7 @@ class CreateSubTaskForm(CreateTaskForm):
         
         
 class CreateTaskItemForm(MarkedForm):
+    """Create a task item."""
     item_name = DojoCharField(max_length = 200, help_text = 'Name of this task item.')
     user = DojoChoiceField(help_text = 'Who is going to do this task item?')
     time = DojoDecimalField(help_text = 'How long will this task item take?')
@@ -165,6 +179,7 @@ class CreateTaskItemForm(MarkedForm):
 
 
 class AddNoticeForm(MarkedForm):
+    """Add a notice to a task."""
     text = DojoCharField(widget = forms.Textarea)
     
     def __init__(self, project = None, user = None, *args, **kwargs):
@@ -178,6 +193,7 @@ class AddNoticeForm(MarkedForm):
         return notice
     
 class AddTodoListForm(MarkedForm):
+    """Add a todo list for the given user."""
     name = DojoCharField(help_text = 'Name of your todo list.')
     
     def __init__(self, project = None, user = None, *args, **kwargs):
@@ -191,10 +207,9 @@ class AddTodoListForm(MarkedForm):
         return list
 
 class CreateWikiPageForm(MarkedForm):
+    """Create a new wiki page."""
     title = DojoCharField(help_text = 'Name of the wiki page.')
-    text = DojoTextArea()
-    #text = DojoCharField(widget = forms.Textarea)
-    
+    text = DojoTextArea()    
     def __init__(self, project = None, user = None, *args, **kwargs):
         super(CreateWikiPageForm, self).__init__(*args, **kwargs)
         self.project = project
@@ -215,7 +230,8 @@ class CreateWikiPageForm(MarkedForm):
         return page
         
 class EditWikiPageForm(MarkedForm):
-    text = DojoTextArea()#DojoCharField(widget = forms.Textarea)
+    """Edit an existing wiki page."""
+    text = DojoTextArea()
     
     def __init__(self, user = None, page = None, *args, **kwargs):
         super(EditWikiPageForm, self).__init__(*args, **kwargs)
@@ -232,25 +248,8 @@ class EditWikiPageForm(MarkedForm):
         self.page.current_revision = page_rev
         self.page.save()
 
-
-"""
-class EditTaskForm(forms.ModelForm):
-    expected_end_date = DojoDateField(required = False)
-    actual_start_date = DojoDateField(required = False)
-    actual_end_date = DojoDateField(required = False)
-    user_responsible = DojoChoiceField()
-    
-    def __init__(self, *args, **kwargs):
-        super(EditTaskForm, self).__init__(*args, **kwargs)
-        users = [subs.user for subs in self.instance.project.subscribeduser_set.all()]
-        self.fields['user_responsible'].choices = [('None','None')] + [(user.username, user.username) for user in users]
-
-    class Meta:
-        model = Task
-        exclude = ('number', 'project', 'parent_task', 'version_number', 'is_current', 'effective_end_date')
-"""
-
 class EditTaskForm(CreateTaskForm):
+    """Edit a task."""
     actual_start_date = DojoDateField(required = False, help_text='When did this task start?')
     actual_end_date = DojoDateField(required = False, help_text='When did this task end?')
     is_complete = forms.BooleanField(help_text = 'Is this task complete?')
@@ -288,6 +287,7 @@ class EditTaskForm(CreateTaskForm):
         return task
             
 class EditTaskItemForm(forms.ModelForm):
+    """Edit a task item."""
     user = DojoChoiceField()
     
     def __init__(self, *args, **kwargs):
@@ -300,6 +300,7 @@ class EditTaskItemForm(forms.ModelForm):
         exclude = ('task', 'task_num', 'version_number', 'is_current', 'effective_end_date')
         
 class AddTaskNoteForm(MarkedForm):
+    """Add a note to a task."""
     text = DojoCharField(widget = forms.Textarea, help_text = 'Add a note to this task')
     
     def __init__(self, task, user, *args, **kwargs):
@@ -359,6 +360,7 @@ class UserCreationForm(MarkedForm):
         return user
     
 class AddFileForm(forms.Form):
+    """Add a file."""
     filename = forms.FileField()
     
     def save(self):
