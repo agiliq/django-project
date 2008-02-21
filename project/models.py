@@ -694,6 +694,7 @@ class WikiPage(models.Model):
     Title: title for the page. Can contain spaces.
     current_revion: the wiki_page which is the current revision for this page.
     created_on: When was this page created. Auto filled.
+    is_deleted: Set this flat when the page needs to be delted.
     """
     name = models.CharField(max_length = 20)
     title = models.CharField(max_length = 200)
@@ -741,6 +742,8 @@ class WikiPageRevision(models.Model):
     wiki_text: The text entered for this revion.
     html_text: The text converted to html.
     created_on: When was this revision created. Auto filled.
+    
+    Version_number: Version number for this revision. Starts from 1 and increemnst there after.
     """
     user = models.ForeignKey(User)
     wiki_page = models.ForeignKey(WikiPage)
@@ -770,8 +773,12 @@ class WikiPageRevision(models.Model):
     
     
 class TaskNote(models.Model):
-    """task_num: The task for which this note is created.
+    """
+    Task_num: The task for which this note is created.
     We cant just use a foreign key coz, the note is for a specific task number, not a revision of it.
+    text: Text of the noe.
+    user: User who wrote this note.
+    created_on: When wa sthis note created.
     """
     task_num = models.IntegerField()
     text = models.TextField()
