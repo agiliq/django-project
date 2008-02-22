@@ -5,6 +5,7 @@ import datetime
 
 from dojofields import *
 from django.db import connection
+import re
 
 import time
 
@@ -54,6 +55,24 @@ class Project(models.Model):
     is_active = models.BooleanField(default = True)
     created_on = models.DateTimeField(auto_now_add = 1)
     
+    def validate(self):
+        """Validations for project.
+        1. Short name must contain aplhnum only.
+        2. Shortname must not be empy
+        3. Name must not be empty.
+        """
+        if self.name == '':
+            raise Exception('name can not be an empty string.')
+        if self.shortname == '':
+            raise Exception('shortname can not be an emplty string.')
+        alnum_re = re.compile(r'^\w+$')
+        if not alnum_re.search(self.shortname):
+            raise Exception("This value must contain only letters, numbers and underscores.")
+        
+    def save(self):
+        self.validate()
+        super(Project, self).save()
+        
     def __unicode__(self):
         return self.shortname
     
@@ -383,10 +402,11 @@ class Task(models.Model):
         super(Task, self).save()
         
     def update_field(self, field, value):
-        """Update a field without updating any other field. We need this when we are versioing a Task and we want to save
+        """Update a field without updating any other field. We need this when we are versioning a Task and we want to save
         the objects to set its is_current, but not modify any other field."""
         cursor = connection.cursor()
         stmt = 'UPDATE project_task SET %s = %s WHERE id = %s' % (field, value, self.id)
+        print stmt
         cursor.execute(stmt)
         
         
@@ -619,6 +639,7 @@ class TodoList(models.Model):
     def set_is_complete(self, is_complete_attr):
         """Get if list is complete.
         When it is, mark all todo items as done too."""
+        print 'asdf'
         self.is_complete_attr = is_complete_attr
         self.save()
         cursor = connection.cursor()
@@ -655,7 +676,7 @@ class Log(models.Model):
     project = models.ForeignKey(Project)
     text = models.CharField(max_length = 200)
     description = models.CharField(max_length = 200, null = True)
-    is_complete = models.BooleanField(default = False)
+    #is_complete = models.BooleanField(default = False)
     created_on = models.DateTimeField(auto_now_add = 1)
     
     def get_absolute_url(self):

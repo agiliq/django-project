@@ -70,6 +70,11 @@ class InviteUserForm(MarkedForm):
         self.already_subscribed()
         return self.cleaned_data['username']
     
+    def clean_group(self):
+        if not self.cleaned_data['group'] in ('Owner', 'Participant', 'Viewer'):
+            raise ValidationError('No such group')
+        return self.cleaned_data['group']
+    
     def already_invited(self):
         try:
             user = User.objects.get(username = self.cleaned_data['username'])
@@ -124,7 +129,6 @@ class CreateTaskForm(MarkedForm):
         return task        
         
     def save(self):
-        print 'xxx1'
         task = self.save_without_db()
         task.save()
         return task

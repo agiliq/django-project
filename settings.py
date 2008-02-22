@@ -8,11 +8,18 @@ ADMINS = (
 )
 
 MANAGERS = ADMINS
-
+"""
 DATABASE_ENGINE = 'mysql'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
 DATABASE_NAME = 'prajact'             # Or path to database file if using sqlite3.
 DATABASE_USER = 'root'             # Not used with sqlite3.
 DATABASE_PASSWORD = '081084'         # Not used with sqlite3.
+DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
+DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
+"""
+DATABASE_ENGINE = 'sqlite3'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+DATABASE_NAME = 'c:\test.db'             # Or path to database file if using sqlite3.
+DATABASE_USER = ''             # Not used with sqlite3.
+DATABASE_PASSWORD = ''         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
 DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
 
@@ -82,3 +89,8 @@ SMTP_PORT = 25
 AUTH_PROFILE_MODULE = 'prefs.userprofile'
 MEDIA_ROOT = 'G:/prajact/files'
 MEDIA_URL = '/files/'
+
+#TESTING
+#
+TEST_RUNNER='project.tests.test_runner_with_coverage'
+COVERAGE_MODULES = ['project.models', 'project.urls', 'project.bforms']
