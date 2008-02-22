@@ -47,7 +47,7 @@ class Project(models.Model):
     end_date: When does this project end?
     is_active: Is this project active?
     """
-    shortname = models.CharField(max_length = 20)
+    shortname = models.CharField(max_length = 20, unique = True)
     name = models.CharField(max_length = 200)
     owner = models.ForeignKey(User)
     start_date = models.DateField()
