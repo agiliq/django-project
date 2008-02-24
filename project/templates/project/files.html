@@ -7,8 +7,48 @@
 
 {% block contents %}
 <h2>Not implemented yet!</h2>
+<table>
+    <thead>
+        <tr>
+            <td>
+                File
+            </td>
+            <td>
+                Created On
+            </td>
+            <td>
+                User
+            </td>
+        </tr>
+    </thead>
+{% for file in files %}
+<tr>
+    <td>
+        <a href="{{file.1}}">{{file.0.filename}}</a>
+    </td>
+    <td>
+        {{file.0.created_on|date}}
+    </td>
+    <td>
+        {{file.0.user.username}}
+    </td>
+</tr>
+{% endfor %}
+</table>
 
-<form>
+<form action="http://i-love-foobar.s3.amazonaws.com/" method="post" enctype="multipart/form-data">
+<input type="text" name="key" value="{{key_prefix}}${filename}" />
+<input type="text" name="acl" value="private" />
+<input type="hidden" name="AWSAccessKeyId" value="15KT1FNB5V8M2EFBQX82" />
+<input type="hidden" name="policy" value="{{policy64}}" />
+<input type="hidden" name="success_action_redirect" value="{{success_action_redirect}}" />
+<input type="hidden" name="signature" value="{{signature}}" />
+<input name="file" type="file" />
+<input name="submit" value="Upload" type="submit" />
+</form>
+
+
+<form action="." method="post" enctype="multipart/form-data">
 <div>
 {{addfileform.as_p}}
 <input type="submit" name="Add file" value="Add file" />

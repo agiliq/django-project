@@ -159,25 +159,28 @@ class Project(models.Model):
     
     def extra_hours(self):
         cursor = connection.cursor()
-        cursor.execute('SELECT COUNT(project_taskitem.id) FROM project_task, project_taskitem WHERE project_task.number = project_taskitem.task_num AND project_taskitem.expected_time < project_taskitem.actual_time AND project_task.project_id = %s AND project_taskitem.is_current = %s' % (self.id, True))
+        cursor.execute('SELECT COUNT(project_taskitem.id) FROM project_task, project_taskitem WHERE project_task.number = project_taskitem.task_num AND project_taskitem.expected_time < project_taskitem.actual_time AND project_task.project_id = %s AND project_taskitem.is_current = %s AND project_task.is_current = %s' % (self.id, True, True))
         data = cursor.fetchone()
         return data[0]
     
     def num_taskitems(self):
         cursor = connection.cursor()
-        cursor.execute('SELECT COUNT(project_taskitem.id) FROM project_task, project_taskitem WHERE project_task.number = project_taskitem.task_num AND project_task.project_id = %s AND project_taskitem.is_current = %s' % (self.id, True))
+        cursor.execute('SELECT COUNT(project_taskitem.id) FROM project_task, project_taskitem WHERE project_task.number = project_taskitem.task_num AND project_task.project_id = %s AND project_taskitem.is_current = %s  AND project_task.is_current = %s' % (self.id, True, True))
         data = cursor.fetchone()
         return data[0]
+        #return self.taskitem_set.all().count()
     
     def sum_time(self):
         cursor = connection.cursor()
-        cursor.execute('SELECT unit, sum(CASE WHEN project_taskitem.actual_time IS NULL THEN project_taskitem.expected_time ELSE project_taskitem.actual_time END) FROM project_task, project_taskitem WHERE project_task.number = project_taskitem.task_num AND project_task.project_id = %s AND project_taskitem.is_current = %s GROUP BY unit' % (self.id, True))
+        stmt = 'SELECT unit, sum(CASE WHEN project_taskitem.actual_time IS NULL THEN project_taskitem.expected_time ELSE project_taskitem.actual_time END) FROM project_task, project_taskitem WHERE project_task.number = project_taskitem.task_num AND project_task.project_id = %s AND project_taskitem.is_current = %s  AND project_task.is_current = %s GROUP BY unit' % (self.id, True, True)
+        print stmt
+        cursor.execute(stmt)
         data = cursor.fetchall()
         return data
     
     def sum_time_complete(self):
         cursor = connection.cursor()
-        cursor.execute('SELECT unit, sum(CASE WHEN project_taskitem.actual_time IS NULL THEN project_taskitem.expected_time ELSE project_taskitem.actual_time END) FROM project_task, project_taskitem WHERE project_task.number = project_taskitem.task_num AND project_task.project_id = %s AND project_taskitem.is_current = %s AND project_taskitem.is_complete = %s GROUP BY unit' % (self.id, True, True))
+        cursor.execute('SELECT unit, sum(CASE WHEN project_taskitem.actual_time IS NULL THEN project_taskitem.expected_time ELSE project_taskitem.actual_time END) FROM project_task, project_taskitem WHERE project_task.number = project_taskitem.task_num AND project_task.project_id = %s AND project_taskitem.is_current = %s AND project_taskitem.is_complete = %s  AND project_task.is_current = %s GROUP BY unit' % (self.id, True, True, True))
         data = cursor.fetchall()
         return data
     
@@ -193,10 +196,30 @@ class Project(models.Model):
         data = cursor.fetchall()
         return data
     
+    def user_tasks_sp(self, user):
+        """How many tasks does a specific user have."""
+        cursor = connection.cursor()
+        stmt = "SELECT (CASE WHEN project_task.is_complete = 1 THEN 'Complete' Else 'In Progress' END) as status, count(project_task.id) FROM auth_user, project_task WHERE auth_user.id = project_task.user_responsible_id AND project_task.is_current = %s AND project_task.project_id = %s AND auth_user.id = %s GROUP BY project_task.is_complete ORDER BY status" % (True, self.id, user.id)
+        print stmt
+        cursor.execute(stmt)
+        data = cursor.fetchall()
+        return data
+    
     def user_timeload(self):
         """How much load does a user have."""
         cursor = connection.cursor()
-        cursor.execute('SELECT auth_user.username, sum(expected_time), unit FROM auth_user, project_taskitem, project_task WHERE project_taskitem.task_num = project_task.number AND project_taskitem.user_id = auth_user.id AND project_taskitem.is_current = %s AND project_task.project_id = %s GROUP BY project_taskitem.user_id, project_taskitem.unit' % (True, self.id))
+        stmt = 'SELECT auth_user.username, sum(CASE WHEN project_taskitem.actual_time IS NULL THEN project_taskitem.expected_time ELSE project_taskitem.actual_time END), unit FROM auth_user, project_taskitem, project_task WHERE project_taskitem.task_num = project_task.number AND project_taskitem.user_id = auth_user.id AND project_taskitem.is_current = %s  AND project_task.is_current = %s AND project_task.project_id = %s GROUP BY project_taskitem.user_id, project_taskitem.unit' % (True, True, self.id)
+        print stmt
+        cursor.execute(stmt)
+        data = cursor.fetchall()
+        return data
+    
+    def user_timeload_sp(self, user):
+        """How much load does a specific user have."""
+        cursor = connection.cursor()
+        stmt = "SELECT (CASE WHEN project_taskitem.is_complete = 1 THEN 'Complete' Else 'In Progress' END) as status, sum(CASE WHEN project_taskitem.actual_time IS NULL THEN project_taskitem.expected_time ELSE project_taskitem.actual_time END), unit FROM auth_user, project_taskitem, project_task WHERE project_taskitem.task_num = project_task.number AND project_taskitem.user_id = auth_user.id AND project_taskitem.is_current = %s  AND project_task.is_current = %s AND project_task.project_id = %s AND auth_user.id = %s GROUP BY project_taskitem.is_complete, project_taskitem.unit ORDER BY status" % (True, True, self.id, user.id)
+        print stmt
+        cursor.execute(stmt)
         data = cursor.fetchall()
         return data
         
@@ -676,7 +699,6 @@ class Log(models.Model):
     project = models.ForeignKey(Project)
     text = models.CharField(max_length = 200)
     description = models.CharField(max_length = 200, null = True)
-    #is_complete = models.BooleanField(default = False)
     created_on = models.DateTimeField(auto_now_add = 1)
     
     def get_absolute_url(self):
@@ -809,14 +831,12 @@ class TaskNote(models.Model):
     
 class ProjectFile(models.Model):
     """project: The project for which this file is attached.
-    file: the file."""
+    filename: name of the file.
+    user: The user who created this file."""
     project = models.ForeignKey(Project)
-    file = models.FileField(upload_to = '/files/')
-    
-    """def __init__(self, *args, **kwargs):
-        super(ProjectFile, self).__init__(*args, **kwargs)
-        #self.file.upload_to = '/%/%s/' % (self.project.shortname, self.file.upload_to)
-    """
+    filename = models.CharField(max_length = 200)
+    user = models.ForeignKey(User)
+    created_on = models.DateTimeField(auto_now_add = 1)
     
     class Admin:
         pass

@@ -42,7 +42,7 @@
 	<ul>
 	{% for item in task.taskitem_set.all %}
 	    <li>
-	    <a href="{{item.get_absolute_url}}">{{item.name}}</a>
+	    <a href="{{item.edit_url}}">{{item.name}}</a>
 	    </li>
 	{% endfor %}
 	</ul>

@@ -43,8 +43,15 @@ def user_details(request, project_name, username):
     """Shows the details for a user. (Pening tasks/taskitems)."""
     project = get_project(request, project_name)
     user = User.objects.get(username = username)
-    tasks = project.task_set.filter(user_responsible = user)
-    items = project.taskitem_set.filter(user = user)
+    timeload = project.user_timeload_sp(user)
+    tasks_count = project.user_tasks_sp(user)
+    show_complete =  request.GET.get('includecomplete', 0)
+    if show_complete:
+        tasks = project.task_set.filter(user_responsible = user)
+        items = project.taskitem_set.filter(user = user)
+    else:
+        tasks = project.task_set.filter(user_responsible = user, is_complete = False)
+        items = project.taskitem_set.filter(user = user, is_complete = False)
     if request.POST.has_key('markdone') or request.POST.has_key('markundone'):
         if request.POST.has_key('xhr'):
             return handle_task_status(request, True)

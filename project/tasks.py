@@ -162,12 +162,13 @@ def edit_task_item(request, project_name, taskitem_num):
     access = get_access(project, request.user)
     taskitem = TaskItem.objects.get(project = project, number = taskitem_num)
     if request.method == 'POST':
-        itemform = bforms.EditTaskItemForm(request.POST, instance = taskitem)
+        itemform = bforms.EditTaskItemForm(project, request.user, taskitem, request.POST)
         if itemform.is_valid():
             item = itemform.save()
             return HttpResponseRedirect(item.task.get_absolute_url())
     elif request.method == 'GET':
-        itemform = bforms.EditTaskItemForm(instance = taskitem)
+        #itemform = bforms.EditTaskItemForm(instance = taskitem)
+        itemform = bforms.EditTaskItemForm(project, request.user, taskitem)
     payload = {'project':project, 'taskitem':taskitem, 'itemform':itemform}
     return render(request, 'project/edititem.html', payload)
     
@@ -224,8 +225,8 @@ def taskitem_history(request, project_name, taskitem_num):
     version1 = int(request.GET.get('version1', 0))
     version2 = int(request.GET.get('version2', 0))
     if version1 and version2:
-        taskitemver1 = Task.all_objects.get(project = project, id = version1)
-        taskitemver2 = Task.all_objects.get(project = project, id = version2)
+        taskitemver1 = TaskItem.all_objects.get(project = project, id = version1)
+        taskitemver2 = TaskItem.all_objects.get(project = project, id = version2)
         app = diff_match_patch.diff_match_patch()
         diff = app.diff_main(taskitemver1.as_text(), taskitemver2.as_text())
         app.diff_cleanupSemantic(diff)

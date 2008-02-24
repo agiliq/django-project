@@ -1,6 +1,26 @@
 {% extends 'project/base.html' %}
 
 {% block contents %}
+<table>
+    <thead>
+	<tr>
+	    <td>Task Status</td>
+	    <td>Number</td>
+	</tr>
+    </thead>
+    <tbody>
+	{% for row in tasks_count %}
+	<tr>
+	    <td>
+		{{row.0}}
+	    </td>
+	    <td>
+		{{row.1}}
+	    </td>
+	</tr>
+	{% endfor %}
+    </tbody>
+</table>
 <h2>Details for {{user.username}}</h2>    
     <ul class="tasklist">
         <h3>Pending tasks</h3>
@@ -16,7 +36,34 @@
     {% endfor %}
     
     </ul>
-    
+  
+    <table>
+	<thead>
+	    <tr>
+		<td>
+		    Status
+		</td>
+		<td>
+		    Time
+		</td>
+	    </tr>
+	</thead>
+	<tbody>
+	    {% for load in timeload %}
+	    <tr>
+		<td>
+		    {{load.0}}
+		</td>
+		<td>
+		    {{load.1}} {{load.2}}
+		</td>
+	    </tr>
+	    {% endfor %}
+	</tbody>    
+    <h3>Pending Taskitems</h3>
+
+    </table>
+	
     <table>
     {% for item in items %}
       	    <tbody>
@@ -31,4 +78,14 @@
     </table>    
 
 
+{% endblock %}
+
+{% block sidebar %}
+
+{{block.super}}
+
+<h3>Meta</h3>
+<ul>
+<li><a href="./?includecomplete=1">Show completed.</a></li>
+</ul>
 {% endblock %}

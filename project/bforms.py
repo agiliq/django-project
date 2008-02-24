@@ -289,9 +289,11 @@ class EditTaskForm(CreateTaskForm):
         task.updated_by = self.user
         task.save()
         return task
-            
+
+
+"""            
 class EditTaskItemForm(forms.ModelForm):
-    """Edit a task item."""
+    "Edit a task item."
     user = DojoChoiceField()
     
     def __init__(self, *args, **kwargs):
@@ -302,6 +304,44 @@ class EditTaskItemForm(forms.ModelForm):
     class Meta:
         model = TaskItem
         exclude = ('task', 'task_num', 'version_number', 'is_current', 'effective_end_date')
+"""
+
+class EditTaskItemForm(forms.Form):
+    """Edit as task item."""
+    name = DojoCharField()
+    user = DojoChoiceField()
+    expected_time = DojoDecimalField()
+    actual_time = DojoDecimalField(required = False)
+    unit = DojoChoiceField(choices = unit_choices)
+    is_complete = forms.BooleanField()
+    
+    def __init__(self, project, user, taskitem, *args, **kwargs):
+        super(EditTaskItemForm, self).__init__(*args, **kwargs)
+        self.project = project
+        self.taskitem = taskitem
+        self.user = user
+        users = [subs.user for subs in taskitem.project.subscribeduser_set.all()]
+        self.fields['user'].choices = [('None','None')] + [(user.username, user.username) for user in users]
+        self.fields['name'].initial = taskitem.name
+        self.fields['user'].initial = taskitem.user
+        self.fields['expected_time'].initial = taskitem.expected_time
+        self.fields['actual_time'].initial = taskitem.actual_time
+        self.fields['unit'].initial = taskitem.unit
+        self.fields['is_complete'].initial = taskitem.is_complete
+        
+    def save(self):
+        self.taskitem.name = self.cleaned_data['name']
+        if not self.cleaned_data['user'] == 'None':
+            user = User.objects.get(username = self.cleaned_data['user'])
+        else:
+            user = None
+        self.taskitem.user = user
+        self.taskitem.expected_time = self.cleaned_data['expected_time']
+        self.taskitem.actual_time = self.cleaned_data['actual_time']
+        self.taskitem.unit = self.cleaned_data['unit']
+        self.taskitem.is_complete = self.cleaned_data['is_complete']
+        self.taskitem.save()
+        return self.taskitem
         
 class AddTaskNoteForm(MarkedForm):
     """Add a note to a task."""
@@ -366,9 +406,6 @@ class UserCreationForm(MarkedForm):
 class AddFileForm(forms.Form):
     """Add a file."""
     filename = forms.FileField()
-    
-    def save(self):
-        pass
 
      
     

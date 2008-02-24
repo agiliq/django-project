@@ -25,6 +25,8 @@ def project_health(request, project_name):
     time_str = ''
     for el in time:
         time_str += '%s %s, ' % (el[1], el[0])
+    if not time_str:
+        time_str = 0
     time_str_complete = ''
     for el in time_complete:
         time_str_complete += '%s %s, ' % (el[1], el[0])
