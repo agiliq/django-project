@@ -19,39 +19,50 @@
             <td>
                 User
             </td>
+            <td>
+                Total Size
+            </td>
+            <td>
+                Versions
+            </td>
         </tr>
     </thead>
-{% for file in files %}
+{% for file in project.projectfile_set.all %}
 <tr>
     <td>
-        <a href="{{file.1}}">{{file.0.filename}}</a>
+        <a href="{{file.current_revision.get_s3_url}}">{{file.filename}}</a>
     </td>
     <td>
-        {{file.0.created_on|date}}
+        {{file.created_on|date}}
     </td>
     <td>
-        {{file.0.user.username}}
+        {{file.current_revision.user.username}}
+    </td>
+    <td>
+        {{file.size_str}}
+    </td>
+    <td>
+        Old revisions.
+        <ul>
+            {% for revision in file.projectfileversion_set.all %}
+            <li>
+                <a href="{{revision.get_s3_url}}">Version {{revision.version_number}}</a>
+            </li>
+            {% endfor %}
+        </ul>
     </td>
 </tr>
 {% endfor %}
 </table>
 
-<form action="http://i-love-foobar.s3.amazonaws.com/" method="post" enctype="multipart/form-data">
-<input type="text" name="key" value="{{key_prefix}}${filename}" />
-<input type="text" name="acl" value="private" />
-<input type="hidden" name="AWSAccessKeyId" value="15KT1FNB5V8M2EFBQX82" />
-<input type="hidden" name="policy" value="{{policy64}}" />
-<input type="hidden" name="success_action_redirect" value="{{success_action_redirect}}" />
-<input type="hidden" name="signature" value="{{signature}}" />
-<input name="file" type="file" />
-<input name="submit" value="Upload" type="submit" />
-</form>
-
 
 <form action="." method="post" enctype="multipart/form-data">
-<div>
+<fieldset>
+<legend>
+    Add a file
+</legend>
 {{addfileform.as_p}}
 <input type="submit" name="Add file" value="Add file" />
-</div>
+</fieldset>
 </form>
 {% endblock %}

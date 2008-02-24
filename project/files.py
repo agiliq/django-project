@@ -20,49 +20,39 @@ def files(request, project_name):
     """
     bucket = 'i-love-foobar'
     project = get_project(request, project_name)
-    gen = S3.QueryStringAuthGenerator(secrets.aws_id, secrets.aws_key)
+    """gen = S3.QueryStringAuthGenerator(secrets.aws_id, secrets.aws_key)
     files = []
     for file in project.projectfile_set.all():
-        url = gen.get(bucket, '/%s/%s' % (project.name, file.filename))
-        files.append((file, url))
-    print files
-    addfileform = bforms.AddFileForm()
-    key_prefix = '/%s/' % project.shortname
-    success_action_redirect = '/dashboard/'
-    policy = """{
-  "expiration": "%s",
-  "conditions": [
-    {"bucket": "i-love-foobar" },
-    {"acl": "private" },
-    {"success_action_redirect":"%s"},
-    ["starts-with", "$key", "%s"],
-  ]
-}""" % (time.strftime('%Y-%m-%dT%I:%M:%S.000Z', time.gmtime((time.time() + defaults.expires_in))), success_action_redirect, key_prefix)
-    #2009-01-01T12:00:00.000Z
-    
-    policy64 = base64.encodestring(policy).strip()
-    policy64 = "".join(policy64.split())
-    signature = base64.encodestring(hmac.new(secrets.aws_key, policy64, sha).digest()).strip()
-    #policy64 = "ewogICJleHBpcmF0aW9uIjogIjIwMDktMDEtMDFUMTI6MDA6MDAuMDAwWiIsCiAgImNvbmRpdGlvbnMiOiBbCiAgICB7ImJ1Y2tldCI6ICJpLWxvdmUtZm9vYmFyIiB9LAogICAgeyJhY2wiOiAicHJpdmF0ZSIgfSwKICAgIFsic3RhcnRzLXdpdGgiLCAiJGtleSIsICIiXSwKICBdCn0K"
-    #signature = "MWNT0ij61+0UIikEt9ngZI1LQbU="
-    
+        url = gen.get(bucket, '/%s/%s' % (project.name, file.current_revision.get_name()))
+        files.append((file, url))"""
+    addfileform = bforms.AddFileForm()    
     aws_id = secrets.aws_id
     if request.method == 'POST':
         addfileform = bforms.AddFileForm(request.POST, request.FILES)
         if addfileform.is_valid():
-            #addfileform.cleaned_data['filename'].content
             conn = S3.AWSAuthConnection(secrets.aws_id, secrets.aws_key)
             filename = '/%s/%s' % (project, addfileform.cleaned_data['filename'].filename)
-            response = conn.put(bucket, filename, addfileform.cleaned_data['filename'].content)
-            saved_file = ProjectFile(project = project, filename = addfileform.cleaned_data['filename'].filename, user = request.user)
-            saved_file.save()
+            try:
+                old_file = project.projectfile_set.get(filename = addfileform.cleaned_data['filename'].filename)
+                versions = old_file.projectfileversion_set.all().count()
+                filename = '%s-%s' % (filename, versions + 1)
+                response = conn.put(bucket, filename, addfileform.cleaned_data['filename'].content)
+                saved_file = old_file
+                saved_file_revision = ProjectFileVersion(file = saved_file, user = request.user, size = len(addfileform.cleaned_data['filename'].content))
+                saved_file_revision.save()
+                saved_file.current_revision = saved_file_revision
+                saved_file.total_size += saved_file_revision.size
+                saved_file.save()
+            except ProjectFile.DoesNotExist, e:
+                filename = '%s-%s' % (filename, 1)
+                response = conn.put(bucket, filename, addfileform.cleaned_data['filename'].content)
+                saved_file = ProjectFile(project = project, filename = addfileform.cleaned_data['filename'].filename, total_size = 0)
+                saved_file.save()
+                saved_file_revision = ProjectFileVersion(file = saved_file, user = request.user, size = len(addfileform.cleaned_data['filename'].content))
+                saved_file_revision.save()
+                saved_file.current_revision = saved_file_revision
+                saved_file.total_size = saved_file_revision.size
+                saved_file.save()
             return HttpResponseRedirect('.')
     payload = locals()
     return render(request, 'project/files.html', payload)
-
-    """policy641 = "ewogICJleHBpcmF0aW9uIjogIjIwMDktMDEtMDFUMTI6MDA6MDAuMDAwWiIsCiAgImNvbmRpdGlvbnMiOiBbCiAgICB7ImJ1Y2tldCI6ICJpLWxvdmUtZm9vYmFyIiB9LAogICAgeyJhY2wiOiAicHJpdmF0ZSIgfSwKICAgIFsic3RhcnRzLXdpdGgiLCAiJGtleSIsICIiXSwKICBdCn0="
-    print policy64
-    print policy641
-    print policy641 == policy642
-    app = diff_match_patch.diff_match_patch()
-    print app.diff_main(policy641, policy642)"""

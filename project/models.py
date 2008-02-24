@@ -832,14 +832,84 @@ class TaskNote(models.Model):
 class ProjectFile(models.Model):
     """project: The project for which this file is attached.
     filename: name of the file.
-    user: The user who created this file."""
+    """
     project = models.ForeignKey(Project)
     filename = models.CharField(max_length = 200)
-    user = models.ForeignKey(User)
+    #user = models.ForeignKey(User)
     created_on = models.DateTimeField(auto_now_add = 1)
+    current_revision = models.ForeignKey('ProjectFileVersion', related_name = 'this_file', null = True)
+    total_size = models.IntegerField()
+    
+    def size_str(self):
+        "String representation of size"
+        size = self.total_size
+        if not (size / (1000 * 1000 )) == 0:
+            size = float(size)/(1000 * 1000)
+            return '%s %s'% (size, 'MB')
+        elif not (size / (1000)) == 0:
+            size = float(size)/(1000 )
+            return '%s %s'% (size, 'KB')
+        else:
+            return '%s %s'% (size, 'bytes')
+        
+    def save(self):
+        "Save and log."
+        log = Log(text = "File %s has been added to %s." % (self.filename, self.project.name), project = self.project)
+        log.description = 'File was created on %s' % time.strftime('%d %B %y')
+        log.save()
+        super(ProjectFile, self).save()
+    
+    def __unicode__(self):
+        return u'%s' % self.filename
+    
+    class Meta:
+        ordering = ('-created_on', )
     
     class Admin:
         pass
+    
+class ProjectFileVersion(models.Model):
+    """A specific version of the file uploaded.
+    file: file for which this revision was created.
+    version_number = version number of the file uploaded. Starts at 1. Increments thereafter.
+    user: The user who created this file.
+    size: size of this file revision.
+    """
+    file = models.ForeignKey(ProjectFile)
+    version_number = models.IntegerField()
+    user = models.ForeignKey(User)
+    size = models.IntegerField()
+    created_on = models.DateTimeField(auto_now_add = 1)
+    
+    def save(self):
+        "Save and log."
+        log = Log(text = "New revision for file %s has been created." % (self.filename, self.project.name), project = self.file.project)
+        log.description = 'Revision was created on %s' % time.strftime('%d %B %y')
+        log.save()
+        super(ProjectFileVersion, self).save()
+    
+    def get_name(self):
+        return '%s-%s' % (self.file.filename,self.version_number)
+    
+    def get_s3_url(self):
+        import secrets
+        import S3
+        import defaults
+        gen = S3.QueryStringAuthGenerator(secrets.aws_id, secrets.aws_key)
+        url = gen.get(defaults.bucket, '/%s/%s' % (self.file.project.shortname, self.get_name()))
+        return url
+        
+    def save(self):
+        last_version = self.file.projectfileversion_set.count()
+        self.version_number = last_version + 1
+        super(ProjectFileVersion, self).save()
+    
+    class Admin:
+        pass
+    
+    class Meta:
+        ordering = ('-version_number', )
+        
     
 
 
