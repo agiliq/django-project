@@ -7,6 +7,9 @@ from django.utils.translation import ugettext as _
 from dojofields import *
 from prefs.models import UserProfile
 import datetime
+import S3
+import secrets
+import defaults
 
 class CreateProjectForm(MarkedForm):
     """Create a new project.
@@ -406,6 +409,41 @@ class UserCreationForm(MarkedForm):
 class AddFileForm(forms.Form):
     """Add a file."""
     filename = forms.FileField()
-
-     
     
+    def __init__(self, project, user, *args, **kwargs):
+        super(AddFileForm, self).__init__(*args, **kwargs)
+        self.project = project
+        self.user = user
+    
+    def save(self):
+            conn = S3.AWSAuthConnection(secrets.aws_id, secrets.aws_key)
+            filename = '/%s/%s' % (self.project, self.cleaned_data['filename'].filename)
+            try:        
+                old_file = self.project.projectfile_set.get(filename = self.cleaned_data['filename'].filename)
+                versions = old_file.projectfileversion_set.all().count()
+                #filename = '%s-%s' % (filename, versions + 1)
+                split_f = filename.split('.')
+                name_no_ext = ''.join(split_f[:-1])
+                filename = '%s-%s.%s' % (name_no_ext, versions + 1, split_f[-1])
+                print filename
+                response = conn.put(defaults.bucket, filename, self.cleaned_data['filename'].content)
+                saved_file = old_file
+                saved_file_revision = ProjectFileVersion(file = saved_file, revision_name=filename, user = self.user, size = len(self.cleaned_data['filename'].content))
+                saved_file_revision.save()
+                saved_file.current_revision = saved_file_revision
+                saved_file.total_size += saved_file_revision.size
+                saved_file.save()
+            except ProjectFile.DoesNotExist, e:
+                #filename = '%s-%s' % (filename, 1)
+                split_f = filename.split('.')
+                name_no_ext = ''.join(split_f[:-1])
+                filename = '%s-%s.%s' % (name_no_ext, 1, split_f[-1])
+                print filename
+                response = conn.put(defaults.bucket, filename, self.cleaned_data['filename'].content)
+                saved_file = ProjectFile(project = self.project, filename = self.cleaned_data['filename'].filename, total_size = 0)
+                saved_file.save()
+                saved_file_revision = ProjectFileVersion(file = saved_file, revision_name=filename, user = self.user, size = len(self.cleaned_data['filename'].content))
+                saved_file_revision.save()
+                saved_file.current_revision = saved_file_revision
+                saved_file.total_size = saved_file_revision.size
+                saved_file.save()        

@@ -4,9 +4,21 @@
 {{block.super}} - Files
 {% endblock %}
 
+{% block jqueryarea %}
+<script>
+$(document).ready(function(){
+ $('.oldrevisions').next().hide()
+ $('.oldrevisions').click(function(){
+    $(this).next().toggle();
+    /*$(this).toggle(function(){$(this)html('Hide Revisions')},
+                   function(){$(this)html('Show Revisions')})*/
+    });
+})
+</script>
+{% endblock %}
 
 {% block contents %}
-<h2>Not implemented yet!</h2>
+{% if  project.projectfile_set.all %}
 <table>
     <thead>
         <tr>
@@ -42,7 +54,7 @@
         {{file.size_str}}
     </td>
     <td>
-        Old revisions.
+        <a class="oldrevisions" href="#">Show Revisions.</a>
         <ul>
             {% for revision in file.projectfileversion_set.all %}
             <li>
@@ -54,6 +66,11 @@
 </tr>
 {% endfor %}
 </table>
+{% else %}
+<h3>
+    No files added.
+</h3>
+{% endif %}
 
 
 <form action="." method="post" enctype="multipart/form-data">

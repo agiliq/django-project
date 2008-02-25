@@ -871,11 +871,13 @@ class ProjectFile(models.Model):
 class ProjectFileVersion(models.Model):
     """A specific version of the file uploaded.
     file: file for which this revision was created.
+    revision_name: Name under which this revision is saved.
     version_number = version number of the file uploaded. Starts at 1. Increments thereafter.
     user: The user who created this file.
     size: size of this file revision.
     """
     file = models.ForeignKey(ProjectFile)
+    revision_name = models.CharField(max_length = 200)
     version_number = models.IntegerField()
     user = models.ForeignKey(User)
     size = models.IntegerField()
@@ -889,14 +891,16 @@ class ProjectFileVersion(models.Model):
         super(ProjectFileVersion, self).save()
     
     def get_name(self):
-        return '%s-%s' % (self.file.filename,self.version_number)
+        #return '%s-%s' % (self.file.filename,self.version_number)
+        return self.revision_name
     
     def get_s3_url(self):
         import secrets
         import S3
         import defaults
         gen = S3.QueryStringAuthGenerator(secrets.aws_id, secrets.aws_key)
-        url = gen.get(defaults.bucket, '/%s/%s' % (self.file.project.shortname, self.get_name()))
+        #url = gen.get(defaults.bucket, '/%s/%s' % (self.file.project.shortname, self.get_name()))
+        url = gen.get(defaults.bucket, '%s' % (self.get_name()))
         return url
         
     def save(self):
