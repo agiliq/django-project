@@ -1,0 +1,33 @@
+{% extends 'project/base.html' %}
+
+{% block contents %}
+    <form action="." method="post">
+    <fieldset>
+        <legend>
+            Add tasks
+        </legend>
+    <table>
+    <thead>
+        <tr>
+        {% for field in itementry_form.data.0.fields %}
+        <td>{{field}}</td>
+        {% endfor %}
+        </tr>
+    </thead>
+   {% for form in itementry_form.data %}
+   <tr>
+    {% for field in form %}
+   <td>
+        <div class="errors">   
+        {{field.errors}} 
+        </div>    
+    {{field}}</td>
+   {% endfor %}
+   </tr>
+   {% endfor %}
+   </table>
+    <input type="submit" name="AddStay" value="Add tasks" />
+    <input type="submit" name="AddRedirect" value="Add tasks and go to tasks page" />
+    </fieldset>
+    </form>
+{% endblock %}

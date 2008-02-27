@@ -73,7 +73,10 @@
             </td>
             <td>
                 Mark Done
-            </td>           
+            </td>
+            <td>
+                Delete
+            </td> 
             </tr>
         </thead>
         
@@ -123,6 +126,12 @@
     <li><a href="#" id="taskshow">Add a task</a></li>
     <li><a href="#" id="inviteshow">Invite a user</a></li>
     </ul>
+    
+    <h3>Meta</h3>
+    <ul>
+      <li><a href="{{project.quicktasks_url}}">Tasks Quick Entry</a></li>
+      <li><a href="{{project.quicktaskitems_url}}">Task Items Quick Entry</a></li>
+    </ul>
     You are looking at details for project {{project.name}}.
     This project has {{project.task_set.all.count}} tasks.
     {% if project.invited_users %}
@@ -133,6 +142,8 @@
            <li> {{user.user.username}}</li>
         {% endfor %}
         </ul>
+        
+        
     </div>
     {% endif %}  
 {% endblock %}

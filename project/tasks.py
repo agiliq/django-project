@@ -6,6 +6,7 @@ from models import *
 import bforms
 from defaults import *
 import diff_match_patch
+import defaults
 
 def project_tasks(request, project_name):
     """Displays all the top tasks and task items for a specific project.
@@ -235,4 +236,37 @@ def taskitem_history(request, project_name, taskitem_num):
         return render(request, 'project/taskdiffresults.html', payload)
     else:
         payload = {'project':project, 'taskitem':taskitem}
-        return render(request, 'project/taskitemhist.html', payload)    
+        return render(request, 'project/taskitemhist.html', payload)
+    
+def tasks_quickentry(request, project_name):
+    """Quick entry form for entering tasks."""
+    project = get_project(request, project_name)
+    if request.method == 'POST':
+        entry_form = bforms.FormCollection(bforms.AddTaskOrSubTaskForm, {'project':project, 'user':request.user, 'data':request.POST}, defaults.objects_on_quickentry_page)
+        print entry_form.is_valid()
+        if entry_form.is_valid():
+            entry_form.save()
+            if request.POST.get('AddRedirect'):    
+                return HttpResponseRedirect(project.tasks_url())
+            else:
+                return HttpResponseRedirect('.')
+    elif request.method == 'GET':
+        entry_form = bforms.FormCollection(bforms.AddTaskOrSubTaskForm, {'project':project, 'user':request.user},  defaults.objects_on_quickentry_page)
+    payload = {'project':project, 'entry_form':entry_form}
+    return render(request, 'project/tasksquickentry.html', payload)
+
+def taskitems_quickentry(request, project_name):
+    "quick entry form for task items."
+    project = get_project(request, project_name)
+    if request.method == 'POST':
+        itementry_form = bforms.FormCollection(bforms.TaskItemQuickForm, {'project':project, 'user':request.user, 'data':request.POST},  defaults.objects_on_quickentry_page)
+        print itementry_form.is_valid()
+        itementry_form.save()
+        if request.POST.get('AddRedirect'):    
+            return HttpResponseRedirect(project.tasks_url())
+        else:
+            return HttpResponseRedirect('.')
+    elif request.method == 'GET':
+        itementry_form = bforms.FormCollection(bforms.TaskItemQuickForm, {'project':project, 'user':request.user},  defaults.objects_on_quickentry_page)
+    payload = {'project':project, 'itementry_form':itementry_form}
+    return render(request, 'project/taskitemsquickentry.html', payload)

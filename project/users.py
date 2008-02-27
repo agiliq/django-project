@@ -21,8 +21,21 @@ def logout(request):
     return auth_logout(request, template_name='registration/logout.html')
     
 def profile(request):
-    """Show the profile for a user."""
-    pass
+    """Show the profile for a user and allows to change settings."""
+    user = request.user
+    projects = [(sub.project, sub.group) for sub in user.subscribeduser_set.all()]
+    if request.method == 'POST':
+        shortname = request.POST['shortname']
+        project = Project.objects.get(shortname = shortname)
+        sub = SubscribedUser.objects.get(project = project, user = user)
+        if sub.group == 'Owner':
+            raise Exception('Cannot delete owner')
+        else:
+            sub.delete()
+    elif request.method == 'GET':
+        pass
+    payload = {'projects':projects}
+    return render(request, 'registration/profile.html', payload)
     
 def register(request):
     """Register a new user.

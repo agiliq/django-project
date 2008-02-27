@@ -164,12 +164,13 @@ class CreateTaskItemForm(MarkedForm):
         users = [subs.user for subs in task.project.subscribeduser_set.all()]
         self.fields['user'].choices = [('None','None')] + [(user.username, user.username) for user in users]
         
-    def clean(self):
+    def clean_time(self):
         if self.cleaned_data['time'] <= 0:
             raise ValidationError('Time must be greater than 0')
-        return super(CreateTaskItemForm, self).clean()
+        return self.cleaned_data['time']
+        #return super(CreateTaskItemForm, self).clean()
         
-    def save(self):
+    def save_without_db(self):
         item = TaskItem(name = self.cleaned_data['item_name'], )
         item.project = self.project
         item.created_by = self.user
@@ -180,11 +181,51 @@ class CreateTaskItemForm(MarkedForm):
             item.user = user
         item.expected_time = self.cleaned_data['time']
         item.unit = self.cleaned_data['units']
+        return item
+        
+    def save(self):
+        item = self.save_without_db()
+        item.save()
+        return item
+    
+class TaskItemQuickForm(CreateTaskItemForm):
+    
+    """item_name = DojoCharField(max_length = 200, help_text = 'Name of this task item.')
+    user = DojoChoiceField(help_text = 'Who is going to do this task item?')
+    time = DojoDecimalField(help_text = 'How long will this task item take?')
+    units = DojoChoiceField(choices = unit_choices)"""
+    task = forms.ChoiceField()
+    
+    def __init__(self, project, user, *args, **kwargs):
+        super(MarkedForm, self).__init__(*args, **kwargs)
+        self.project = project
+        self.user = user
+        users = [subs.user for subs in project.subscribeduser_set.all()]
+        self.fields['user'].choices = [('None','None')] + [(user.username, user.username) for user in users]
+        tasks = [task for task in project.task_set.all()]
+        self.fields['task'].choices = [(task.number, task.name) for task in tasks]
+         
+    def save(self):
+        task = self.cleaned_data['task']
+        print type(task)
+        self.task = Task.objects.get(number = task, project = self.project)
+        item = self.save_without_db()
         item.save()
         return item
         
-
-
+        """task = Task.objects.get(project = self.project, number = self.cleaned_data['task'])
+        self.task = task
+        taskitem = TaskItem(project = self.project, task = task, name = self.cleaned_data['item_name'],)
+        taskitem.created_by  = self.user
+        taskitem.last_updated_by = self.user
+        if not self.cleaned_data['user'] == 'None':
+            user = User.objects.get(username = self.cleaned_data['user'])
+            taskitem.user = user
+        taskitem.expected_time = self.cleaned_data['time']
+        taskitem.unit = self.cleaned_data['units']
+        taskitem.save()
+        return taskitem   """
+    
 class AddNoticeForm(MarkedForm):
     """Add a notice to a task."""
     text = DojoCharField(widget = forms.Textarea)
@@ -446,4 +487,40 @@ class AddFileForm(forms.Form):
                 saved_file_revision.save()
                 saved_file.current_revision = saved_file_revision
                 saved_file.total_size = saved_file_revision.size
-                saved_file.save()        
+                saved_file.save()
+                
+class AddTaskOrSubTaskForm(CreateTaskForm):
+    parent_task = forms.ChoiceField()
+    def __init__(self, project , user, *args, **kwargs):
+        super(AddTaskOrSubTaskForm, self).__init__(project, user, *args, **kwargs)
+        tasks = [task for task in project.task_set.all()]
+        self.fields['parent_task'].choices = [('None','None')] + [(task.number, task.name) for task in tasks]#[(user.username, user.username) for user in users]
+    
+    def save(self):
+        task = super(AddTaskOrSubTaskForm, self).save_without_db()
+        if self.cleaned_data['parent_task'] == 'None':
+            task.parent_task = None
+        else:
+            task_num = int(self.cleaned_data['parent_task'])
+            par_task = Task.objects.get(project = self.project, number = task_num)
+            task.parent_task_num = par_task.number
+        task.save()    
+
+class FormCollection:
+    def __init__(self, FormClass, attrs, num_form):
+        self.data = []
+        for i in xrange(num_form):
+            self.data.append(FormClass(prefix = i, **attrs))
+            
+    def is_valid(self):
+        "Are all the forms valid"
+        for form in self.data:
+            if form.is_bound and not form.is_valid():
+                return False
+            return True
+            
+    def save(self):
+        """Save the forms which are valid."""
+        for form in self.data:
+            if form.is_valid():
+                form.save()

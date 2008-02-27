@@ -84,6 +84,14 @@ class Project(models.Model):
         """Url to the tasks page."""
         return '/%s/tasks/' % self.shortname
     
+    def quicktasks_url(self):
+        """Url to the tasks quick entry page."""
+        return '/%s/tasks/quickentry/' % self.shortname
+    
+    def quicktaskitems_url(self):
+        """Url to the tasks quick entry page."""
+        return '/%s/taskitems/quickentry/' % self.shortname
+    
     def noticeboard_url(self):
         """Urls to the noticeboard."""
         return '/%s/noticeboard/' % self.shortname

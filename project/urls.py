@@ -19,7 +19,9 @@ urlpatterns += patterns('project.main',
 )
 
 urlpatterns += patterns('project.tasks',
-    (r'^(?P<project_name>\w+)/tasks/$', 'project_tasks'),                        
+    (r'^(?P<project_name>\w+)/tasks/$', 'project_tasks'),
+    (r'^(?P<project_name>\w+)/tasks/quickentry/$', 'tasks_quickentry'),
+    (r'^(?P<project_name>\w+)/taskitems/quickentry/$', 'taskitems_quickentry'),   
     (r'^(?P<project_name>\w+)/taskdetails/(?P<task_num>\d+)/$', 'task_details'),
     (r'^(?P<project_name>\w+)/taskhistory/(?P<task_num>\d+)/$', 'task_history'),
     (r'^(?P<project_name>\w+)/taskdetails/(?P<task_num>\d+)/addnote/$', 'add_task_note'),

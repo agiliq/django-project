@@ -59,6 +59,7 @@ TEMPLATE_LOADERS = (
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    #'django.mycontrib.middleware.DualSessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.doc.XViewMiddleware',
      'django.middleware.transaction.TransactionMiddleware',
@@ -82,6 +83,7 @@ INSTALLED_APPS = (
     'prajact.prefs',
 )
 
+
 SESSION_COOKIE_DOMAIN = '.shabda.tld'
 LOGIN_REDIRECT_URL = '/dashboard/'
 SMTP_HOST = 'localhost'
@@ -89,6 +91,7 @@ SMTP_PORT = 25
 AUTH_PROFILE_MODULE = 'prefs.userprofile'
 MEDIA_ROOT = 'G:/prajact/files'
 MEDIA_URL = '/files/'
+PERSISTENT_SESSION_KEY = True
 
 #TESTING
 #

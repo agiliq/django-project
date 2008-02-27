@@ -189,6 +189,7 @@ def todo(request, project_name):
     payload = {'project':project, 'lists':lists, 'addlistform':addlistform}
     return render(request, 'project/todo.html', payload)
 
+
 def project_as_ul(request, project_name):
     project = get_project(request, project_name)
     access = get_access(project, request.user)
