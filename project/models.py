@@ -8,6 +8,7 @@ from django.db import connection
 import re
 
 import time
+import mptt
 
 class AddTodoItemForm(forms.Form):
     """A form to add a todo item to a todo list."""
@@ -250,7 +251,16 @@ class Project(models.Model):
         cursor = connection.cursor()
         cursor.execute('SELECT expected_end_date, count(expected_end_date) FROM project_task WHERE project_id = %s AND is_current = %s AND year(expected_end_date) = %s AND month(expected_end_date) = %s GROUP BY expected_end_date' % (self.id, True, year, month))
         data = cursor.fetchall()
-        return data    
+        return data
+    
+    def get_task_hierachy(self):
+        """REturn taks hiearchy as a nested list. This methods can be veru costly. Use carefully."""
+        top_tasks = self.task_set.filter(parent_task_num__isnull = True)
+        task_list = []
+        for task in top_tasks:
+            task_list.append(task)
+            task_list.append(get_tree(task))
+        return task_list
         
     class Admin:
         pass
@@ -379,6 +389,12 @@ class Task(models.Model):
     
     objects = TaskManager()
     all_objects = models.Manager()
+    
+    def __unicode__(self):
+        return self.name
+    
+    def __str__(self):
+        return self.name
     
     def get_sub_tasks(self):
         """Get subtasks for this task."""
@@ -922,6 +938,20 @@ class ProjectFileVersion(models.Model):
     class Meta:
         ordering = ('-version_number', )
         
+#Set things up for mptt
+#mptt.register(Task, parent_attr = 'parent_task')
+
+def get_tree(task):
+    "Given a task return its sub task hiearchy"
+    task_list = []
+    subt = task.task_set.all()
+    for task in subt:
+        print task
+        task_list.append(task)
+        children = get_tree(task)
+        if children:
+            task_list.append(children)
+    return task_list
     
 
 

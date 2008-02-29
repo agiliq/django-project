@@ -7,6 +7,11 @@
 {% block contents %}
 
 <div class="message">
+{% if user.is_authenticated %}
+<h3>
+    You are already logged in. <a href="/accounts/logout/">Logout?</a>
+</h3>
+{% else %}
 <h3>
 Login!
 </h3>
@@ -16,11 +21,12 @@ Login!
 {% endif %}
 
 <form method="post" action=".">
-<p><label for="id_username">Username:</label></td><td>{{ form.username }}</p>
-<p><label for="id_password">Password:</label></td><td>{{ form.password }}</p>
-<input type="submit" value="login" />
+
+{{form}}
 <input type="hidden" name="next" value="{{ next }}" />
+<input type="submit" name="Login" value="login" />
 </form>
+{% endif %}
 {% endblock %}
 
 {% block sidebar %}

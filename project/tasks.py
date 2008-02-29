@@ -239,11 +239,14 @@ def taskitem_history(request, project_name, taskitem_num):
         return render(request, 'project/taskitemhist.html', payload)
     
 def tasks_quickentry(request, project_name):
-    """Quick entry form for entering tasks."""
+    """Quick entry form for entering tasks.
+    Actions available here.
+    Create tasks: Owner Participant
+    """
     project = get_project(request, project_name)
+    access = get_access(project, request.user)
     if request.method == 'POST':
         entry_form = bforms.FormCollection(bforms.AddTaskOrSubTaskForm, {'project':project, 'user':request.user, 'data':request.POST}, defaults.objects_on_quickentry_page)
-        print entry_form.is_valid()
         if entry_form.is_valid():
             entry_form.save()
             if request.POST.get('AddRedirect'):    
@@ -256,8 +259,12 @@ def tasks_quickentry(request, project_name):
     return render(request, 'project/tasksquickentry.html', payload)
 
 def taskitems_quickentry(request, project_name):
-    "quick entry form for task items."
+    """quick entry form for task items.
+    Actions available here.
+    Create tasksitem: Owner Participant
+    """
     project = get_project(request, project_name)
+    access = get_access(project, request.user)
     if request.method == 'POST':
         itementry_form = bforms.FormCollection(bforms.TaskItemQuickForm, {'project':project, 'user':request.user, 'data':request.POST},  defaults.objects_on_quickentry_page)
         print itementry_form.is_valid()
@@ -270,3 +277,21 @@ def taskitems_quickentry(request, project_name):
         itementry_form = bforms.FormCollection(bforms.TaskItemQuickForm, {'project':project, 'user':request.user},  defaults.objects_on_quickentry_page)
     payload = {'project':project, 'itementry_form':itementry_form}
     return render(request, 'project/taskitemsquickentry.html', payload)
+
+def task_hierachy(request, project_name):
+    """SHow the tasks for project as nested list."""
+    project = get_project(request, project_name)
+    tasks = project.get_task_hierachy()
+    tasks = recursive_map(task2task_link, tasks)
+    payload = {'project':project, 'tasks':tasks}
+    return render(request, 'project/taskhier.html', payload)
+
+def recursive_map(f, l):
+    "A helper method to convert nested list."    
+    return [isinstance(e, list) and recursive_map(f, e) or f(e) for e in l]
+
+def task2task_link(task):
+    from django.utils.safestring import mark_safe
+    "contert a task object to a lnk"
+    return mark_safe('<a href="%s">%s</a>' % (task.get_absolute_url(), task.name))
+    

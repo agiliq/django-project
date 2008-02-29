@@ -85,3 +85,18 @@ table.calendar div.starttasks{
 table.calendar div.endtasks{
     background-color: #fef;
 }
+
+.tv li .leaf{
+    list-style-image: url('/site_media/images/leaf.gif')
+    
+}
+
+.tv li .collapsed{
+    list-style-image: url('/site_media/images/plus.gif')
+    
+}
+
+.tv li .expanded{
+    list-style-image: url('/site_media/images/minus.gif')
+    
+}

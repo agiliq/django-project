@@ -524,3 +524,31 @@ class FormCollection:
         for form in self.data:
             if form.is_valid():
                 form.save()
+                
+from django.newforms import widgets
+from django.contrib.auth.models import User
+
+class LoginForm(forms.Form):
+    """Login form for users."""
+    username = forms.RegexField(r'^[a-zA-Z0-9_]{1,30}$',
+                                max_length = 30,
+                                min_length = 1,
+                                error_message = 'Must be 1-30 alphanumeric characters or underscores.')
+    password = forms.CharField(min_length = 6, 
+                               max_length = 128, 
+                               widget = widgets.PasswordInput,
+                               label = 'Password')
+    remember_user = forms.BooleanField(required = False, 
+                                       label = 'Remember Me')
+    
+    def clean(self):
+        try:
+            user = User.objects.get(username__iexact = self.cleaned_data['username'])
+        except User.DoesNotExist, KeyError:
+            raise forms.ValidationError('Invalid username, please try again.')
+        
+        if not user.check_password(self.cleaned_data['password']):
+            raise forms.ValidationError('Invalid password, please try again.')
+        
+        return self.cleaned_data
+                
