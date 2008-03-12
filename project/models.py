@@ -74,6 +74,13 @@ class Project(models.Model):
         self.validate()
         super(Project, self).save()
         
+    @classmethod
+    def as_csv_header(self):
+        return ('Shortname', 'Name', 'Owner', 'Start Date', 'End Date')
+        
+    def as_csv(self):
+        return (self.shortname, self.name, self.owner, self.start_date, self.end_date)
+        
     def __unicode__(self):
         return self.shortname
     
@@ -396,6 +403,13 @@ class Task(models.Model):
     def __str__(self):
         return self.name
     
+    @classmethod
+    def as_csv_header(self):
+        return ('Name', 'User', 'Start Date', 'End Date', 'Actual Start Date', 'Actual End Date', 'Is Complete')
+    
+    def as_csv(self):
+        return (self.name, self.user_responsible, self.expected_start_date, self.expected_end_date, self.actual_start_date, self.actual_end_date, self.is_complete)
+    
     def get_sub_tasks(self):
         """Get subtasks for this task."""
         return Task.objects.filter(project = self.project, parent_task_num = self.number)
@@ -629,6 +643,14 @@ class TaskItem(models.Model):
         """Summary representation of the taskitem."""
         txt = 'Name: %s \n Task: %s \n Expected time: %s %s \n Actual time: %s %s User: %s' % (self.name, self.task.name, self.expected_time, self.unit, self.actual_time, self.unit, self.user)
         return txt
+    
+    @classmethod
+    def as_csv_header(self):
+        return ('Name', 'Time', 'User', 'Complete?')
+    
+    def as_csv(self):
+        return (self.name, str(self.expected_time) + self.unit, self.user, self.is_complete)
+    
             
     def get_task(self):
         """Get the task from the taskitem. This is not a direct FK reference as the tasks may be versioned."""
@@ -683,6 +705,14 @@ class TodoList(models.Model):
         """Get if list is complete."""
         return self.is_complete_attr
     
+    @classmethod
+    def as_csv_header(self):
+        return ('List Name', 'Is Complete?')
+    
+    def as_csv(self):
+        return (self.name, self.is_complete)
+        
+    
     def set_is_complete(self, is_complete_attr):
         """Get if list is complete.
         When it is, mark all todo items as done too."""
@@ -712,6 +742,13 @@ class TodoItem(models.Model):
     is_complete = models.BooleanField(default = False)
     created_on = models.DateTimeField(auto_now_add = 1)
     
+    @classmethod
+    def as_csv_header(self):
+        return ('List Name', 'Todo Item', 'Is Complete?')
+    
+    def as_csv(self):
+        return (self.list.name, self.text, self.is_complete)
+    
     class Admin:
         pass
     
@@ -731,6 +768,13 @@ class Log(models.Model):
     def __unicode__(self):
         return '%s (Logged on %s)' % (self.text, self.created_on)
     
+    @classmethod
+    def as_csv_header(self):
+        return ('Log Text', 'Description', 'Logged on')
+    
+    def as_csv(self):
+        return (self.text, self.description, self.created_on.strftime('%Y-%m-%d'))
+    
     class Meta:
         ordering = ('-created_on', )
     
@@ -748,6 +792,13 @@ class Notice(models.Model):
     project = models.ForeignKey(Project)
     text = models.TextField()
     created_on = models.DateTimeField(auto_now_add = 1)
+    
+    @classmethod
+    def as_csv_header(self):
+        return ('Notice Text', 'Notice created by', 'Created on')
+    
+    def as_csv(self):
+        return (self.text, self.user.username, self.created_on.strftime('%Y-%m-%d'))    
     
     class Admin:
         pass
@@ -937,9 +988,6 @@ class ProjectFileVersion(models.Model):
     
     class Meta:
         ordering = ('-version_number', )
-        
-#Set things up for mptt
-#mptt.register(Task, parent_attr = 'parent_task')
 
 def get_tree(task):
     "Given a task return its sub task hiearchy"

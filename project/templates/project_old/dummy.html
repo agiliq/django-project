@@ -1,0 +1,46 @@
+{% extends 'project/base.html' %}
+        
+{% block jqueryarea %}
+    <script>
+    $(document).ready(function() {
+        //$('form').validate();
+    })
+    </script>
+{% endblock %}
+
+{% block contents %}
+        <form action="." method="post" id="11">
+            <fieldset>
+                <legend class="collapasble">Add a task</legend>
+            <p><label for="id_name">Name:</label> <input id="id_name" type="text" class="textfield required" name="name" maxlength="200" /><span class="help_text"> Name of the task</span></p>
+
+<p><label for="id_start_date">Start date:</label> <input id="id_start_date" type="text" class="datefield required date" name="start_date" /><span class="help_text"> When will this task start?</span></p>
+<p><label for="id_end_date">End date:</label> <input id="id_end_date" type="text" class="datefield date" name="end_date" /><span class="help_text"> When will this task end?</span></p>
+<p><label for="id_user_responsible">User responsible:</label> <select name="user_responsible" dojoType="dijit.form.ComboBox" id="id_user_responsible">
+<option value="None">None</option>
+<option value="shabda">shabda</option>
+
+</select><span class="help_text"> Who is reponsible for this task?</span></p>
+            <input type="submit" name="task" value="Add a task" />
+            </fieldset>
+        </form>
+        
+            </legend>
+            
+        <form action="." method="POST" id="22">
+
+            <div id="formfield">
+            <p><label for="id_shortname">Shortname:</label> <input id="id_shortname" type="text" class="textfield required" name="shortname" maxlength="20" /><span class="help_text"> Shortname for your project. Determines URL. Can not contain spaces/sepcial chars.</span></p>
+<p><label for="id_name">Name:</label> <input id="id_name" type="text" name="name" dojoType="dijit.form.TextBox" maxlength="200" /><span class="help_text"> Name of the project.</span></p>
+<p><label for="id_start_date">Start date:</label> <input id="id_start_date" type="text" class="datefield required date" value="2008-02-29" name="start_date" /><span class="help_text"></span></p>
+<p><label for="id_end_date">End date:</label> <input id="id_end_date" type="text" class="datefield date" name="end_date" /><span class="help_text"></span></p>
+
+            <input type="SUBMIT" name="createproject" value="Create new project" id="createproject" />
+            </div>
+        </form>        
+
+<form id="33">
+    <input type="text" class="number required" />
+    <input type="submit" />
+</form>
+{% endblock %}

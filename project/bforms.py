@@ -5,7 +5,7 @@ import re
 from models import *
 from django.utils.translation import ugettext as _
 from dojofields import *
-from prefs.models import UserProfile
+import prefs.models as pmodel
 import datetime
 import S3
 import secrets
@@ -20,7 +20,7 @@ class CreateProjectForm(MarkedForm):
     End_date: End date ofr the project.
     """
     shortname = DojoCharField(max_length = 20, help_text = 'Shortname for your project. Determines URL. Can not contain spaces/sepcial chars.')
-    name = DojoCharField(max_length = 200, widget=forms.TextInput(attrs={'dojoType':'dijit.form.TextBox'}), help_text='Name of the project.')
+    name = DojoCharField(max_length = 200, help_text='Name of the project.')
     start_date = DojoDateField()
     end_date = DojoDateField(required = False)
     
@@ -404,8 +404,8 @@ class AddTaskNoteForm(MarkedForm):
 class UserCreationForm(MarkedForm):
     """A form that creates a user, with no privileges, from the given username and password."""
     username = DojoCharField(max_length = 30, required = True, help_text = '')
-    password1 = DojoCharField(max_length = 30, required = True, widget = forms.PasswordInput)
-    password2 = DojoCharField(max_length = 30, required = True, widget = forms.PasswordInput)
+    password1 = DojoPasswordField(max_length = 30, required = True)
+    password2 = DojoPasswordField(max_length = 30, required = True)
     project_name = DojoCharField(max_length = 20, required = False)
 
     def clean_username (self):
@@ -525,6 +525,12 @@ class FormCollection:
             if form.is_valid():
                 form.save()
                 
+class PreferencesForm(forms.ModelForm):
+    class Meta:
+        model = pmodel.UserProfile
+        exclude = ('user',)
+    
+                
 from django.newforms import widgets
 from django.contrib.auth.models import User
 
@@ -533,10 +539,11 @@ class LoginForm(forms.Form):
     username = forms.RegexField(r'^[a-zA-Z0-9_]{1,30}$',
                                 max_length = 30,
                                 min_length = 1,
+                                widget = widgets.TextInput(attrs={'class':'input'}),
                                 error_message = 'Must be 1-30 alphanumeric characters or underscores.')
-    password = forms.CharField(min_length = 6, 
+    password = forms.CharField(min_length = 1, 
                                max_length = 128, 
-                               widget = widgets.PasswordInput,
+                               widget = widgets.PasswordInput(attrs={'class':'input'}),
                                label = 'Password')
     remember_user = forms.BooleanField(required = False, 
                                        label = 'Remember Me')

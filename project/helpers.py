@@ -1,10 +1,17 @@
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import Http404
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
+import csv
 
 from django.core.paginator import ObjectPaginator, InvalidPage
+from django.template.loader import get_template
+from django.template import Context
+import StringIO
+import sx.pisa3 as pisa
+import defaults
 
+import BeautifulSoup as soup
 from models import *
 
 def get_project(request, project_name):
@@ -21,7 +28,38 @@ def get_access(project, user):
     return SubscribedUser.objects.get(project = project, user = user).group
 
 def render(request, template, payload):
-    """This populates the site wide template context in the payload passed to the template"""
+    """This populates the site wide template context in the payload passed to the template.
+        It the job of this methods to make sure that, if user want to see the PDF they are able to see it.
+    """
+    if request.GET.get('pdf', ''):
+        tarr = template.split('/')
+        template = '%s/%s/%s' % (tarr[0], 'pdf', tarr[1])
+        template = get_template(template)
+        html = template.render(Context(payload))
+        import copy
+        hsoup = soup.BeautifulSoup(html)
+        #print type(hsoup)
+        #print dir(hsoup)
+        links = hsoup.findAll('a')
+        for link in links:
+            if not link['href'].startswith('http'):
+                link['href'] = '%s%s' % (defaults.base_url, link['href'])
+        print hsoup
+        html = StringIO.StringIO(str(hsoup))
+        result = StringIO.StringIO()
+        pdf = pisa.CreatePDF(html, result)
+        if pdf.err:
+            return HttpResponse(pdf.log)
+        return HttpResponse(result.getvalue(), mimetype='application/pdf')
+    if not payload.get('subs', ''):
+        subs = request.user.subscribeduser_set.all()
+        payload.update({'subs':subs})
+    #Populate the PDF path
+    if request.META['QUERY_STRING']:
+        pdfpath = '%s&pdf=1' % request.get_full_path()
+    else:
+        pdfpath = '%s?pdf=1'% request.get_full_path()
+    payload.update({'pdfpath':pdfpath})
     return render_to_response(template, payload, RequestContext(request))
 
 def get_pagination_data(obj_page, page_num):
@@ -77,3 +115,13 @@ def delete_task(request):
     task = Task.objects.get(id = taskid)
     task.delete()
     return HttpResponseRedirect('.')
+
+def reponse_for_cvs(filename = 'filename.csv', project=None):
+    response = HttpResponse(mimetype='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=%s' % filename
+    writer = csv.writer(response)
+    if project:
+        writer.writerow(Project.as_csv_header())
+        writer.writerow(project.as_csv())
+        writer.writerow(())        
+    return response, writer

@@ -3,11 +3,26 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import login as auth_login
 from django.contrib.auth.views import logout as auth_logout
 from django.contrib import auth
-from django.conf import settings
+from django.conf import settings as settin
+from django.contrib.auth.decorators import login_required
 
 from helpers import *
 from models import *
+from prefs.models import *
 import bforms
+
+@login_required
+def settings(request):
+    profile = request.user.get_profile()
+    prefform = bforms.PreferencesForm(instance = profile)
+    
+    if request.method == 'POST':
+        prefform = bforms.PreferencesForm(instance = profile, data=request.POST)
+        if prefform.is_valid():
+            prefform.save()
+            return HttpResponseRedirect('.')
+    payload = {'prefform':prefform}
+    return render(request, 'registration/settings.html', payload)
 
 
 def login(request):
@@ -19,7 +34,8 @@ def login(request):
     no_cookies = False
     account_disabled = False
     invalid_login = False
-    redirect_to = request.REQUEST.get('REDIRECT_FIELD_NAME', '')
+    redirect_to = request.REQUEST.get('REDIRECT_FIELD_NAME', settin.LOGIN_REDIRECT_URL)
+    
     if request.method == 'POST':
         if request.session.test_cookie_worked():
             request.session.delete_test_cookie()
@@ -29,7 +45,8 @@ def login(request):
                                          password = form.cleaned_data['password'])
                 if user:
                     if user.is_active:
-                        request.session[settings.PERSISTENT_SESSION_KEY] = form.cleaned_data['remember_user']
+                        print type(settin)
+                        request.session[settin.PERSISTENT_SESSION_KEY] = form.cleaned_data['remember_user']
                         
                         auth.login(request, user)
                         # login successful, redirect

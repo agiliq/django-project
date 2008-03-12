@@ -6,11 +6,14 @@
 5. Attach datepicker, to date fields
 */
  $(document).ready(function(){
-    $('legend.collapasble').append(' <a href="#" class="closeform">x</a> ');
+    //$('legend.collapasble').append(' <a href="#" class="closeform">x</a> ');
     $('.closeform').click(function(){
         $(this).parent().parent().parent().parent().hide();
         });    
     //$('form').validate();
+   $('form').each(function(){
+      $(this).validate()
+   })
     $('.help_text').hide()
     $('input[@type="text"]').focus(function(){
         $(this).next().filter('.help_text').show();
@@ -24,7 +27,9 @@
     $('input[@type="text"]').blur(function(){
       $(this).removeClass('focusfield');
     });
-    //$('.datefield').attachDatepicker();
+    $('.datefield').attachDatepicker({
+      dateFormat: 'yy-mm-dd'
+      });
     });
 
  

@@ -4,6 +4,15 @@
 {{block.super}} - Project details
 {% endblock %}
 
+{% block includes %}
+    <link rel="stylesheet" href="/site_media/css/flora.datepicker.css" type="text/css" media="screen" title="Flora (Default)" />
+    <script type="text/javascript" src="/site_media/js/jquery.js"></script>
+    <script type="text/javascript" src="/site_media/js/jquery.validate.js"></script>
+    <script type="text/javascript" src="/site_media/js/ui.datepicker.js"></script>
+    <script type="text/javascript" src="/site_media/js/jquery.cookie.js"></script>
+    <script type="text/javascript" src="/site_media/js/prajact.js"></script>
+{% endblock %}
+
 {% block jqueryarea %}
 <script type="text/javascript" src="/site_media/js/projectdetails.js"></script>
 {% endblock %}

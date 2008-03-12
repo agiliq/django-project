@@ -6,18 +6,19 @@
 
 {% block contents %}
 
-<div>
-    <h3>
-    Register.
-    </h3>
-    
-</div>
-
-<form method="post" action=".">
-{{form.as_p}}
-<input name="Submit" type="submit" class="button" value="Regsiter" />
-</form>
+		<h2>Join Now! It's quick and easy.</h2>
+			<div class="textcontent register">
+			<form action="." method="post">
+				{{form.as_p}}
+				<input name="Submit" type="submit" class="button" value="Regsiter" />				
+			</form>
+			
+			
+			
+			</div>
+		
+		
+	
+		
 {% endblock %}
 
-{% block sidebar %}
-{% endblock %}

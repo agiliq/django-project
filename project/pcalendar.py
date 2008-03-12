@@ -10,6 +10,7 @@ from django.core.paginator import ObjectPaginator, InvalidPage
 import calendar as cal
 import datetime
 
+@login_required
 def index(request, project_name):
     """The calendars index page. Shows calendars for intersting months. (Months in which a task stars or ends.)
     Actions available:
@@ -43,6 +44,7 @@ def index(request, project_name):
     payload = locals()
     return render(request, 'project/calendarindex.html', payload,)
 
+@login_required
 def month_cal(request, project_name, year, month):
     """Shows a large calendar with details for a month.
     Actions available:

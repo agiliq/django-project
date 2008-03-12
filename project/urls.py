@@ -7,22 +7,53 @@ urlpatterns = patterns('project.foo',
     (r'^projson/(?P<project_name>\w+)/$', 'proj_json')
     )
 
+urlpatterns += patterns('',
+        (r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': 'G:/prajact/project/templates/site_media'}),
+    )
+
+urlpatterns += patterns('',
+        (r'^help/(?P<path>.*)$', 'django.views.static.serve', {'document_root': 'G:/prajact/project/templates/help'}),
+    )
+
+
+urlpatterns += patterns('project.users',
+    (r'^accounts/login/$', 'login'),
+    (r'^accounts/logout/$', 'logout'),
+    (r'^accounts/profile/$', 'profile'),
+    (r'^accounts/register/$', 'register'),
+    (r'^accounts/settings/$', 'settings'),
+    (r'^(?P<project_name>\w+)/user/(?P<username>\w+)/$', 'user_details'),
+    )
+
+urlpatterns += patterns('project.json.task',
+    (r'json/(?P<project_name>\w+)/task/show/(?P<task_id>\d+)/$', 'show_task'),
+    )
+
+feeds = {
+    'project': ProjectRss,
+}
+urlpatterns += patterns('',
+    (r'^feeds/(?P<url>.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': feeds}),
+    )
+
 urlpatterns += patterns('project.main',
     # Example:
     (r'^$', 'index'),
+    (r'^foo/$', direct_to_template, {'template':'project/dummy.html'}),
     (r'^admin/', include('django.contrib.admin.urls')),
-    (r'^dashboard/$', 'dashboard'),
+    (r'^dashboard/$', 'dashboard'),    
     (r'^(?P<project_name>\w+)/$', 'project_details'),
+    (r'^(?P<project_name>\w+)/settings/$', 'settings'),                            
     (r'^(?P<project_name>\w+)/logs/$', 'full_logs'),
-    (r'^(?P<project_name>\w+)/noticeboard/$', 'noticeboard'),    
+    (r'^(?P<project_name>\w+)/noticeboard/$', 'noticeboard'),
     (r'^(?P<project_name>\w+)/todo/$', 'todo'),
 )
 
 urlpatterns += patterns('project.tasks',
     (r'^(?P<project_name>\w+)/tasks/$', 'project_tasks'),
-    (r'^(?P<project_name>\w+)/taskhier/$', 'task_hierachy'),    
+    (r'^(?P<project_name>\w+)/taskhier/$', 'task_hierachy'),
     (r'^(?P<project_name>\w+)/tasks/quickentry/$', 'tasks_quickentry'),
-    (r'^(?P<project_name>\w+)/taskitems/quickentry/$', 'taskitems_quickentry'),   
+    (r'^(?P<project_name>\w+)/taskitems/quickentry/$', 'taskitems_quickentry'),
     (r'^(?P<project_name>\w+)/taskdetails/(?P<task_num>\d+)/$', 'task_details'),
     (r'^(?P<project_name>\w+)/taskhistory/(?P<task_num>\d+)/$', 'task_history'),
     (r'^(?P<project_name>\w+)/taskdetails/(?P<task_num>\d+)/addnote/$', 'add_task_note'),
@@ -46,7 +77,7 @@ urlpatterns += patterns('project.wiki',
 urlpatterns += patterns('project.metrics',
     (r'^(?P<project_name>\w+)/health/$', 'project_health'),
     (r'^(?P<project_name>\w+)/userstats/$', 'user_stats'),
-    )                       
+    )
 
 urlpatterns += patterns('project.files',
     (r'^(?P<project_name>\w+)/files/$', 'files'),
@@ -55,30 +86,6 @@ urlpatterns += patterns('project.files',
 urlpatterns += patterns('project.pcalendar',
     (r'^(?P<project_name>\w+)/calendar/$', 'index'),
     (r'^(?P<project_name>\w+)/calendar/(?P<year>\d+)/(?P<month>\d+)/$', 'month_cal'),
-    )
-
-
-urlpatterns += patterns('project.users',
-    (r'^accounts/login/$', 'login'),
-    (r'^accounts/logout/$', 'logout'),
-    (r'^accounts/profile/$', 'profile'),
-    (r'^accounts/register/$', 'register'),
-    (r'^(?P<project_name>\w+)/user/(?P<username>\w+)/$', 'user_details'),
-    )
-
-urlpatterns += patterns('project.json.task',
-    (r'json/(?P<project_name>\w+)/task/show/(?P<task_id>\d+)/$', 'show_task'),                        
-    )
-
-feeds = {
-    'project': ProjectRss,
-}
-urlpatterns += patterns('',
-    (r'^feeds/(?P<url>.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': feeds}),
-    )
-
-urlpatterns += patterns('',
-        (r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': 'G:/prajact/project/templates/site_media'}),
     )
 
 

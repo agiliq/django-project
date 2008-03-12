@@ -11,31 +11,16 @@
     {% block feeds %}
     <link rel="alternate" type="application/rss+xml" title="{{project.name}} logs RSS feeds" href="/feeds/project/{{project.shortname}}/" />
     {% endblock %}
+    {% block includes %}
     <link rel="stylesheet" href="/site_media/css/flora.datepicker.css" type="text/css" media="screen" title="Flora (Default)" />
     <script type="text/javascript" src="/site_media/js/jquery.js"></script>
     <script type="text/javascript" src="/site_media/js/jquery.validate.js"></script>
     <script type="text/javascript" src="/site_media/js/ui.datepicker.js"></script>
     <script type="text/javascript" src="/site_media/js/jquery.cookie.js"></script>
-    
     <script type="text/javascript" src="/site_media/js/prajact.js"></script>
-    
-    {% block jqueryarea %}
     {% endblock %}
     
-    {% block dojorequires %}
-    <!--
-<script type="text/javascript">
-    dojo.require("dojo.parser");
-    dojo.require("dijit.form.TextBox");
-    dojo.require("dijit.form.DateTextBox");
-    dojo.require("dijit.form.ComboBox");
-    dojo.require("dijit.form.NumberTextBox");
-    dojo.require("dijit.Tree");
-    dojo.require("dijit.layout.AccordionContainer");
-    dojo.require('dijit.Editor');
-</script>
-    -->
-
+    {% block jqueryarea %}
     {% endblock %}
     
     <link rel="stylesheet" type="text/css" href="/site_media/css/style.css" />

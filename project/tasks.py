@@ -39,7 +39,13 @@ def project_tasks(request, project_name):
             return delete_task(request)
     if request.method == 'GET':
         taskform = bforms.CreateTaskForm(project, request.user)
-        
+    
+    if request.GET.get('csv', ''):
+        response, writer = reponse_for_cvs(project=project)
+        writer.writerow(Task.as_csv_header())
+        for task in tasks:
+            writer.writerow(task.as_csv())
+        return response
     payload = {'project':project, 'tasks':tasks, 'taskform':taskform, 'page_data':page_data}    
     return render(request, 'project/projecttask.html', payload)
         
@@ -70,6 +76,7 @@ def task_details(request, project_name, task_num):
     
     if request.method == 'POST':
         if request.POST.has_key('addsubtask'):
+            
             addsubtaskform = bforms.CreateSubTaskForm(project, request.user, task, request.POST)
             if addsubtaskform.is_valid():
                 addsubtaskform.save()
@@ -92,6 +99,11 @@ def task_details(request, project_name, task_num):
         addsubtaskform = bforms.CreateSubTaskForm(project, request.user, task)
         additemform = bforms.CreateTaskItemForm(project, request.user, task)
         noteform = bforms.AddTaskNoteForm(task, request.user)
+    if request.GET.get('csv', ''):
+        response, writer = reponse_for_cvs(project=project)
+        writer.writerow(Task.as_csv_header())
+        writer.writerow(task.as_csv())
+        return response
     payload = {'project':project, 'task':task, 'addsubtaskform':addsubtaskform, 'additemform':additemform, 'noteform':noteform}
     return render(request, 'project/taskdetails.html', payload)
 
@@ -111,7 +123,11 @@ def edit_task(request, project_name, task_num):
             return HttpResponseRedirect(task.get_absolute_url())
     if request.method == 'GET':        
         editform = bforms.EditTaskForm(project, request.user, task)
-        
+    if request.GET.get('csv', ''):
+        response, writer = reponse_for_cvs(project=project)
+        writer.writerow(Task.as_csv_header())
+        writer.writerow(task.as_csv())        
+        return response          
     payload = {'project':project, 'task':task, 'editform':editform}
     return render(request, 'project/edittask.html', payload)
     
@@ -132,6 +148,11 @@ def task_revision(request, project_name, task_id):
         task.save()
         prevlatest.is_current = False
         prevlatest.save_without_versioning()
+    if request.GET.get('csv', ''):
+        response, writer = reponse_for_cvs(project=project)
+        writer.writerow(Task.as_csv_header())
+        writer.writerow(task.as_csv())        
+        return response        
     payload = {'project':project, 'task':task,}
     return render(request, 'project/taskrevision.html', payload)
 
@@ -168,8 +189,13 @@ def edit_task_item(request, project_name, taskitem_num):
             item = itemform.save()
             return HttpResponseRedirect(item.task.get_absolute_url())
     elif request.method == 'GET':
-        #itemform = bforms.EditTaskItemForm(instance = taskitem)
         itemform = bforms.EditTaskItemForm(project, request.user, taskitem)
+        
+    if request.GET.get('csv', ''):
+        response, writer = reponse_for_cvs(project=project)
+        writer.writerow(TaskItem.as_csv_header())
+        writer.writerow(taskitem.as_csv())
+        return response
     payload = {'project':project, 'taskitem':taskitem, 'itemform':itemform}
     return render(request, 'project/edititem.html', payload)
     
@@ -188,6 +214,11 @@ def taskitem_revision(request, project_name, taskitem_id):
         prevlatest.is_current = False
         prevlatest.save_without_versioning()
         return HttpResponseRedirect(taskitem.task.get_absolute_url())
+    if request.GET.get('csv', ''):
+        response, writer = reponse_for_cvs(project=project)
+        writer.writerow(TaskItem.as_csv_header())
+        writer.writerow(taskitem.as_csv())
+        return response
     payload = {'project':project, 'taskitem':taskitem,}
     return render(request, 'project/taskitemrev.html', payload)
 

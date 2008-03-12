@@ -1,15 +1,8 @@
-{% extends "registration/base.html" %}
+{% extends 'registration/base.html' %}
 
-{% block title %}
-{{block.super}} - Logout
-{% endblock %}
-
-{% block contents %}
-<div class="message">
-Logged out.
-<a href="/accounts/login/">Login again</a>
-</div>
-{% endblock %}
-
-{% block sidebar %}
-{% endblock %}
+		{% block contents %}
+		  <div id="content" style="height:300px;">
+				<h1>Logged out sucessfully</h1>
+				<p class="loginlink"><a href="/accounts/login/">Login again</a>	</p>
+			</div>
+		{% endblock %}
