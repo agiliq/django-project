@@ -1247,17 +1247,6 @@ text-align:left;
     margin-top: 10px;
     padding-top: 10px;
 }
-/*    
-.accordionheader a{
-background:#4D7CA7;    
-color: #fff;    
-    font-size: medium;
-    font-weight: normal;
-border-bottom:2px solid #10548A;
-margin-top:10px;
-width: auto;
-    }
-*/
 .accordionheader a{
 background:#4D7CA7 url(images/curve_blue.gif) no-repeat right top;
 color:#FFFFFF;
@@ -1266,3 +1255,14 @@ margin: 0px;
 margin-top: 10px;
 padding:4px 0px 4px 13px;
 }
+.toggleform{
+    color: white;
+    font-weight: normal;
+    font-size: medium;
+}
+.tbl2 form{
+margin:0px;
+
+}
+
+.focusfield{ background:url(images/inputselect.gif)}

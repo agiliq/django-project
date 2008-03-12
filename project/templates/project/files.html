@@ -54,7 +54,12 @@
         </ul>
 				{% endif %}
 		</td>
-	 <td width="20%" > <img src="/site_media/images/x-icon.gif" alt="" /></td>
+	 <td width="20%" > 
+	 <form action="." method="post">
+	 <input type="hidden" name="fileid" value="{{file.id}}"
+	 <input type="image" name="deletefile" value="deletefile" src="/site_media/images/x-icon.gif">
+	 </form>
+	 </td>
   </tr>  
 	{% endfor %}
 </table>
@@ -74,7 +79,7 @@
 				<form action="." method="post" enctype="multipart/form-data">
 					<div>
 					{{addfileform.as_p}}
-					<input type="submit" name="Add file" value="Add file" class="submitbutton" />
+					<input type="submit" name="Addfile" value="Add file" class="submitbutton" />
 					</div>
 				</form>
 				</div>

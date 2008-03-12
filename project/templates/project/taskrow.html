@@ -26,11 +26,11 @@
             {% if task.is_complete %}
                 <input type="hidden" name="taskid" value="{{task.id}}" />
 		<input type="hidden" name="markundone" value="markundone" />
-		<input type="checkbox" name="markundone_check" value="{{task.is_complete}}" checked="checked" onchange="submit()" />
+		<input type="checkbox" name="markundone_check" value="{{task.is_complete}}" checked="checked" onclick="this.form.submit();" />
             
             {% else %}
                 <input type="hidden" name="taskid" value="{{task.id}}" />
-		<input type="checkbox" name="markdone" value="{{task.is_complete}}" onchange="submit()"/>         
+		<input type="checkbox" name="markdone" value="{{task.is_complete}}" onclick="this.form.submit();"/>         
             {% endif %}
 		</div>
     </form> 

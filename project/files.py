@@ -29,9 +29,17 @@ def files(request, project_name):
     addfileform = bforms.AddFileForm(project = project, user = request.user)    
     aws_id = secrets.aws_id
     if request.method == 'POST':
-        addfileform = bforms.AddFileForm(project , request.user, request.POST, request.FILES)
-        if addfileform.is_valid():
-            addfileform.save()
-            return HttpResponseRedirect('.')
+        if request.POST.has_key('Addfile'):
+            addfileform = bforms.AddFileForm(project , request.user, request.POST, request.FILES)
+            if addfileform.is_valid():
+                addfileform.save()
+                return HttpResponseRedirect('.')
+        if request.POST.has_key('fileid'):
+            fileid = int(request.POST['fileid'])
+            file = ProjectFile.objects.get(project = project, id = fileid)
+            conn = S3.AWSAuthConnection(secrets.aws_id, secrets.aws_key)
+            for revision in file.projectfileversion_set.all():
+                conn.delete(defaults.bucket, revision.revision_name)
+            file.delete()
     payload = locals()
     return render(request, 'project/files.html', payload)
