@@ -143,7 +143,6 @@ def task_revision(request, project_name, task_id):
     access = get_access(project, request.user)
     task = Task.all_objects.get(project = project, id = task_id)
     if request.method == 'POST':
-        print request.POST
         prevlatest = Task.objects.get(project = project, number = task.number)
         task.save()
         prevlatest.is_current = False
@@ -298,7 +297,6 @@ def taskitems_quickentry(request, project_name):
     access = get_access(project, request.user)
     if request.method == 'POST':
         itementry_form = bforms.FormCollection(bforms.TaskItemQuickForm, {'project':project, 'user':request.user, 'data':request.POST},  defaults.objects_on_quickentry_page)
-        print itementry_form.is_valid()
         itementry_form.save()
         if request.POST.get('AddRedirect'):    
             return HttpResponseRedirect(project.tasks_url())

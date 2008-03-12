@@ -38,13 +38,10 @@ def render(request, template, payload):
         html = template.render(Context(payload))
         import copy
         hsoup = soup.BeautifulSoup(html)
-        #print type(hsoup)
-        #print dir(hsoup)
         links = hsoup.findAll('a')
         for link in links:
             if not link['href'].startswith('http'):
                 link['href'] = '%s%s' % (defaults.base_url, link['href'])
-        print hsoup
         html = StringIO.StringIO(str(hsoup))
         result = StringIO.StringIO()
         pdf = pisa.CreatePDF(html, result)
@@ -52,8 +49,11 @@ def render(request, template, payload):
             return HttpResponse(pdf.log)
         return HttpResponse(result.getvalue(), mimetype='application/pdf')
     if not payload.get('subs', ''):
-        subs = request.user.subscribeduser_set.all()
-        payload.update({'subs':subs})
+        try:
+            subs = request.user.subscribeduser_set.all()
+            payload.update({'subs':subs})
+        except AttributeError, e:
+            pass
     #Populate the PDF path
     if request.META['QUERY_STRING']:
         pdfpath = '%s&pdf=1' % request.get_full_path()

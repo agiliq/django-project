@@ -703,7 +703,6 @@ def test():
     chart.download('test.png')
 
     url = chart.get_url()
-    print url
     if 0:
         data = urllib.urlopen(chart.get_url()).read()
         open('meh.png', 'wb').write(data)

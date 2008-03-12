@@ -27,7 +27,6 @@
  $(document).ready(function() {
     $('.taskrowdetail').hide()
     $('.showtaskdetails').click(function(){
-         console.log($(this).parent().parent().parent().children().filter('.taskrowdetail'))
         $(this).parent().parent().parent().children().filter('.taskrowdetail').toggle()
         })
      });

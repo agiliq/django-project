@@ -62,10 +62,19 @@
     <td width="20%"> {{task.expected_end_date|date}}</td>
     <td width="14%" class="completed">{{task.user_responsible}}<br />
     <td width="12%" style="vertical-align:middle; text-align:center">
-		<form action="." method="post">
-		<input type="hidden" name="taskid" value="{{task.id}}" />
-		<input name="taskdone" type="checkbox" onchange="submit()" />
-		</form>
+		<form action="." method="post" id="markdone-{{task.id}}" class="markdone">
+		<div>
+            {% if task.is_complete %}
+                <input type="hidden" name="taskid" value="{{task.id}}" />
+		<input type="hidden" name="markundone" value="markundone" />
+		<input type="checkbox" name="markundone_check" value="{{task.is_complete}}" checked="checked" onchange="submit()" />
+            
+            {% else %}
+                <input type="hidden" name="taskid" value="{{task.id}}" />
+		<input type="checkbox" name="markdone" value="{{task.is_complete}}" onchange="submit()"/>         
+            {% endif %}
+		</div>
+    </form>
 		</td>
   </tr> 
 	{% endfor %}

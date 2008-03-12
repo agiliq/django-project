@@ -18,9 +18,21 @@
         The total effort required is {{time_str}} and  {{time_str_complete}} work has been completed.</p>
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tblmetrics">
   <tr>
-    <td><img src="{{task_chart_url}}" alt="Task chart" /></td>
-    <td><img src="{{deadl_chart_url}}" alt="Deadline status chart" /></td>
-    <td><img src="{{item_chart_url}}" alt="Taskitem status chart" /></td>
+    <td>
+		{% if num_tasks %}
+		<img src="{{task_chart_url}}" alt="Task chart" />
+		{% endif %}
+		</td>
+    <td>
+		{% if num_tasks %}
+		<img src="{{deadl_chart_url}}" alt="Deadline status chart" />
+		{% endif %}
+		</td>
+    <td>
+		{% if num_taskitems %}
+		<img src="{{item_chart_url}}" alt="Taskitem status chart" />
+		{% endif %}
+		</td>
   </tr>
   <tr>
     <td>Total tasks: {{num_tasks}}

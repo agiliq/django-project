@@ -45,7 +45,6 @@ def login(request):
                                          password = form.cleaned_data['password'])
                 if user:
                     if user.is_active:
-                        print type(settin)
                         request.session[settin.PERSISTENT_SESSION_KEY] = form.cleaned_data['remember_user']
                         
                         auth.login(request, user)

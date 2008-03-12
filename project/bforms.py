@@ -207,7 +207,6 @@ class TaskItemQuickForm(CreateTaskItemForm):
          
     def save(self):
         task = self.cleaned_data['task']
-        print type(task)
         self.task = Task.objects.get(number = task, project = self.project)
         item = self.save_without_db()
         item.save()
@@ -466,7 +465,6 @@ class AddFileForm(forms.Form):
                 split_f = filename.split('.')
                 name_no_ext = ''.join(split_f[:-1])
                 filename = '%s-%s.%s' % (name_no_ext, versions + 1, split_f[-1])
-                print filename
                 response = conn.put(defaults.bucket, filename, self.cleaned_data['filename'].content)
                 saved_file = old_file
                 saved_file_revision = ProjectFileVersion(file = saved_file, revision_name=filename, user = self.user, size = len(self.cleaned_data['filename'].content))
@@ -479,7 +477,6 @@ class AddFileForm(forms.Form):
                 split_f = filename.split('.')
                 name_no_ext = ''.join(split_f[:-1])
                 filename = '%s-%s.%s' % (name_no_ext, 1, split_f[-1])
-                print filename
                 response = conn.put(defaults.bucket, filename, self.cleaned_data['filename'].content)
                 saved_file = ProjectFile(project = self.project, filename = self.cleaned_data['filename'].filename, total_size = 0)
                 saved_file.save()

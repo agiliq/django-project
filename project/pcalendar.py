@@ -22,7 +22,6 @@ def index(request, project_name):
     for month in interesting_months:
         if month[0]:
             month_datum = {}
-            print month
             month_datum['name'] = datetime.date(month[0], month[1], month[2]).strftime('%B %y')
             month_datum['href'] = '/%s/calendar/%s/%s/' % (project.shortname, month[0], month[1])
             month_cal = cal.monthcalendar(month[0], month[1])

@@ -102,10 +102,6 @@ def wikipage_diff(request, project_name, page_name):
     if version1 and version2:
         rev1 = WikiPageRevision.objects.get(wiki_page = page, id = version1)
         rev2 = WikiPageRevision.objects.get(wiki_page = page, id = version2)
-        print rev1.id
-        print rev1.wiki_page
-        print 111, rev1.html_text
-        print 111, rev1.wiki_text
         app = diff_match_patch.diff_match_patch()
         diff = app.diff_main(html2text(rev1.html_text), html2text(rev2.html_text))
         app.diff_cleanupSemantic(diff)

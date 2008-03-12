@@ -17,7 +17,7 @@ def index(request):
     if request.method == 'POST':
         return login(request)
     register_form = bforms.UserCreationForm(prefix='register')
-    login_form = form = bforms.LoginForm()
+    login_form = bforms.LoginForm()
     payload = {'register_form':register_form, 'login_form':login_form}
     return render(request, 'project/index.html', payload)
 
@@ -36,7 +36,6 @@ def dashboard(request):
     invites = user.inviteduser_set.filter(rejected = False)
     createform = bforms.CreateProjectForm()
     if request.method == 'POST':
-        print request.POST
         if request.POST.has_key('createproject'):
             createform = bforms.CreateProjectForm(user, request.POST)
             if createform.is_valid():
@@ -50,7 +49,6 @@ def dashboard(request):
             invite.delete()
             return HttpResponseRedirect('.')
         elif request.POST.has_key('activestatus'):
-            print request.POST
             projid = request.POST['projectid']
             project = Project.objects.get(id = projid)
             if request.POST['activestatus'] == 'true':
@@ -59,7 +57,9 @@ def dashboard(request):
                 project.is_active = True
             project.save()
             return HttpResponseRedirect('.')
-            
+        elif request.POST.has_key('markdone'):
+            print request.POST
+            handle_task_status(request)
     elif request.method == 'GET':
         createform = bforms.CreateProjectForm()
 
@@ -111,7 +111,6 @@ def project_details(request, project_name):
                 return HttpResponseForbidden('%s(%s) does not have enough rights' % (request.user.username, access))
             taskform = bforms.CreateTaskForm(project, user, request.POST)
             if taskform.is_valid():
-                print request.POST
                 taskform.save()
                 return HttpResponseRedirect('.')
         elif request.POST.has_key('markdone') or request.POST.has_key('markundone'):

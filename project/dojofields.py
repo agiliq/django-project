@@ -52,7 +52,6 @@ class DojoTextArea(forms.CharField):
     def __init__(self, *args, **kwargs):
         if kwargs.get('required', True):    
             if not kwargs.has_key('widget'):
-                print 1234.12
                 kwargs.update({'widget' : forms.Textarea(attrs={'class':'required'})})
         else:
             if not kwargs.has_key('widget'):

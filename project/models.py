@@ -151,8 +151,6 @@ class Project(models.Model):
         stmt = 'SELECT DISTINCT year( expected_start_date ) , month( expected_start_date ), 1 FROM project_task UNION SELECT DISTINCT year( expected_end_date ) , month( expected_end_date ), 1 FROM project_project, project_task WHERE project_project.id = project_task.project_id AND project_project.id = %s' % self.id
         cursor.execute(stmt)
         data = cursor.fetchall()
-        print data
-        print stmt
         return data
     
     def new_tasks(self):
@@ -189,7 +187,6 @@ class Project(models.Model):
     def sum_time(self):
         cursor = connection.cursor()
         stmt = 'SELECT unit, sum(CASE WHEN project_taskitem.actual_time IS NULL THEN project_taskitem.expected_time ELSE project_taskitem.actual_time END) FROM project_task, project_taskitem WHERE project_task.number = project_taskitem.task_num AND project_task.project_id = %s AND project_taskitem.is_current = %s  AND project_task.is_current = %s GROUP BY unit' % (self.id, True, True)
-        print stmt
         cursor.execute(stmt)
         data = cursor.fetchall()
         return data
@@ -216,7 +213,6 @@ class Project(models.Model):
         """How many tasks does a specific user have."""
         cursor = connection.cursor()
         stmt = "SELECT (CASE WHEN project_task.is_complete = 1 THEN 'Complete' Else 'In Progress' END) as status, count(project_task.id) FROM auth_user, project_task WHERE auth_user.id = project_task.user_responsible_id AND project_task.is_current = %s AND project_task.project_id = %s AND auth_user.id = %s GROUP BY project_task.is_complete ORDER BY status" % (True, self.id, user.id)
-        print stmt
         cursor.execute(stmt)
         data = cursor.fetchall()
         return data
@@ -225,7 +221,6 @@ class Project(models.Model):
         """How much load does a user have."""
         cursor = connection.cursor()
         stmt = 'SELECT auth_user.username, sum(CASE WHEN project_taskitem.actual_time IS NULL THEN project_taskitem.expected_time ELSE project_taskitem.actual_time END), unit FROM auth_user, project_taskitem, project_task WHERE project_taskitem.task_num = project_task.number AND project_taskitem.user_id = auth_user.id AND project_taskitem.is_current = %s  AND project_task.is_current = %s AND project_task.project_id = %s GROUP BY project_taskitem.user_id, project_taskitem.unit' % (True, True, self.id)
-        print stmt
         cursor.execute(stmt)
         data = cursor.fetchall()
         return data
@@ -234,7 +229,6 @@ class Project(models.Model):
         """How much load does a specific user have."""
         cursor = connection.cursor()
         stmt = "SELECT (CASE WHEN project_taskitem.is_complete = 1 THEN 'Complete' Else 'In Progress' END) as status, sum(CASE WHEN project_taskitem.actual_time IS NULL THEN project_taskitem.expected_time ELSE project_taskitem.actual_time END), unit FROM auth_user, project_taskitem, project_task WHERE project_taskitem.task_num = project_task.number AND project_taskitem.user_id = auth_user.id AND project_taskitem.is_current = %s  AND project_task.is_current = %s AND project_task.project_id = %s AND auth_user.id = %s GROUP BY project_taskitem.is_complete, project_taskitem.unit ORDER BY status" % (True, True, self.id, user.id)
-        print stmt
         cursor.execute(stmt)
         data = cursor.fetchall()
         return data
@@ -467,7 +461,6 @@ class Task(models.Model):
         the objects to set its is_current, but not modify any other field."""
         cursor = connection.cursor()
         stmt = 'UPDATE project_task SET %s = %s WHERE id = %s' % (field, value, self.id)
-        print stmt
         cursor.execute(stmt)
         
         
@@ -620,7 +613,6 @@ class TaskItem(models.Model):
             super(TaskItem, self).save()
             cursor = connection.cursor()
             foo = 'SELECT MAX(version_number) from project_taskitem WHERE project_id = %s AND number = %s' % (self.project.id, self.number)
-            print foo
             cursor.execute(foo)
             num = cursor.fetchone()[0]
             if not num:
@@ -629,7 +621,6 @@ class TaskItem(models.Model):
             new_item.is_current = True
             new_item.id = None
             super(TaskItem, new_item).save()
-            print new_item.version_number
             log_text = 'Item %s for taks %s has been updated.' % (self.name, self.task.name)
             log_description = 'Task was updated by %s on %s' % (self.last_updated_by.username, time.strftime('%d %B %y'))
             log = Log(project = self.task.project, text = log_text, description = log_description)
@@ -716,7 +707,6 @@ class TodoList(models.Model):
     def set_is_complete(self, is_complete_attr):
         """Get if list is complete.
         When it is, mark all todo items as done too."""
-        print 'asdf'
         self.is_complete_attr = is_complete_attr
         self.save()
         cursor = connection.cursor()
@@ -994,7 +984,6 @@ def get_tree(task):
     task_list = []
     subt = task.task_set.all()
     for task in subt:
-        print task
         task_list.append(task)
         children = get_tree(task)
         if children:

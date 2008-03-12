@@ -1,5 +1,14 @@
 {% extends 'project/base.html' %}
 
+	{% block subnav %}
+                
+		<div class="subnav">	
+				 <a href="/dashboard/" class="dp-icon">Dashboard</a>  |  <a href="{{project.get_absolute_url}}">Project Details</a>  |  <a href="{{project.tasks_url}}">Tasks</a>  |  <a href="{{project.todo_url}}">Todo</a>  | 
+				 <a href="{{project.noticeboard_url}}">Noticeboard</a>  |  <a href="{{project.calendar_url}}"  class="subnav_selected">Calendar</a>  | <a href="{{project.wiki_url}}">Wiki</a> | <a href="{{project.files_url}}">Files</a>  |  <a href="{{project.metrics_url}}">Metrics</a>  |  <a href="{{project.logs_url}}">Logs</a>
+		</div>
+	{% endblock %}
+
+
 {% block contents %}
 		<h1 class="title">{{project.name}}</h1>
 		

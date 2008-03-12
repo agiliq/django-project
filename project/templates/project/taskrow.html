@@ -39,9 +39,33 @@
             <form action="." method="post" id="deletetask-{{task.id}}" class="deletetask">
 		<div>
                 <input type="hidden" name="taskid" value="{{task.id}}" />
+                <input type="hidden" name="deletetask" value="deletetask" />								
                 <input type="image" src="/site_media/images/x-icon.gif" name="deletetask" value="Delete" />
 		</div>
             </form>	
 	</td>
 	
   </tr>
+	
+	            <tr class="taskrowdetail">
+                <td>Actual start date</td>
+                <td>
+								{% if task.actual_start_date %}
+								{{task.actual_start_date|date}}
+								{% else %}
+								No date specified
+								{% endif %}
+								
+								</td>
+            </tr>
+            <tr class="taskrowdetail">
+                <td>Actual end date</td>
+                <td>
+								{% if task.actual_end_date %}								
+								{{task.actual_end_date|date}}
+								{% else %}
+								No date specified
+								{% endif %}
+								
+								</td>
+            </tr>
