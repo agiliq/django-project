@@ -1,0 +1,98 @@
+{% extends 'project/base.html' %}
+
+	{% block subnav %}
+                
+		<div class="subnav">	
+				 <a href="/dashboard/" class="dp-icon">Dashboard</a>  |  <a href="{{project.get_absolute_url}}">Project Details</a>  |  <a href="{{project.tasks_url}}">Tasks</a>  |  <a href="{{project.todo_url}}">Todo</a>  | 
+				 <a href="{{project.noticeboard_url}}">Noticeboard</a>  |  <a href="{{project.calendar_url}}">Calendar</a>  | <a href="{{project.wiki_url}}">Wiki</a> | <a href="{{project.files_url}}">Files</a>  |  <a href="{{project.metrics_url}}" class="subnav_selected">Metrics</a>  |  <a href="{{project.logs_url}}">Logs</a>
+		</div>
+	{% endblock %}
+
+{% block contents %}
+<div class="contenttext">
+				<div class="curve"><p></p></div>
+				<div class="tblpad">
+				<div class="textcontent">
+		
+	<p class="metricstitle">{{project.name}} has {{num_tasks}} tasks with {{num_taskitems}} task items, and {{num_tasks_complete}} tasks are complete.
+        The total effort required is {{time_str}} and  {{time_str_complete}} work has been completed.</p>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="tblmetrics">
+  <tr>
+    <td><img src="{{task_chart_url}}" alt="Task chart" /></td>
+    <td><img src="{{deadl_chart_url}}" alt="Deadline status chart" /></td>
+    <td><img src="{{item_chart_url}}" alt="Taskitem status chart" /></td>
+  </tr>
+  <tr>
+    <td>Total tasks: {{num_tasks}}
+            Tasks complete: {{num_tasks_complete}}</td>
+    <td>Total tasks: {{num_tasks}}
+            Missed deadlines: {{num_deadline_miss}}</td>
+    <td>Total tasksitems: {{num_taskitems}}
+            Extra hours: {{num_extra_hours}}</td>
+  </tr>
+</table>				
+				
+				</div>
+				</div>
+</div>
+
+			<div id="thismonth">
+			<h1 class="title">Tasks staring this month</h1>
+			<div class="contenttext">
+				<div class="curve"><p></p></div>
+				<div class="tblpad">
+				<table width="100%" border="0" cellspacing="0" cellpadding="0" class="tbltitle">
+  <tr>
+    <td width="41%" style=" padding-left:30px;" >Month</td>
+    <td width="59%"  style="background:#4D7CA7 url(images/curve_blue.gif) 100% 0px no-repeat" >Starting this month.</td>
+   
+  </tr>
+ 
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="tbl">
+ {% for monthview in start_month %}
+  <tr>
+    <td width="41%" style=" padding-left:30px;">{{monthview.0}} {{monthview.1}}</td>
+    <td width="59%"> {{monthview.2}} </td>
+  </tr>
+	{% endfor %}
+ 
+  
+</table>
+</div>
+
+			
+			</div>
+			
+			<h1 class="title">Tasks ending this month</h1>
+			<div class="contenttext">
+				<div class="curve"><p></p></div>
+				<div class="tblpad">
+				<table width="100%" border="0" cellspacing="0" cellpadding="0" class="tbltitle">
+  <tr>
+    <td width="41%" style=" padding-left:30px;" >Month</td>
+    <td width="59%"  style="background:#4D7CA7 url(images/curve_blue.gif) 100% 0px no-repeat" >Ending this month.</td>
+   
+  </tr>
+ 
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="tbl">
+ {% for monthview in end_month %}
+  <tr>
+    <td width="41%" style=" padding-left:30px;">{{monthview.0}} {{monthview.1}}</td>
+    <td width="59%"> {{monthview.2}} </td>
+  </tr>
+	{% endfor %}
+ 
+  
+</table>
+</div>
+
+			
+			</div>
+
+
+			
+			</div>
+								
+{% endblock %}			

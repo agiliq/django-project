@@ -1,0 +1,15 @@
+{% extends 'project/pdf/base.html' %}
+
+{% block contents %}
+<h3>Version 1</h3>
+<pre>
+{{ver1.as_text}}
+</pre>
+<h3>Version 2</h3>
+<pre>
+{{ver2.as_text}}
+</pre>
+
+<h3>Diff</h3>
+    {{diff|safe}}
+{% endblock %}

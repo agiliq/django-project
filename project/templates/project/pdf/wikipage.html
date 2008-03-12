@@ -1,0 +1,12 @@
+{% extends 'project/pdf/base.html' %}
+
+{% block title %}
+{{page.title}} - {{page.title}}
+{% endblock %}
+
+{% block contents %}
+    <h2>{{page.title}}</h2>
+    <div id="wikitext">
+        {{page.current_revision.html_text|safe}}
+    </div>
+{% endblock %}

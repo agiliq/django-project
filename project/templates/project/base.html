@@ -1,0 +1,163 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>
+{% block title %}
+Dash Bard
+{% endblock %}
+</title>
+
+<script language="JavaScript" type="text/javascript" src="/site_media/js/jquery.js">
+<!--
+
+//-->
+</script>
+<script language="JavaScript" type="text/javascript" src="/site_media/js/jquery.validate.js">
+<!--
+
+//-->
+</script>
+<script language="JavaScript" type="text/javascript" src="/site_media/js/jquery.validate.js">
+<!--
+
+//-->
+</script>
+<script language="JavaScript" type="text/javascript" src="/site_media/js/ui.datepicker.js">
+<!--
+
+//-->
+</script>
+
+<script language="JavaScript" type="text/javascript" src="/site_media/js/jquery.dimensions.js">
+<!--
+
+//-->
+</script>
+
+<script language="JavaScript" type="text/javascript" src="/site_media/js/ui.accordion.js">
+<!--
+
+//-->
+</script>
+<script language="JavaScript" type="text/javascript" src="/site_media/js/prajact.js">
+<!--
+
+//-->
+</script>
+
+{% block jqueryarea %}
+{% endblock %}
+
+
+{% block feeds %}
+    <link rel="alternate" type="application/rss+xml" title="{{project.name}} logs RSS feeds" href="/feeds/project/{{project.shortname}}/" />
+{% endblock %}
+
+<link href="/site_media/style.css" type="text/css" rel="stylesheet" />
+<link href="/site_media/css/flora.datepicker.css" type="text/css" rel="stylesheet" />
+</head>
+
+<body>
+
+<div id="container">
+	<div id="header">
+		{% block topheader %}
+		<div class="signout"><a href="/accounts/logout/">Sign Out</a></div>
+		<div id="logo">
+		<img src="/site_media/images/logo.gif" alt="" /></div>
+		<div class="icon"></div>
+		<div class="topicon"><a href="{{pdfpath}}"><img src="/site_media/images/pdf-icon.gif" alt="" /></a><a href="./?csv=1"><img src="/site_media/images/excel-icon.gif" alt="" /></a><a href="#"><img src="/site_media/images/question_icon.gif" alt="" /></a></div>		
+		{% endblock %}	
+	</div> <!-- end header -->
+	
+	<div id="subheader">
+		{% block subheader %}
+		<div class="sub_header">
+			<div class="welcome"><p>Howdy {{user.username}}<br />
+			{% block breadcrumbs %}
+			<span class="breadcrumbs"><a href="/dashboard/">Dashboard</a> > <a href="{{project.get_absolute_url}}">{{project.name}}</a> 
+			</span>
+			{% endblock %}
+			</p></div>
+			<div class="nav">
+			<ul>
+			<li><a href="/dashboard/" class="nav-selected">Dashboard</a></li>
+			<li><a href="/accounts/settings/">Settings</a></li>
+			</ul>
+		
+		</div><!--End nav -->
+	</div> <!--end sub_header -->
+	{% endblock %}
+	
+		<div class="subnav">
+				 {% block subnav %}
+				 <div class="subnav">	
+		 <a href="/dashboard/" class="dp-icon">Dashboard</a>  
+		 |  <a href="{{project.get_absolute_url}}">Project Details</a>  |  <a href="{{project.tasks_url}}">Tasks</a>  |  <a href="{{project.todo_url}}">Todo</a>  | 
+		 <a href="{{project.noticeboard_url}}">Noticeboard</a>  |  <a href="{{project.calendar_url}}">Calendar</a>  | <a href="{{project.wiki_url}}" >Wiki</a> | <a href="{{project.files_url}}">Files</a>  |  <a href="{{project.metrics_url}}">Metrics</a>  |  <a href="{{project.logs_url}}">Logs</a>
+		</div>
+				 {% endblock %}
+		</div> <!-- End subnav -->
+	</div><!-- end subheader -->
+	{% block outercontent %}
+	<div id="content">
+	
+
+	{% block contenttitle %}
+	
+	{% endblock %}
+
+	
+	<div id="contentwrap">
+		<div id="leftcolumn">
+			{% block contents %}
+			<div class="contenttext">
+			
+				<div class="curve"><p></p></div>
+				
+				<div class="tblpad">
+				
+					<div class="textcontent">
+					{%  block innercontent %}
+					{% endblock %}
+					</div><!-- end  textcontent -->
+				
+			
+				</div> <!-- end tblpad -->
+
+			
+			</div><!-- end contenttext -->
+			{% block formsarea %}
+			{% endblock %}
+		
+		{% endblock contents %}	
+		</div><!-- end leftcolumn -->
+		
+		</div><!-- end contentwrap -->
+		
+		<div id="rightcolumn">
+		{% block sidebar %}
+		<h3>Meta</h3>
+		<p class="totalproject">This project has 8 tasks</p>
+		<p>You are viewing logs for :<br />
+Project name<br />
+These are also available<br />
+ as <a href="#">RSS feeds</a></p>
+		
+	
+		{% endblock sidebar %}
+		</div><!-- End rightcolumn -->
+		<br style="clear:both" />
+	</div><!-- end content -->
+	{% endblock outercontent %}
+<div id="footer">
+{% block footer %}
+<p class="footerlink"><a href="#">Home</a> | <a href="#">Contact</a> | <a href="#">Terms</a> | <a href="#">Links</a> | <a href="#">Privacy</a> | <a href="#">Site Map</a></p>
+<p style="margin:0px;">Powered By webfactional .Copyright 2007. webfactional.com</p>
+{% endblock footer %}
+</div><!-- end footer -->
+
+</div><!-- end container -->
+</body>
+</html>

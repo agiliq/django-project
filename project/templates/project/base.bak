@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+      <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+        
+<head>
+    <title>
+        {% block title %}
+        {% endblock %}
+    </title>
+    <style type="text/css">
+        @import "http://o.aolcdn.com/dojo/1.0.0/dijit/themes/tundra/tundra.css";
+        @import "http://o.aolcdn.com/dojo/1.0.0/dojo/resources/dojo.css"
+    </style>
+    <link rel="stylesheet" type="text/css" href="/site_media/css/style.css" />
+    <script type="text/javascript" src="http://o.aolcdn.com/dojo/1.0.0/dojo/dojo.xd.js"
+        djConfig="parseOnLoad: true"></script>
+    </script>
+    <script>
+    dojo.addOnLoad(function() {dojo.addClass(dojo.body(), 'tundra');});
+    </script>
+    <script type="text/javascript">
+    {% block dojorequires %}
+        dojo.require("dojo.parser");
+        dojo.require("dijit.form.TextBox");
+        dojo.require("dijit.form.CheckBox");
+        dojo.require("dijit.form.DateTextBox");
+        dojo.require("dijit.form.NumberTextBox");
+        dojo.require("dijit.form.ComboBox");
+        dojo.require("dijit.form.Button");
+        dojo.require("dojo.data.ItemFileReadStore");
+        dojo.require("dijit.Tree");        
+    {% endblock %}
+    </script>
+</head>
+
+<body>
+    <div id="topbar">
+    {% block topbar %}
+        <ul>
+            {% if user.is_authenticated %}
+            <li><a href="/accounts/profile/">Settings</a></li>
+            <li><a href="/accounts/logout/">Logout</a></li>
+            {% else %}
+            <li><a href="/accounts/register/">Register</a></li>
+            <li><a href="/accounts/login/">Login</a></li>
+            {% endif %}
+        </ul>
+    {% endblock %}
+    </div>
+    
+    <div id="header">
+        <div id="logo">
+            {% block logo %}
+            {% endblock %}
+        </div>
+        
+        <div id="tabs">
+            {% block tabs %}
+            <ul>
+                <li><a href="/dashboard/">Dashboard</a></li>
+                    <li><a href="{{project.get_absolute_url}}">Project Details</a></li>
+                    <li><a href="{{project.tasks_url}}">Tasks</a></li>
+                    <li><a href="{{project.todo_url}}">Todo</a></li>
+                    <li><a href="{{project.noticeboard_url}}">Noticeboard</a></li>
+                    <li><a href="{{project.wiki_url}}">Wiki</a></li>
+                    <li><a href="{{project.files_url}}">Files</a></li>
+                    <li><a href="{{project.logs_url}}">Logs</a></li>
+                
+            </ul>
+            {% endblock %}
+        </div>
+    </div>
+    
+    <div id="main">
+        <div id="content">
+            {% block contents %}
+            {% endblock %}            
+        </div>
+        <div id="sidebar">
+            {% block sidebar %}
+            {% endblock %}                       
+        </div>
+    </div>
+    
+    <div id="footer">
+        {% block footer %}
+        {% endblock %}        
+    </div>
+</body>
+</html>

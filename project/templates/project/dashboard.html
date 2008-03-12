@@ -1,0 +1,139 @@
+{% extends 'project/base.html' %}
+
+{% block breadcrumbs %}
+			You are subscribed to {{subs.count}} projects.
+{% endblock %}
+
+{% block feeds %}
+{% endblock %}
+
+{% block subnav %}                
+		<div class="subnav">	
+		 <a href="/dashboard/" class="dp-icon subnav_selected">Dashboard</a>
+		</div>
+{% endblock %}
+
+	{% block contenttitle %}
+	{% endblock contenttitle %}
+
+{% block jqueryarea %}
+<script>
+ $(document).ready(function() {
+   $('.projstatus').change(function(){
+        return false;
+   });
+    });
+
+ </script>
+{% endblock %}
+
+{% block title %}
+   Dashboard
+{% endblock %}
+
+            {% block tabs %}
+            <ul>
+                <li>
+                    <a href="/dashboard/">Dashboard</a>
+                </li>
+            </ul>
+            {% endblock %}
+
+{% block contents %}
+	 <div class="contenttext">
+				<div class="curve"><p></p></div>
+				<div class="tblpad">
+				<table width="100%" border="0" cellspacing="0" cellpadding="0" class="tbltitle">
+  <tr>
+    <td width="27%" style="text-align:center">Project Name</td>
+    <td width="27%" style=" text-align:left" >Task</td>
+    <td width="20%" style=" text-align:left">Was due on</td>
+    <td width="14%" style=" text-align:left">User</td>
+    <td width="12%"  style="background:#4D7CA7 url(images/curve_blue.gif) 100% 0px no-repeat; text-align:center">Select</td>
+  </tr>
+ 
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="tbl">
+ {% for sub in subs %}
+             {% for task in sub.project.overdue_tasks %}
+ <tr class={% cycle "" "tdbggrey" %}>
+    <td width="27%" class="projectname"><a href="{{sub.project.get_absolute_url}}">{{sub.project.name}}</a></td>
+    <td width="27%"> <a href="{{task.get_absolute_url}}">{{task.name}}</a></td>
+    <td width="20%"> {{task.expected_end_date|date}}</td>
+    <td width="14%" class="completed">{{task.user_responsible}}<br />
+    <td width="12%" style="vertical-align:middle; text-align:center">
+		<form action="." method="post">
+		<input type="hidden" name="taskid" value="{{task.id}}" />
+		<input name="taskdone" type="checkbox" onchange="submit()" />
+		</form>
+		</td>
+  </tr> 
+	{% endfor %}
+ {% endfor %}
+ </tr> 
+</table>
+
+</div>
+</div>
+    
+    {% if invites %}
+        <h2>Pending Invites</h2>
+        <ul>
+        {% for invite in invites %}
+            <li>
+                {{invite.project.name}}
+                <form action="." method="post">
+                <input type="hidden" name="projid" value={{invite.project.id}} />
+                <input type="hidden" name="invid" value={{invite.id}} />
+                <input type="submit" name="acceptinv" value="Accept" />
+                </form>
+            </li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+				
+		<div id="create">
+			<h3>Create a new project</h3>
+			<div class="createcontent">
+				<form action="." method="post">
+            {{createform.as_p}}				
+					<input name="createproject" type="submit" value="Submit" class="submitbutton" />
+				</form>
+			</div>
+			
+			
+			</div>		
+{% endblock %}
+
+
+{% block sidebar %}
+	 <h3>Projects</h3>
+	 {% if subs %}
+	 <ul>
+	 {% for sub in subs %}
+        <li>
+        <a href="{{sub.project.get_absolute_url}}">{{sub.project.name}}</a>
+				<div class="floatform">
+				<form action="." method="post">
+            <input type="hidden" name="projectid" value="{{sub.project.id}}" />
+            {% if sub.project.is_active %}
+            <input type="hidden" name="activestatus" value="true" />
+            <input type="checkbox" name="inactivate" value="" onchange="submit()" checked="checked" class="projstatus" />
+            {% else %}
+            <input type="hidden" name="activestatus" value="false" />
+            <input type="checkbox" name="activate" value="" onchange="submit()" class="projstatus" />
+            {% endif %}
+        </form>			
+				</div>	
+				</li>
+	{% endfor %}
+	 </ul>
+	 {% else %}
+	 <p>You are not subscribed to any project</p>
+	 {% endif %}
+    <h3>Meta</h3>
+	    <p class="sideblurb">Your dashboard has {{subs.count}} projects.</p>		
+    <ul>
+        <li><a href="./?includeinactive=1">Show inactive projects</a></li>
+    </ul>
+{% endblock %}

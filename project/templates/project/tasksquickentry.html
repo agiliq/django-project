@@ -1,0 +1,44 @@
+{% extends 'project/base.html' %}
+
+{% block contents %}
+
+    <h2>{{project.name}}</h2>
+		
+					<div class="contenttext">
+				<div class="curve"><p></p></div>
+				<div class="tblpad">
+	 <div id="quickentry" >
+    <form action="." method="post" class="quick">
+		<div class="createcontent1">
+    <table>
+    <thead>
+        <tr>
+        {% for field in entry_form.data.0.fields %}
+        <td>
+            
+            {{field}}</td>
+        {% endfor %}
+        </tr>
+    </thead>
+   {% for form in entry_form.data %}
+   <tr class="{% cycle  'odd' 'even' %}">
+    {% for field in form %}
+   <td>
+        <div class="errors">   
+        {{field.errors}} 
+        </div>
+    {{field}}</td>
+   {% endfor %}
+   </tr>
+   {% endfor %}
+   </table>
+    <input type="submit" name="AddStay" value="Add tasks" />
+    <input type="submit" name="AddRedirect" value="Add tasks and go to tasks page" />
+    </form>
+		</div>
+		</div>
+				
+</div>
+</div>
+
+{% endblock %}

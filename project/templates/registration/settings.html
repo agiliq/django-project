@@ -1,0 +1,15 @@
+{% extends 'registration/base.html' %}
+
+
+{% block contents %}
+<div class="genericform">
+<h3>Your settings</h3>
+<div class="createcontent" >
+<form action="." method="post">
+{{prefform.as_p}}
+<input type="submit" name="Edit" value="edit" class="submitbtn"/>
+</form>
+</div>
+</div>
+
+{% endblock %}

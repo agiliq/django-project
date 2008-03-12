@@ -1,0 +1,89 @@
+{% extends 'project/base.html' %}
+
+{% block title %}
+{{block.super}} - Files
+{% endblock %}
+
+{% block jqueryarea %}
+<script language="JavaScript" type="text/javascript" src="/site_media/js/files.js">
+<!--
+
+//-->
+</script>
+
+{% endblock %}
+
+{% block subnav %}
+                
+		<div class="subnav">	
+		 <a href="/dashboard/" class="dp-icon">Dashboard</a>  |  <a href="{{project.get_absolute_url}}">Project Details</a>  |  <a href="{{project.tasks_url}}">Tasks</a>  |  <a href="{{project.todo_url}}">Todo</a>  | 
+		 <a href="{{project.noticeboard_url}}">Noticeboard</a>  |  <a href="{{project.calendar_url}}">Calendar</a>  | <a href="{{project.wiki_url}}" >Wiki</a> | <a href="{{project.files_url}}"  class="subnav_selected">Files</a>  |  <a href="{{project.metrics_url}}">Metrics</a>  |  <a href="{{project.logs_url}}">Logs</a>
+		</div>
+	{% endblock %}
+
+{% block contents %}
+{% if  project.projectfile_set.all %}
+<div class="contenttext">
+				<div class="curve"><p></p></div>
+				<div class="tblpad">
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="tbltitle">
+  <tr>
+    <td width="19%" class="projectname">Project Name</td>
+    <td width="15%"  >Created On</td>
+    <td width="14%" >User</td>
+    <td width="16%" >File Size</td>
+    <td width="16%" >Version</td>
+	<td width="20%"  style="background:#4D7CA7 url(images/curve_blue.gif) 100% 0px no-repeat">Delete</td>
+  </tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="tbl">
+ {% for file in project.projectfile_set.all %}
+  <tr class="{% cycle '' 'tdbggrey' %}">
+    <td width="19%" class="projectname"><a href="{{file.current_revision.get_s3_url}}">{{file.filename}}</a></td>
+    <td width="15%"> {{file.created_on|date}}  </td>
+    <td width="14%"> {{file.current_revision.user.username}} </td>
+    <td width="16%"> {{file.size_str}}</td>
+    <td width="16%"> <a class="oldrevisions" href="#">Show Revisions.</a>
+				{% if file.projectfileversion_set.all %}
+        <ul>
+            {% for revision in file.projectfileversion_set.all %}
+            <li>
+                <a href="{{revision.get_s3_url}}">Version {{revision.version_number}}</a>
+            </li>
+            {% endfor %}
+        </ul>
+				{% endif %}
+		</td>
+	 <td width="20%" > <img src="/site_media/images/x-icon.gif" alt="" /></td>
+  </tr>  
+	{% endfor %}
+</table>
+</div>
+</div>
+{% else %}
+<h3>
+    No files added.
+</h3>
+{% endif %}
+
+
+<div id="create">
+			<h3>Upload File</h3>
+			<div class="createcontent">
+			
+				<form action="." method="post" enctype="multipart/form-data">
+					<div>
+					{{addfileform.as_p}}
+					<input type="submit" name="Add file" value="Add file" class="submitbutton" />
+					</div>
+				</form>
+				</div>
+</div>
+
+{% endblock %}
+
+
+{% block sidebar %}
+<h3>About</h3>
+<p>You are looking at files for {{project.name}}</p>
+{% endblock %}	

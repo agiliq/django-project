@@ -1,0 +1,75 @@
+{% extends 'project/base.html' %}
+
+{% block title %}
+Index
+{% endblock %}
+
+{% block contents1 %}
+    
+    <div id="login">
+    <form action="/accounts/login/" method="post">
+    <fieldset>
+	<legend>Login</legend>
+        <p><label for="username">Username:</label> <input id="id_username" type="text" name="username" dojoType="dijit.form.TextBox" maxlength="30" /></p>
+	<p><label for="password">Password:</label> <input id="id_password" type="password" name="password" maxlength="30" /></p>
+	<input type="submit" value="login" />
+	<input type="hidden" name="next" value="" />
+    </fieldset>
+    </form>
+    <a href="/accounts/register/">Or Register</a>
+    </div>
+{% endblock %}
+
+{% block outercontent %}
+	<div id="content1">
+		<div id="leftcontent">
+		<h1>Welcome to Dashbard!</h1>
+		<h3 class="arrowh3">Enjoy all the benefits of Yahoo! Mail.</h3>
+		<ul class="ultext">
+
+		<li>* Vestibulum volutpat posuere neque bulum volutpat posu.</li>
+    <li>* Maecenas quis metus vel orci feugiat ullamcorpers quis metus vel orci feugia.</li>
+    <li>* Integer eu sapien et lacus aliquet euismodapien et lacus aliquet eu.</li>
+    <li>* Sed volutpat vestibulum libero volutpat vestibulum lib.</li>
+    <li>* Nam pharetra felis non pederetra felis .</li>
+		</ul>
+
+	
+	<h2>Lorem ipsum dolor sit amet ? </h2>
+	<p class="ptext">Lorem ipsum dolor sit amet</p>
+	<div class="m-img"><img src="images/m-img.gif" alt="" /><br />Lorem ipsum dolor sit</div><div class="m-img"><img src="images/m-img.gif" alt="" /><br />Lorem ipsum dolor sit</div><div class="m-img"><img src="images/m-img.gif" alt="" /><br />Lorem ipsum dolor sit</div>
+		
+		</div>
+		<div id="rightcontent"><div id="sigin">
+			<h3>Signin into DashBoard</h3>
+
+			<div class="createcontent">
+				<form action="/accounts/login/" method="post">
+									{{login_form}}
+									<input type="submit" value="login" />
+				</form>
+				
+			
+			</div>
+			<div class="forgatpass">
+			<p style="color:#4D7CA7; padding-left:95px;"><a href="/accounts/reset/">Forgot your password?</a> | <a href="#">Help</a></p>
+
+			<p style="padding-left:110px; margin-top:30px;"><span style="font-size:15px;">Don't have a Account yet ?</span><br />
+Signing up is easy.</p>
+<p style="padding-left:140px; margin-top:20px;"><a href="/accounts/register/" class="join"></a></p>
+			
+			
+			</div>
+			
+			
+			</div></div>
+		
+	
+		
+	<br style="clear:both" />
+	</div>
+{% endblock outercontent %}
+
+{% block sidebar %}
+    Sidebar data
+{% endblock %}

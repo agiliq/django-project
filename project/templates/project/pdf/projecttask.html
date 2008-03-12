@@ -1,0 +1,61 @@
+{% extends 'project/pdf/base.html' %}
+
+{% block title %}
+{{block.super}} - Tasks
+{% endblock %}
+
+{% block contents %}
+
+
+    <h2>Tasks for project</h2>
+    <ul class="tasklist">
+    {% for task in tasks %}
+	<li class="taskrow" id="task-{{task.id}}">
+	<h4>{{task.name}}</h4>
+	<table>
+	    <tbody>
+            {% include 'project/taskrow.html' %}
+	    </tbody>
+	</table> 
+    {% if task.num_child_tasks %}	
+    <div id="subtasks">
+	<h3>Subs tasks for {{task.name}}</h3>
+	<ul>
+	{% for task in task.task_set.all %}
+	    <li>
+	    <a href="{{task.get_absolute_url}}">{{task.name}}</a>
+	    </li>
+	{% endfor %}
+	</ul>
+    </div>
+    {% endif %}
+    
+    {% if task.num_items %}
+    <div id="taskitems">
+	<h3>Items for {{task.name}}</h3>
+	<ul>
+	{% for item in task.taskitem_set.all %}
+	    <li>
+	    <a href="{{item.edit_url}}">{{item.name}}</a>
+	    </li>
+	{% endfor %}
+	</ul>
+    </div>
+    {% endif %}	
+        
+	</li>
+    {% endfor %}
+    </ul>
+    
+    <div id="pagination">
+        [Showing task {{page_data.first_on_page}} - {{page_data.last_on_page}} of {{page_data.total}} tasks]
+        {% if page_data.has_next_page %}
+        <a href="./?page={{page_data.next_page}}">next</a>
+        {% endif %}
+        
+        {% if page_data.has_prev_page %}
+        <a href="./?page={{page_data.prev_page}}">prev</a>
+        {% endif %}
+    </div>    
+     
+{% endblock %}

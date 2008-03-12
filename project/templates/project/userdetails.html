@@ -1,0 +1,91 @@
+{% extends 'project/base.html' %}
+
+{% block contenttitle %}
+<h1>Details for User {{user.username}}</h1>   
+{% endblock %}
+
+{% block innercontent %}
+<table>
+    <thead>
+	<tr>
+	    <td>Task Status</td>
+	    <td>Number</td>
+	</tr>
+    </thead>
+    <tbody>
+	{% for row in tasks_count %}
+	<tr>
+	    <td>
+		{{row.0}}
+	    </td>
+	    <td>
+		{{row.1}}
+	    </td>
+	</tr>
+	{% endfor %}
+    </tbody>
+</table> 
+    <ul class="tasklist">
+        <h3>Pending tasks</h3>
+					<div class="textcontent" style="padding:0px; border:0px; border-top:1px solid #EDEDED; ">				
+    {% for task in tasks %}
+			 <div class="currenttasks">
+					<p class="metricstitle">{{task.name}}</p>
+						<table width="90%" border="0" cellspacing="0" cellpadding="0" class="create">
+            {% include 'project/taskrow.html' %}
+						</table>
+				</div>
+			{% endfor %}				
+    
+    </ul>
+  
+    <table>
+	<thead>
+	    <tr>
+		<td>
+		    Status
+		</td>
+		<td>
+		    Time
+		</td>
+	    </tr>
+	</thead>
+	<tbody>
+	    {% for load in timeload %}
+	    <tr>
+		<td>
+		    {{load.0}}
+		</td>
+		<td>
+		    {{load.1}} {{load.2}}
+		</td>
+	    </tr>
+	    {% endfor %}
+	</tbody>    
+    <h3>Pending Taskitems</h3>
+
+    </table>
+	
+    <table>
+    {% for item in items %}
+      	    <tbody>
+            <tr class={% cycle "odd" "even" %}>
+	    <td><a href="{{item.edit_url}}">{{item.name}}</a></td>
+            <td>{{item.user}}</td>
+            <td>{{item.time_worked}}</td>
+            {% include 'project/taskitem_done.html' %}
+            </tr>
+	    </tbody>
+    {% endfor %}
+    </table>    
+
+
+{% endblock %}
+
+{% block sidebar %}
+
+<h3>Meta</h3>
+<ul>
+<li><a href="./?includecomplete=1">Show completed.</a></li>
+</ul>
+{% endblock %}

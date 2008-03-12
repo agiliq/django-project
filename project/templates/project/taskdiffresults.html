@@ -1,0 +1,27 @@
+{% extends 'project/base.html' %}
+
+{% block innercontent %}
+<h3>Version 1</h3>
+<pre>
+{{ver1.as_text}}
+</pre>
+<h3>Version 2</h3>
+<pre>
+{{ver2.as_text}}
+</pre>
+
+<h3>Diff</h3>
+    {{diff|safe}}
+{% endblock %}
+
+{% block sidebar %}
+    <h3>Meta</h3>
+    <ul>
+	<li>
+	    <a href="{{task.get_absolute_url}}">Details</a>
+	</li>
+	<li>
+	    <a href="{{task.edit_url}}">Edit</a>
+	</li>
+    </ul>
+{% endblock %}

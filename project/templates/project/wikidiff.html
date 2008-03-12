@@ -1,0 +1,34 @@
+{% extends 'project/base.html' %}
+
+{% block innercontent %}
+    <div class="genericform">		
+		<h3>
+				Revisions for {{page.title}}
+		</h3>							
+		<div class="createcontent">
+    <form>
+    <ul>
+    {% for rev in page.wikipagerevision_set.all %}
+	<li>
+	    <a href="{{rev.get_absolute_url}}">Version {{rev.version_number}} created on {{rev.created_on}}</a>
+            <input type="radio" name="version1" value="{{rev.id}}" />
+	    <input type="radio" name="version2" value="{{rev.id}}" />
+            <div class="revisionhtml">
+            {{rev.html_text|truncatewords_html:50|safe}}
+            </div>
+	</li>
+    {% endfor %}
+    </ul>
+    <input type="submit" name="diff" value="Diff" class="submitbutton" />
+    </form>
+		</div>
+		</div>
+{% endblock %}
+
+{% block sidebar %}
+    <h3>Meta</h3>
+    <ul>
+    <li><a href="{{page.edit_url}}">Edit this page</a></li>
+    <li><a href="{{page.version_url}}">See previous versions</a></li>
+    </ul>
+{% endblock %}

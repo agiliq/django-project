@@ -1,0 +1,43 @@
+{% extends 'project/pdf/base.html' %}
+
+{% block contents %}
+{% for month in month_data %}
+    <a href="{{month.href}}" class="monthname">
+    <table class="calendar">
+    <thead>
+        <tr>
+            {% for day in weekheader %}
+            <td>
+                {{day}}
+            </td>
+            {% endfor %}
+        </tr>
+    </thead>
+   {% for week in month.calendar %}
+    
+        <tr>
+        {% for day in week %}
+        <td>
+            <div class="date">
+            {{day.0}}
+            </div>
+        <div class="starttasks">
+        {% for task in  day.1 %}
+           {{task}}
+        {% endfor %}
+        </div>
+        
+        <div class="endtasks">
+        {% for task in  day.2 %}
+           {{task}}
+        {% endfor %}
+        </div>
+        
+        </td>
+        {% endfor %}
+        </tr>
+   {% endfor %}
+   </table>
+    {{month.name}}</a>
+{% endfor %}
+{% endblock %}

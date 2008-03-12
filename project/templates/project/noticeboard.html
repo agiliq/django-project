@@ -1,0 +1,78 @@
+{% extends 'project/base.html' %}
+
+{% block title %}
+{{block.super}} - Noticeboard
+{% endblock %}
+
+{% block subnav %}
+                
+		<div class="subnav">	
+		 <a href="/dashboard/" class="dp-icon">Dashboard</a>  |  <a href="{{project.get_absolute_url}}">Project Details</a>  |  <a href="{{project.tasks_url}}">Tasks</a>  |  <a href="{{project.todo_url}}">Todo</a>  | 
+		 <a href="{{project.noticeboard_url}}" class="subnav_selected">Noticeboard</a>  |  <a href="{{project.calendar_url}}">Calendar</a>  | <a href="{{project.wiki_url}}" >Wiki</a> | <a href="{{project.files_url}}" >Files</a>  |  <a href="{{project.metrics_url}}">Metrics</a>  |  <a href="{{project.logs_url}}">Logs</a>
+		</div>
+	{% endblock %}
+
+{% block contents %}
+
+
+<div class="contenttext">
+				<div class="curve"><p></p></div>
+
+				<div class="tblpad">
+					<div class="noticeboard">
+					{% if notices %}
+					{% for notice in notices %}
+					<div class="noticetext {% cycle "noticebgwhite" "noticebggrey" %}">
+					<p class="noticetitle">{{notice.text|linebreaks|urlize}}</p>
+<p class="putby">Put by {{notice.user.username}} on {{notice.created_on|date}} {{notice.created_on|time}}</p>
+					</div>
+					{% endfor %}
+					{% else %}
+					<div class="noticetext">
+					No notices yet.
+					</div>
+					{% endif %}
+					
+					</div>
+					
+					
+				
+			
+				</div>
+
+			
+			</div>
+    
+		<div class="genericform">
+		<h3>Add a notice.</h3>		
+    <div id="noticeform">		
+		<div class="createcontent">
+        <form action="." method="post">
+            {{addnoticeform.as_p}}
+            <input type="submit" name="addnotice" value="Add Notice" />
+        </form>
+		</div>
+    </div>
+		</div>
+    
+    <div id="pagination">
+        {% if page_data.has_next_page %}
+        <a href="./?page={{page_data.next_page}}">next</a>
+        {% endif %}
+        
+        {% if page_data.has_prev_page %}
+        <a href="./?page={{page_data.prev_page}}">prev</a>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block sidebar %}
+	 <h3>About</h3>
+	 <p>
+    You are viewing notices put for {{project.name}}.
+    There are {{notices.count}} notices.
+    {% if notices %}
+        The latest notice was put by {{notices.0.user.username}} on {{notices.0.created_on|date}}
+    {% endif %}
+		</p>
+{% endblock %}

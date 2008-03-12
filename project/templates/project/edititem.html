@@ -1,0 +1,34 @@
+{% extends 'project/base.html' %}
+
+{% block title %}
+{{block.super}} - Edit {{taskitem.name}}
+{% endblock %}
+
+{% block innercontent %}
+	 <div class="genericform">
+	 <h3>Editing {{taskitem.name}}</h3>
+	  <div class="createcontent">
+    <form action="." method="POST">
+        {{itemform.as_p}}
+        <input type="SUBMIT" name="edititem" value="Edit" />
+    </form>
+		</div>
+	</div>
+{% endblock %}
+
+{% block sidebar %}
+    <h3>Meta</h3>
+		<p class="sideblurb">You are editing {{taskitem.name}}, a task item created for {{taskitem.task.name}}</p>
+    <ul>
+        <li><a href="{{taskitem.task.get_absolute_url}}">See task</a></li>
+        <li><a href="{{taskitem.version_url}}">See previous versions</a></li>
+    </ul>
+		<h3>Versions</h3>
+    <ul>
+    {% for item in taskitem.old_versions %}
+	<li>
+	<a href="{{item.revision_url}}">Version number {{item.version_number}} versioned on {{item.effective_start_date|date}}.</a>
+	</li>
+    {% endfor %}
+    </ul>
+{% endblock %}

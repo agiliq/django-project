@@ -1,0 +1,19 @@
+{% extends 'project/pdf/base.html' %}
+
+{% block contents %}
+    <form action="." method="get">
+    <ul>
+    {% for item in taskitem.old_versions %}
+	<li>
+	<a href="{{item.revision_url}}">Version number {{item.version_number}} versioned on {{item.effective_start_date|date}}.</a>
+        <pre>
+{{item.as_text}}
+        </pre>
+        <input type="radio" name="version1" value="{{item.id}}" />
+        <input type="radio" name="version2" value="{{item.id}}" />
+	</li>
+    {% endfor %}
+    </ul>
+    <input type="submit" name="Diff" value="diff" />
+    </form>
+{% endblock %}

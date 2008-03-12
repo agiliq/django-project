@@ -1,0 +1,166 @@
+{% extends 'project/base.html' %}
+
+{% block title %}
+{{block.super}} - Project details
+{% endblock %}
+
+{% block jqueryarea %}
+<script language="JavaScript" type="text/javascript" src="/site_media/js/projectdetails.js">
+<!--
+
+//-->
+</script>
+
+{% endblock %}
+
+	{% block subnav %}
+                
+		<div class="subnav">	
+		 <a href="/dashboard/" class="dp-icon">Dashboard</a>  |  <a href="{{project.get_absolute_url}}" class="subnav_selected">Project Details</a>  |  <a href="{{project.tasks_url}}">Tasks</a>  |  <a href="{{project.todo_url}}">Todo</a>  | 
+		 <a href="{{project.noticeboard_url}}">Noticeboard</a>  |  <a href="{{project.calendar_url}}">Calendar</a>  | <a href="{{project.wiki_url}}" >Wiki</a> | <a href="{{project.files_url}}">Files</a>  |  <a href="{{project.metrics_url}}">Metrics</a>  |  <a href="{{project.logs_url}}">Logs</a>
+		</div>
+	{% endblock %}
+
+{% block includes %}
+    <link rel="stylesheet" href="/site_media/css/flora.datepicker.css" type="text/css" media="screen" title="Flora (Default)" />
+    <script type="text/javascript" src="/site_media/js/jquery.js"></script>
+    <script type="text/javascript" src="/site_media/js/jquery.validate.js"></script>
+    <script type="text/javascript" src="/site_media/js/ui.datepicker.js"></script>
+    <script type="text/javascript" src="/site_media/js/jquery.cookie.js"></script>
+    <script type="text/javascript" src="/site_media/js/prajact.js"></script>
+{% endblock %}
+
+{% block contents %}
+    <h2>{{project.name}}</h2>
+
+		
+					<div class="contenttext">
+				<div class="curve"><p></p></div>
+				<div class="tblpad">
+{% if new_tasks %}				
+				<table width="100%" border="0" cellspacing="0" cellpadding="0" class="tbltitle">
+  <tr>
+    <td width="19%" style="padding-left:30px;">Project Name</td>
+    <td width="16%" style=" text-align:left" >Expected Start Due</td>
+    <td width="16%" style=" text-align:left">Expected End Date</td>
+    <td width="16%" style=" text-align:left">User Responsible</td>
+	<td width="8%" style=" text-align:left">Details </td>
+	<td width="6%" style=" text-align:left">Edit</td>
+	<td width="10%" style=" text-align:left">Mark Done</td>
+    <td width="9%"  style="background:#4D7CA7 url(images/curve_blue.gif) 100% 0px no-repeat">Delete</td>
+  </tr>
+ 
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="tbl">
+		{% for task in new_tasks %}
+        {% include 'project/taskrow.html' %}
+    {% endfor %}
+
+</table>
+{% else %}
+<div class="no_table">
+No Recent Tasks.
+</div>
+{% endif %}
+</div>
+</div>
+
+
+			<h1 class="titleor">Overdue tasks </h1>
+			<div class="contenttext">
+				<div class="curve"><p></p></div>
+				<div class="tblpad">
+{% if overdue_tasks %}				
+				<table width="100%" border="0" cellspacing="0" cellpadding="0" class="tbltitle">
+  <tr>
+    <td width="19%" style="padding-left:30px;">Project Name</td>
+    <td width="16%" style=" text-align:left" >Expected Start Due</td>
+    <td width="16%" style=" text-align:left">Expected End Date</td>
+    <td width="16%" style=" text-align:left">User Responsible</td>
+	<td width="8%" style=" text-align:left">Details </td>
+	<td width="6%" style=" text-align:left">Edit</td>
+	<td width="10%" style=" text-align:left">Mark Done</td>
+    <td width="9%"  style="background:#4D7CA7 url(images/curve_blue.gif) 100% 0px no-repeat">Delete</td>
+  </tr>
+ 
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="tbl">
+ 
+      {% for task in overdue_tasks %}
+        <tbody>
+        {% include 'project/taskrow.html' %}
+        </tbody>
+    {% endfor %}  
+  
+</table>
+{% else %}
+<div class="no_table">
+No overdue tasks.
+</div>
+{% endif %}
+</div>
+
+			
+			</div>
+    <div class="genericform">
+		<h3>Invite a User</h3>
+		<div class="createcontent">
+    <div id="inviteform">
+        <form action="." method="post">
+            {{inviteform.as_p}}
+            <div><input type="submit" name="invite" value="Invite User" class="submitbutton" /></div>
+        </form>
+    </div>
+		</div>
+		</div>
+		
+		<div class="genericform">
+		<h3>Add a task 
+		</h3>
+		<div class="createcontent">
+    <div id="taskform">
+        <form action="." method="post">
+            {{taskform.as_p}}
+            <div><input type="submit" name="task" value="Add a task" class="submitbutton" /></div>
+        </form>
+    </div>
+		</div>
+		</div>
+
+{% endblock %}
+
+{% block sidebar %}
+    <h3>Actions</h3>
+    <ul>
+    <li><a href="#" id="taskshow">Add a task</a></li>
+    <li><a href="#" id="inviteshow">Invite a user</a></li>
+    </ul>
+    
+    <h3>Meta</h3>
+		<p class="sideblurb">
+		You are looking at details for project {{project.name}}.
+    This project has {{project.task_set.all.count}} tasks.
+		</p>
+    <ul>
+      <li><a href="{{project.quicktasks_url}}">Tasks Quick Entry</a></li>
+      <li><a href="{{project.quicktaskitems_url}}">Task Items Quick Entry</a></li>
+    </ul>
+    {% if project.invited_users %}
+    <div>
+        <h3>Pending users.</h3>
+        <ul>
+        {% for user in project.invited_users %}
+           <li> {{user.user.username}}</li>
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+		<h3>Users</h3>
+		<ul>
+        {% for user in project.subscribeduser_set.all %}
+        <li>
+          <a href="{{user.get_absolute_url}}">{{user.user.username}}</a>
+        </li>
+        {% endfor %}
+    </ul>  
+{% endblock %}

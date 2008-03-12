@@ -1,0 +1,256 @@
+Using Dashbard
+==============
+
+:Author: Shabda Raaj
+:Version: $Revision: 1 $
+:Copyright: This document is realeased under CC Attribution Lisence.
+
+.. contents::
+
+Welcome
+--------
+Hello and welcome to Dashbard. Dashbard is a tool to manage and track your projects. We are excited to have you use Dashbard, and we are confident that dashbard will help you get the most out of your projects. If you have any doubts, or would like help in using Dashbard please do not hesitate to get in touch with us.
+
+
+Features
+--------
+Dashbard is an web based collaborative tool to magange and track your projects.
+
+The basic features of Dashbard are
+
+* Tasks to track dates and milestones for the project.
+* Taskitems to track the time sepnt in the project on each task.
+* Tracking and logging all changes in the project.
+* Personal Todo lists available to all team members.
+* Noticeboard, to keep conversation on the project with the project.
+* Project specific Wiki, to share information in the team.
+* Files, to securely share documents within the team.
+* Multiple access levels, allowing people to act as owner, particpant or viewer in the project.
+
+Dashbard has a rich set of features, but you do not need to use, or learn every feature for Dashbard to work for you. You may want to use only the task feature and never care about the wiki. Or vice versa.
+
+Dashbard is based around giving people freedom, but tracking and logging changes so that the freedom is used responsibly. Dashbard tracks and logs all changes done to projects.
+
+Using tasks and taskitems you can divide large projects into smaller managable chunks, and delegate each task or taskitem to a team member. 
+
+
+Benefits
+--------
+
+At Dashbard everything is versioned, and everything is logged. This means that you can give access to your project with the fear of it being used maliciously. Multiple access levels means that people with auxilary roles can be invited as viewers. 
+
+Access Levels
+--------------
+People with acess to a project can be either viewer, participant or owners of the project. Viewers can see everything in a project, but they can not make edits to the project. Partcipant can create and edit tasks, task items, wiki pages, notices and files. The owner can make project level changes, such as making the project inactive. Inviting other users to the project, and removing a user from the project.
+
+
+
+Tasks
+-----
+Tasks are the real workhorse of Dashbard. They allow you to break a project into smallers managable chunks, and allow each task to be assigned to a person. A task has start and ent date when you estimate it to start. It has a user responsible who is the person responsible for finishing the task. Once the task is complete, you can enter actual start and end dates, to track the slippage on the tasks.
+
+Like everything else Tasks are versioned and logged. When you create a task this information is looged, and is accesible from the Logs tab. When you edit a task the previous version is saved, and anew version is created. You can see all the previous versions and roll back to any version of the task.
+
+Tasks can have a hierachy, any level deep. This can be used to track and manage depenendancy of tasks. For example, if your team is divided into subteams, the team leads can be made responsible for the top level tasks. The other team members can have tasks, which are subtasks of the top level tasks.
+
+Taskitems
+---------
+
+Tasks are a good way to manage and track dates when a part of the project needs to be completed, and a way to delegate responsibility. When you want to manage the time spent on the project, taskitems are a good fit. If tasks have dates, task items have Time spent. 
+
+Todo
+----
+
+We have a confession to make. When we said that everything in Dashbard is versioned and logged, we were not being entirely truthful, Todos are not versioned or tracked. But this is a good thing as, you will see in a moment. 
+
+Once you have been assigned some work, you might want to divide that work into smallers chunks. But you might not want to share this information with everyone else. Todos are a way for you to track yourself. Anything you do here is visible to you only.
+
+Todo Lists can contain Todo Items. As you complete your tasks, you may keep on making your todo items complete. When a new job is assigned to you, you would create a new Todo List. When the job is fully complete, you can make the List complete and the List is removed from your Todo page.
+
+Todos are not versioned as they are meant to be personal. They help you manage yourself.
+
+Wiki
+----
+
+Wikis are a great way for your team to collaborate. They serve as a platform where the team can share information or capture freeform infomration. As the information changes the wiki pages can be modified by your team members. The ability to see changes made by everyone, and the ability to rollback, if mistakes happen give the courage to be bold. 
+
+Calendar
+--------
+Calendars show the tasks in a easier to understand and digest view. Each calendar shows the tasks which start and end on a specific day. You can drill down to any month and then access tasks starting on those days.
+
+Noticeboard
+-----------
+Did you ever have a comunication with all your team mates, only to lose that email thread when you needed it most? Noticeboard is meant to remove this chaos, by keeping project specific notices with the project. When you add a notice, this notice is kept with the project in perpetuity.
+
+Logs
+----
+
+Logs are like the heartbeat of your project. Looking at them you can see how the project is progressing. Every change made to the project, and the person making the change is logged. These logs are available as RSS feeds or as emails. You can also access them from within the project using the Logs tab.
+
+Metrics
+-------
+
+Metrics give you a high level overview of the project. They show the percent of tasks done, the percent of tasks which missed their deadline. 
+
+The Tabs
+--------
+
+Dashboard
+~~~~~~~~~~~
+When you log in you would be directed to this page. This is the place where your ineraction with Dashbard starts. This page shows the projects you are subscribed to, and the overdue tasks in those projects. This page allows you to create new Projects, and when a project gets over, this page allows you to archive the Projects. By default only the active pages are shown. If you want to access an archieved project, which you have marked as inactive, you can click "Show Inactive Projects". If you have completed a task, shows here, you can mark that as complete from this page.
+
+|dashbard_image| `Dashboard Full <dashbard/dashboard.png>`_
+
+ .. |dashbard_image| image:: dashbard/tn_dashboard.png
+
+Project Details
+~~~~~~~~~~~~~~~~
+This page shows relevant details specific to a project. The recetly modified tasks, as well as the tasks which are overdue are visible on this page. This page allows you to invite a registered user to your project, or to add a top level task to the project. This page shows the users who are subscrbed to this project, as well as the users who have been invited to this project.
+
+
+|project-details_image| `Project Details Full <dashbard/project-details.png>`_
+
+ .. |project-details_image| image:: dashbard/tn_project-details.png
+
+Tasks
+~~~~~~~~~~~~~~~~
+This page shows the list of top level tasks for the project, and shows the sub tasks and task items for those projects. On this page you can create a top level task. You can edit, delete or mark as complete the task.
+
+|tasks_image| `Tasks Full <dashbard/tasks.png>`_
+
+ .. |tasks_image| image:: dashbard/tn_tasks.png
+
+Todo
+~~~~~
+This page shows the personal todos you have created for yourself. You can create new todo lists or add items to the existing todo list. You can mark a todo list or todo item as complete from this page. By default only the non complete Todo lists are shown. If you want to see the completed todo lists as well, click "Show Completed Lists".
+
+|todo_image| `Todo Full <dashbard/todo.png>`_
+
+ .. |todo_image| image:: dashbard/tn_todo.png
+
+Noticeboard
+~~~~~~~~~~~
+This page shows the notices put up for the project, and the user and the time when the notice was put. You can add a new notice using this page.
+
+|noticeboard_image| `Noticeboard Full <dashbard/noticeboard.png>`_
+
+ .. |noticeboard_image| image:: dashbard/tn_noticeboard.png
+
+Calendar
+~~~~~~~~
+This page shows the months of interest, (The months where a task either starts or ends). The number of tasks starting on a specific day are shown. You can drill down to a specific months where you can see the tasks starting or ending on a specific date.
+
+|calendar_image| `Calendar Full <dashbard/calendar.png>`_
+
+ .. |calendar_image| image:: dashbard/tn_calendar.png
+ 
+ |calendar-details_image| `Calendar details Full <dashbard/calendar-details.png>`_
+
+ .. |calendar-details_image| image:: dashbard/tn_calendar-details.png
+
+Wiki
+~~~~
+This page shows the list of the wiki pages available for this project. A excerpt of the page, and the user who last edited this page is shown. You can navigate to any shown wiki page from this page.
+
+|wiki_image| `Wiki Full <dashbard/wiki.png>`_
+
+ .. |wiki_image| image:: dashbard/tn_wiki.png
+
+Files
+~~~~~
+This page shows the files added to the project, and the revisions for the files. You can add a new file, delete a file, and create new revisions for existing files. If you add a new file with the same name as an existing file, the previous file is versioned.
+
+|files_image| `Files Full <dashbard/files.png>`_
+
+ .. |files_image| image:: dashbard/tn_files.png
+
+Metrics
+~~~~~~~
+This page shows a overview of the project, the nuber of tasks remaining to be done, the number of tasks required each month, and other such relevent details. 
+
+|metrics_image| `Metrics Full <dashbard/metrics.png>`_
+
+ .. |metrics_image| image:: dashbard/tn_metrics.png
+
+Logs
+~~~~
+Any change done to the project is logged. This log is available from this page. You can see the logs as a RSS feed or can subscribe to an email where the logs are sent to you.
+
+|logs_image| `Logs Full <dashbard/logs.png>`_
+
+ .. |logs_image| image:: dashbard/tn_logs.png
+
+Other Pages
+------------
+
+Taskdetails Page
+~~~~~~~~~~~~~~~~~
+This page shows details for a sepcific task. The dates for the task, the sub tasks for this task, and the tasks items are shown. You can add sub task to the task, add a task item, and add a note to the task.
+
+Tasks Quickentry
+~~~~~~~~~~~~~~~~~
+If you want to enter multipe tasks at one time, you can use Tasks Quick Entry page. You need to enter only as many tasks as needed, and those tasks are created.
+
+Taskitems Quickentry
+~~~~~~~~~~~~~~~~~~~~
+If you want to create multiple task items at one time, you can use this page. You only need to enter data for as many taskitems as needed.
+
+Create Wikipage
+~~~~~~~~~~~~~~~
+Allows you to create a new wiki page.
+
+Edit Task
+~~~~~~~~~
+Allows you to edit a previously created task. You can enter actual start and end dates as well as completion status for the task on this page.
+
+Task Versions Page
+~~~~~~~~~~~~~~~~~~~
+Shows all the revisions for the task, and allows to see a diff (Showing changes made between two tasks).
+
+Task Diff Page
+~~~~~~~~~~~~~~
+Shows the diff between two versions of the task.
+
+Edit Taskitem page
+~~~~~~~~~~~~~~~~~~~
+Allows editing taskitems. You can enter actual time and completion status for the task item on this page, and change other details.
+
+Taskitems versions page
+~~~~~~~~~~~~~~~~~~~~~~~
+Shows the previous versions for the taskitem, and allows to take a diff between any two versions of the taskitem.
+
+Taskitems diff page
+~~~~~~~~~~~~~~~~~~~~
+Shows the diff between two versions of the taskitem.
+
+Task revision page
+~~~~~~~~~~~~~~~~~~~
+Shows a specific revision of the task, and allows rolling back to that task.
+
+Taskitem reision page
+~~~~~~~~~~~~~~~~~~~~~~
+Shows a specific revision of the taskitem and allows rolling back to that revision of the tasksitem.
+
+Wikipage
+~~~~~~~~
+Shows the current version of the wikipage.
+
+Create Wikipage
+~~~~~~~~~~~~~~~~
+Allows you to create a new wiki page.
+
+Edit Wikipage
+~~~~~~~~~~~~~~
+Allows editing an existing wikipage. The title of the wikipage, once created, can not be changed.
+
+Wikipage versions
+~~~~~~~~~~~~~~~~~
+Allows you to see previous versions of a wiki page and to take a diff between them.
+
+Wikipage diff page
+~~~~~~~~~~~~~~~~~~
+Shows the diff taken between two versions of a wiki page.
+
+Wikipage revisiosn page
+~~~~~~~~~~~~~~~~~~~~~~~~
+Shows a specific revision of the wiki page, and allows rolling back to that revision.

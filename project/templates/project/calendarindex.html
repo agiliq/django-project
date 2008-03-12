@@ -1,0 +1,72 @@
+{% extends 'project/base.html' %}
+
+{% block contents %}
+		<h1 class="title">{{project.name}}</h1>
+		
+
+{% for month in month_data %}
+	 <div class="calwrap">		
+			<div class="calendar">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0" class="monthtitle">
+  <tr>
+
+    <td width="33%" ><a href="#"><img src="/site_media/images/previous-cal.gif" alt="" /></a></td>
+    <td width="34%">{{month.name}}</td>
+    <td width="33%"><a href="#"><img src="/site_media/images/next-cal.gif" alt="" /></a></td>
+  </tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="days tbl">
+  <tr class="tdbggrey">
+    <td class="textday">Mon</td>
+    <td class="textday">Tue</td>
+
+    <td class="textday">Wed</td>
+    <td class="textday">Thu</td>
+    <td class="textday">Fri</td>
+    <td class="textday">Sat</td>
+    <td class="textday">Sun</td>
+  </tr>
+	
+	   {% for week in month.calendar %}
+    
+        <tr>
+        {% for day in week %}
+        <td class="{% if day.1 or day.2 %}yellowbg{% endif %}">
+						{% if day.0 %}
+            <div class="date">
+            {{day.0}}
+            </div>
+						{% else %}
+						&nbsp;
+						{% endif %}
+        <div class="starttasks">
+        {% for task in  day.1 %}
+           {{task}}
+        {% endfor %}
+        </div>
+        
+        <div class="endtasks">
+        {% for task in  day.2 %}
+           {{task}}
+        {% endfor %}
+        </div>
+        
+        </td>
+        {% endfor %}
+        </tr>
+   {% endfor %}
+</table>
+		</div>
+		</div>
+{% endfor %}		
+{% endblock %}
+
+
+{% block sidebar %}
+<h3>Months</h3>
+<ul>
+{% for month in month_data %}
+    <li><a href="{{month.href}}" class="monthname">    {{month.name}}</a></li>
+{% endfor %}
+</ul>
+{% endblock %}

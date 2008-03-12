@@ -1,0 +1,16 @@
+{% extends 'project/base.html' %}
+
+{% block title %}
+{{block.super}} - Edit {{task.name}}
+{% endblock %}
+
+
+{% block contents %}
+    <form action="." method="post">
+	<fieldset>
+	    <legend>Editing {{task.name}}</legend>
+        {{editform.as_p}}
+        <input type="SUBMIT" name="edit" value ="Edit Task" />
+	</fieldset>
+    </form>
+{% endblock %}
