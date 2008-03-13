@@ -411,7 +411,7 @@ background:url(images/inputselect.gif)
 }
 
 #sigin h3, #create h3, .password h3{
-background:#4D7CA7 url(images/curve_blue.gif) no-repeat right top;
+background:#4D7CA7 url(/site_media/images/curve_blue.gif) no-repeat right top;
 color:#FFFFFF;
 font-size:14px;
 margin:0px;

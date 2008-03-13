@@ -10,6 +10,7 @@ from helpers import *
 from models import *
 from prefs.models import *
 import bforms
+from django.contrib.auth import REDIRECT_FIELD_NAME
 
 @login_required
 def settings(request):
@@ -34,7 +35,9 @@ def login(request):
     no_cookies = False
     account_disabled = False
     invalid_login = False
-    redirect_to = request.REQUEST.get('REDIRECT_FIELD_NAME', settin.LOGIN_REDIRECT_URL)
+    redirect_to = request.REQUEST.get(REDIRECT_FIELD_NAME, '')
+    if not redirect_to or '//' in redirect_to or ' ' in redirect_to:
+        redirect_to = settin.LOGIN_REDIRECT_URL
     
     if request.method == 'POST':
         if request.session.test_cookie_worked():
@@ -62,12 +65,13 @@ def login(request):
     
     # cookie must be successfully set/retrieved for the form to be processed    
     request.session.set_test_cookie()
-    return render_to_response('registration/login.html', 
-                              { 'no_cookies': no_cookies,
+    payload = { 'no_cookies': no_cookies,
                                 'account_disabled': account_disabled,
                                 'invalid_login': invalid_login,
                                 'form': form,
-                                'REDIRECT_FIELD_NAME': redirect_to },
+                                REDIRECT_FIELD_NAME: redirect_to }
+    return render_to_response('registration/login.html', 
+                              payload,
                               context_instance = RequestContext(request))    
     
 def logout(request):

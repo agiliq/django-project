@@ -1262,7 +1262,10 @@ padding:4px 0px 4px 13px;
 }
 .tbl2 form{
 margin:0px;
-
 }
 
+.tbl2 tr td{
+    padding-left: 3px;
+    padding-right: 3px;
+}
 .focusfield{ background:url(images/inputselect.gif)}

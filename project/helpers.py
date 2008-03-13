@@ -16,7 +16,10 @@ from models import *
 
 def get_project(request, project_name):
     """Returns the project with the given name if the logged in user has access to the project. Raises 404 otherwise."""
-    project = Project.objects.get(shortname = project_name)
+    try:
+        project = Project.objects.get(shortname = project_name)
+    except Project.DoesNotExist:
+        raise Http404
     try:
         project.subscribeduser_set.get(user = request.user)
     except SubscribedUser.DoesNotExist:

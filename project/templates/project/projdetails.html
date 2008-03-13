@@ -52,10 +52,12 @@
  
 </table>
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tbl">
+		
 		{% for task in new_tasks %}
+		<tbody>
         {% include 'project/taskrow.html' %}
+		</tbody>		
     {% endfor %}
-
 </table>
 {% else %}
 <div class="no_table">
@@ -144,6 +146,9 @@ No overdue tasks.
     <ul>
       <li><a href="{{project.quicktasks_url}}">Tasks Quick Entry</a></li>
       <li><a href="{{project.quicktaskitems_url}}">Task Items Quick Entry</a></li>
+			{% ifequal access 'Owner' %}
+			<li><a href="{{project.settings_url}}">Settings</a></li>
+			{% endifequal %}
     </ul>
     {% if project.invited_users %}
     <div>

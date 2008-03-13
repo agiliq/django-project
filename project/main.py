@@ -18,6 +18,7 @@ def index(request):
         return login(request)
     register_form = bforms.UserCreationForm(prefix='register')
     login_form = bforms.LoginForm()
+    request.session.set_test_cookie()
     payload = {'register_form':register_form, 'login_form':login_form}
     return render(request, 'project/index.html', payload)
 
@@ -140,7 +141,7 @@ def project_details(request, project_name):
             writer.writerow(task.as_csv())
         return response
     
-    payload = {'project':project, 'inviteform':inviteform, 'taskform':taskform, 'new_tasks':new_tasks, 'overdue_tasks':overdue_tasks,}
+    payload = {'project':project, 'inviteform':inviteform, 'taskform':taskform, 'new_tasks':new_tasks, 'overdue_tasks':overdue_tasks, 'access':access}
     return render(request, 'project/projdetails.html', payload)
 
 

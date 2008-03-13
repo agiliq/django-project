@@ -7,6 +7,7 @@ import bforms
 
 import pygooglechart
 
+@login_required
 def project_health(request, project_name):
     """Shows the over all progress report of the Project.
     Actions available:
@@ -57,6 +58,7 @@ def project_health(request, project_name):
     payload = locals()
     return render(request, 'project/projecthealth.html', payload)
 
+@login_required
 def user_stats(request, project_name):
     """Shows the per user account od the task/task items.
     Actions available: None

@@ -34,6 +34,7 @@ feeds = {
 }
 urlpatterns += patterns('',
     (r'^feeds/(?P<url>.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': feeds}),
+    (r'^feeds2/(?P<url>.*)/$', 'project.rss.proj_feed', {'feed_dict': feeds}),
     )
 
 urlpatterns += patterns('project.main',

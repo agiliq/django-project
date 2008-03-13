@@ -137,6 +137,10 @@ class Project(models.Model):
         """Url to the rss for this project."""
         return '/feeds/project/%s/' % self.shortname
     
+    def settings_url(self):
+        """Url to the settings for this project."""
+        return '/%s/settings/' % self.shortname
+    
     def get_last_date(self):
         """Returns a reasonable last date even if the end date for the project is null."""
         cursor = connection.cursor()
@@ -179,10 +183,14 @@ class Project(models.Model):
     
     def num_taskitems(self):
         cursor = connection.cursor()
-        cursor.execute('SELECT COUNT(project_taskitem.id) FROM project_task, project_taskitem WHERE project_task.number = project_taskitem.task_num AND project_task.project_id = %s AND project_taskitem.is_current = %s  AND project_task.is_current = %s' % (self.id, True, True))
+        stmt = 'SELECT COUNT(project_taskitem.id) FROM project_task, project_taskitem WHERE project_task.number = project_taskitem.task_num AND project_task.project_id = %s AND project_taskitem.is_current = %s  AND project_task.is_current = %s' % (self.id, True, True)
+        cursor.execute(stmt)
+        print stmt
         data = cursor.fetchone()
+        stmt = 'SELECT project_task.project_id, project_taskitem.name FROM project_task, project_taskitem WHERE project_task.number = project_taskitem.task_num AND project_task.project_id = %s AND project_taskitem.is_current = %s  AND project_task.is_current = %s' % (self.id, True, True)
+        cursor.execute(stmt)
+        print cursor.fetchall()
         return data[0]
-        #return self.taskitem_set.all().count()
     
     def sum_time(self):
         cursor = connection.cursor()
@@ -396,6 +404,14 @@ class Task(models.Model):
     
     def __str__(self):
         return self.name
+    
+    def delete(self):
+        log_text = 'Task %s has been deleted.' % self.name
+        log_description = 'Task was deleted on %s' % time.strftime('%d %B %y')
+        log = Log(project = self.project, text=log_text, description = log_description)
+        log.save()
+        self.taskitem_set.all().delete()
+        super(Task, self).delete()
     
     @classmethod
     def as_csv_header(self):

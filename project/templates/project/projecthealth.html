@@ -56,7 +56,7 @@
 				<table width="100%" border="0" cellspacing="0" cellpadding="0" class="tbltitle">
   <tr>
     <td width="41%" style=" padding-left:30px;" >Month</td>
-    <td width="59%"  style="background:#4D7CA7 url(images/curve_blue.gif) 100% 0px no-repeat" >Starting this month.</td>
+    <td width="59%"  style="background:#4D7CA7 url(/site_media/images/curve_blue.gif) 100% 0px no-repeat" >Starting this month.</td>
    
   </tr>
  
@@ -83,7 +83,7 @@
 				<table width="100%" border="0" cellspacing="0" cellpadding="0" class="tbltitle">
   <tr>
     <td width="41%" style=" padding-left:30px;" >Month</td>
-    <td width="59%"  style="background:#4D7CA7 url(images/curve_blue.gif) 100% 0px no-repeat" >Ending this month.</td>
+    <td width="59%"  style="background:#4D7CA7 url(/site_media/images/curve_blue.gif) 100% 0px no-repeat" >Ending this month.</td>
    
   </tr>
  
@@ -91,7 +91,13 @@
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tbl">
  {% for monthview in end_month %}
   <tr>
-    <td width="41%" style=" padding-left:30px;">{{monthview.0}} {{monthview.1}}</td>
+    <td width="41%" style=" padding-left:30px;">
+		{% if monthview.0 %}
+		{{monthview.0}} {{monthview.1}}
+		{% else %}
+		Unspecified
+		{% endif %}
+		</td>
     <td width="59%"> {{monthview.2}} </td>
   </tr>
 	{% endfor %}

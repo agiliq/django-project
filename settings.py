@@ -84,14 +84,15 @@ INSTALLED_APPS = (
 )
 
 
-SESSION_COOKIE_DOMAIN = '.shabda.tld'
+#SESSION_COOKIE_DOMAIN  '.shabda.tld'
 LOGIN_REDIRECT_URL = '/dashboard/'
 SMTP_HOST = 'localhost'
 SMTP_PORT = 25
 AUTH_PROFILE_MODULE = 'prefs.userprofile'
 MEDIA_ROOT = 'G:/prajact/files'
 MEDIA_URL = '/files/'
-PERSISTENT_SESSION_KEY = True
+PERSISTENT_SESSION_KEY = 'persistant'
+REDIRECT_FIELD_NAME = "next"
 
 #TESTING
 #

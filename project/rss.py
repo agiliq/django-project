@@ -5,6 +5,9 @@ from helpers import *
 from models import *
 import bforms
 
+import basicauth
+from django.contrib.syndication.views import feed
+
 from django.contrib.syndication.feeds import FeedDoesNotExist, Feed
 
 class ProjectRss(Feed):
@@ -27,5 +30,13 @@ class ProjectRss(Feed):
     
     
     def items(self, obj):
-        return obj.log_set.all()[:30]     
+        return obj.log_set.all()[:30]
+   
+@basicauth.logged_in_or_basicauth()    
+def proj_feed(request, url, feed_dict=None):
+    slug, param = url.split('/', 1)
+    project_name = param
+    project = get_project(request, project_name)
+    return feed(request, url, feed_dict)
     
+
