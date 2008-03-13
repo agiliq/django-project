@@ -8,7 +8,6 @@ from django.db import connection
 import re
 
 import time
-import mptt
 
 class AddTodoItemForm(forms.Form):
     """A form to add a todo item to a todo list."""
