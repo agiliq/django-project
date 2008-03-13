@@ -1,4 +1,4 @@
-{% extends 'registration/base.html' %}
+{% extends 'project/base.html' %}
 
 
 {% block contents %}
@@ -8,6 +8,16 @@
 <form action="." method="post">
 {{prefform.as_p}}
 <input type="submit" name="Edit" value="edit" class="submitbtn"/>
+</form>
+</div>
+</div>
+
+<div class="genericform">
+<h3>Change password</h3>
+<div class="createcontent" >
+<form action="." method="post">
+{{passch_form.as_p}}
+<input type="submit" name="changepass" value="Change Password" class="submitbtn"/>
 </form>
 </div>
 </div>

@@ -4,42 +4,46 @@
 Index
 {% endblock %}
 
-{% block contents1 %}
-    
-    <div id="login">
-    <form action="/accounts/login/" method="post">
-    <fieldset>
-	<legend>Login</legend>
-        <p><label for="username">Username:</label> <input id="id_username" type="text" name="username" dojoType="dijit.form.TextBox" maxlength="30" /></p>
-	<p><label for="password">Password:</label> <input id="id_password" type="password" name="password" maxlength="30" /></p>
-	<input type="submit" value="login" />
-	<input type="hidden" name="next" value="" />
-    </fieldset>
-    </form>
-    <a href="/accounts/register/">Or Register</a>
-    </div>
+{% block subnav %}
 {% endblock %}
+
+{% block subheader %}
+{% endblock %}
+
+{% block feeds %}
+{% endblock %}
+
+		{% block topheader %}
+		<div class="signout"></div>
+		<div id="logo">
+		<img src="/site_media/images/logo.gif" alt="" /></div>
+		<div class="icon"></div>		
+		{% endblock %}	
+
 
 {% block outercontent %}
 	<div id="content1">
 		<div id="leftcontent">
 		<h1>Welcome to Dashbard!</h1>
-		<h3 class="arrowh3">Enjoy all the benefits of Yahoo! Mail.</h3>
+		<h3 class="arrowh3">Plan. Track. Manage.</h3>
 		<ul class="ultext">
 
-		<li>* Vestibulum volutpat posuere neque bulum volutpat posu.</li>
-    <li>* Maecenas quis metus vel orci feugiat ullamcorpers quis metus vel orci feugia.</li>
-    <li>* Integer eu sapien et lacus aliquet euismodapien et lacus aliquet eu.</li>
-    <li>* Sed volutpat vestibulum libero volutpat vestibulum lib.</li>
-    <li>* Nam pharetra felis non pederetra felis .</li>
+		<li>* Manage depenedencies with multi-level-hierchical task structure. </li>
+    <li>* Track time spent with task items.</li>
+    <li>* Integrated wiki, file storage and notice board.</li>
+    <li>* Versioned projects so your data is never lost.</li>
+    <li>* Integrated metrics.</li>
+		<li>* Keep track of changes via mail or rss. </li>
+		<li>* Multiple access levels.</li>		
 		</ul>
 
 	
-	<h2>Lorem ipsum dolor sit amet ? </h2>
-	<p class="ptext">Lorem ipsum dolor sit amet</p>
-	<div class="m-img"><img src="/site_media/screenshots/tn_calendar.png" alt="" /><br />Lorem ipsum dolor sit</div><div class="m-img"><img src="/site_media/screenshots/tn_dashboard.png" alt="" /><br />Lorem ipsum dolor sit</div>
-		
+	<h2>Oh look. Some screenshots!</h2>
+	<div class="m-img"><img src="/site_media/screenshots/tn_calendar_1.png" alt="" /><br />Calendar</div>
+	<div class="m-img"><img src="/site_media/screenshots/tn_dashboard_1.png" alt="" /><br />Metrics</div>
+	<div class="m-img"><img src="/site_media/screenshots/tn_metrics_1.png" alt="" /><br />Dashboard</div>		
 		</div>
+		
 		<div id="rightcontent"><div id="sigin">
 			<h3>Signin into DashBoard</h3>
 

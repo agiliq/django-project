@@ -10,19 +10,26 @@ from helpers import *
 from models import *
 from prefs.models import *
 import bforms
+import userforms
 from django.contrib.auth import REDIRECT_FIELD_NAME
 
 @login_required
 def settings(request):
     profile = request.user.get_profile()
     prefform = bforms.PreferencesForm(instance = profile)
-    
+    passch_form = userforms.PasswordChangeForm(request.user)
     if request.method == 'POST':
-        prefform = bforms.PreferencesForm(instance = profile, data=request.POST)
-        if prefform.is_valid():
-            prefform.save()
-            return HttpResponseRedirect('.')
-    payload = {'prefform':prefform}
+        if request.POST.has_key('settings'):
+            prefform = bforms.PreferencesForm(instance = profile, data=request.POST)
+            if prefform.is_valid():
+                prefform.save()
+                return HttpResponseRedirect('.')
+        elif request.POST.has_key('changepass'):
+            passch_form = userforms.PasswordChangeForm(request.user, data = request.POST)
+            if passch_form.is_valid():
+                passch_form.save()
+                return HttpResponseRedirect('.')
+    payload = {'prefform':prefform, 'passch_form':passch_form}
     return render(request, 'registration/settings.html', payload)
 
 
