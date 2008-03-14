@@ -442,8 +442,8 @@ class UserCreationForm(MarkedForm):
     
     def save(self):
         user = User.objects.create_user(self.cleaned_data['username'], '', self.cleaned_data['password1'])
-        profile = UserProfile(user = user)
-        profile.save()
+        #profile = UserProfile(user = user)
+        #profile.save()
         return user
     
 class AddFileForm(forms.Form):
