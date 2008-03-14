@@ -20,8 +20,9 @@ urlpatterns += patterns('project.users',
     (r'^accounts/login/$', 'login'),
     (r'^accounts/logout/$', 'logout'),
     (r'^accounts/profile/$', 'profile'),
-    (r'^accounts/register/$', 'register'),
+    #(r'^accounts/register/$', 'register'),
     (r'^accounts/settings/$', 'settings'),
+    (r'^accounts/', include('registration.urls')),
     (r'^(?P<project_name>\w+)/user/(?P<username>\w+)/$', 'user_details'),
     )
 
