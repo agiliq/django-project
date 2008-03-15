@@ -1269,3 +1269,8 @@ margin:0px;
     padding-right: 3px;
 }
 .focusfield{ background:url(images/inputselect.gif)}
+
+.simple{
+    color: red;
+    
+}
