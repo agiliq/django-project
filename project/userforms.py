@@ -1,11 +1,12 @@
-from django import newforms as forms
-import re
-from django.newforms import ValidationError
+from django import forms
+from django.forms import ValidationError
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.contrib.sites.models import Site
 from django.template import Context, loader
 from django.utils.translation import ugettext as _
+
+import re
 
 class PasswordResetForm(forms.Form):
     """A form that lets a user request a password reset"""
@@ -13,7 +14,7 @@ class PasswordResetForm(forms.Form):
 
     def clean_email (self):
         try:
-           self.user = User.objects.get(email__iexact=self.cleaned_data['email'])
+            self.user = User.objects.get(email__iexact=self.cleaned_data['email'])
         except User.DoesNotExist:
             print '***'
             raise ValidationError(_("That e-mail address doesn't have an associated user account. Are you sure you've registered?"))

@@ -7,15 +7,6 @@ urlpatterns = patterns('project.foo',
     (r'^projson/(?P<project_name>\w+)/$', 'proj_json')
     )
 
-urlpatterns += patterns('',
-        (r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': 'G:/prajact/project/templates/site_media'}),
-    )
-
-urlpatterns += patterns('',
-        (r'^help/(?P<path>.*)$', 'django.views.static.serve', {'document_root': 'G:/prajact/project/templates/help'}),
-    )
-
-
 urlpatterns += patterns('project.users',
     (r'^accounts/login/$', 'login'),
     (r'^accounts/logout/$', 'logout'),

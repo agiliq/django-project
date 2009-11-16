@@ -23,4 +23,5 @@ DATABASE_PORT = ''             # Set to empty string for default. Not used with 
 TIME_ZONE = 'America/Chicago'
 
 MEDIA_ROOT = ''
+HELP_ROOT = ''
 MEDIA_URL = ''

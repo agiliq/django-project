@@ -3,7 +3,7 @@ from models import *
 from bforms import *
 from django.contrib.auth.models import User
 import datetime
-from django.newforms import ValidationError
+from django.forms import ValidationError
 
 today = datetime.date.today()
 today_str = str(today)

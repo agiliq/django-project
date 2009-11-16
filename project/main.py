@@ -5,7 +5,7 @@ from helpers import *
 from models import *
 import bforms
 from defaults import *
-from django.core.paginator import ObjectPaginator, InvalidPage
+from django.core.paginator import Paginator, InvalidPage
 import csv
 import StringIO
 import sx.pisa3 as pisa

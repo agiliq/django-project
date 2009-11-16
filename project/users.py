@@ -4,7 +4,6 @@ from django.contrib.auth.views import login as auth_login
 from django.contrib.auth.views import logout as auth_logout
 from django.contrib import auth
 from django.conf import settings as settin
-from django.contrib.auth.decorators import login_required
 
 from helpers import *
 from models import *
