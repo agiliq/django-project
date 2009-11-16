@@ -462,31 +462,31 @@ class AddFileForm(forms.Form):
         self.user = user
     
     def save(self):
-            conn = S3.AWSAuthConnection(secrets.aws_id, secrets.aws_key)
-            filename = '/%s/%s' % (self.project, self.cleaned_data['filename'].filename)
+            conn = S3.AWSAuthConnection(secrets.AWS_ID, secrets.AWS_SECRET_KEY)
+            uploaded_filename = self.cleaned_data['filename'].name
+            filename = '/%s/%s' % (self.project, uploaded_filename)
+            content = self.cleaned_data['filename'].read()
             try:        
-                old_file = self.project.projectfile_set.get(filename = self.cleaned_data['filename'].filename)
+                old_file = self.project.projectfile_set.get(filename = uploaded_filename)
                 versions = old_file.projectfileversion_set.all().count()
-                #filename = '%s-%s' % (filename, versions + 1)
-                split_f = filename.split('.')
+                split_f = filename.rsplit('.', 1)
                 name_no_ext = ''.join(split_f[:-1])
                 filename = '%s-%s.%s' % (name_no_ext, versions + 1, split_f[-1])
-                response = conn.put(defaults.bucket, filename, self.cleaned_data['filename'].content)
+                response = conn.put(defaults.bucket, filename, content)
                 saved_file = old_file
-                saved_file_revision = ProjectFileVersion(file = saved_file, revision_name=filename, user = self.user, size = len(self.cleaned_data['filename'].content))
+                saved_file_revision = ProjectFileVersion(file = saved_file, revision_name=filename, user = self.user, size = len(content))
                 saved_file_revision.save()
                 saved_file.current_revision = saved_file_revision
                 saved_file.total_size += saved_file_revision.size
                 saved_file.save()
             except ProjectFile.DoesNotExist, e:
-                #filename = '%s-%s' % (filename, 1)
-                split_f = filename.split('.')
+                split_f = filename.rsplit('.', 1)
                 name_no_ext = ''.join(split_f[:-1])
                 filename = '%s-%s.%s' % (name_no_ext, 1, split_f[-1])
-                response = conn.put(defaults.bucket, filename, self.cleaned_data['filename'].content)
-                saved_file = ProjectFile(project = self.project, filename = self.cleaned_data['filename'].filename, total_size = 0)
+                response = conn.put(defaults.bucket, filename, content)
+                saved_file = ProjectFile(project = self.project, filename = uploaded_filename, total_size = 0)
                 saved_file.save()
-                saved_file_revision = ProjectFileVersion(file = saved_file, revision_name=filename, user = self.user, size = len(self.cleaned_data['filename'].content))
+                saved_file_revision = ProjectFileVersion(file = saved_file, revision_name=filename, user = self.user, size = len(content))
                 saved_file_revision.save()
                 saved_file.current_revision = saved_file_revision
                 saved_file.total_size = saved_file_revision.size

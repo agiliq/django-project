@@ -68,13 +68,13 @@ def render(request, template, payload):
 def get_pagination_data(obj_page, page_num):
     data = {}
     page_num = int(page_num)
-    data['has_next_page'] = obj_page.has_next_page(page_num)
+    data['has_next_page'] = obj_page.has_next()
     data['next_page'] = page_num + 1
-    data['has_prev_page'] = obj_page.has_previous_page(page_num)
+    data['has_prev_page'] = obj_page.has_previous()
     data['prev_page'] = page_num - 1
-    data['first_on_page'] = obj_page.first_on_page(page_num)
-    data['last_on_page'] = obj_page.last_on_page(page_num)
-    data['total'] = obj_page.hits
+    data['first_on_page'] = obj_page.start_index()
+    data['last_on_page'] = obj_page.end_index()
+    data['total'] = -1#TODO, dummy
     return data
 
 def get_paged_objects(query_set, request, obj_per_page):
@@ -82,11 +82,11 @@ def get_paged_objects(query_set, request, obj_per_page):
         page = request.GET['page']
         page = int(page)
     except KeyError, e:
-        page = 0
-    object_page = ObjectPaginator(query_set, obj_per_page)
-    object = object_page.get_page(page)
-    page_data = get_pagination_data(object_page, page)
-    return object, page_data
+        page = 1
+    object_page = Paginator(query_set, obj_per_page)
+    paged = object_page.page(page)
+    page_data = get_pagination_data(paged, page)
+    return paged.object_list, page_data
 
 def handle_task_status(request, is_xhr = False):
     """Handle changes to status for a task. (Is_complete status toggle)."""

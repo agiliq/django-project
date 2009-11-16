@@ -2,4 +2,5 @@
 *.log
 *.temp
 localsettings.py
-*secret*
+*secrets.py
+*secret.py

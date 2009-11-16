@@ -13,13 +13,14 @@ import defaults
 
 import S3
 
+@login_required
 def files(request, project_name):
     """Files for a project. Shows the files uploaded for a project.
     Actions available:
     Add files:  Owner Participant
     """
     project = get_project(request, project_name)
-    gen = S3.QueryStringAuthGenerator(secrets.aws_id, secrets.aws_key)
+    gen = S3.QueryStringAuthGenerator(secrets.AWS_ID, secrets.AWS_SECRET_KEY)
     print gen.list_bucket(defaults.bucket)
     """files = []
     for file in project.projectfile_set.all():
@@ -27,7 +28,7 @@ def files(request, project_name):
         files.append((file, url))"""
         
     addfileform = bforms.AddFileForm(project = project, user = request.user)    
-    aws_id = secrets.aws_id
+    aws_id = secrets.AWS_ID
     if request.method == 'POST':
         if request.POST.has_key('Addfile'):
             addfileform = bforms.AddFileForm(project , request.user, request.POST, request.FILES)
@@ -37,7 +38,7 @@ def files(request, project_name):
         if request.POST.has_key('fileid'):
             fileid = int(request.POST['fileid'])
             file = ProjectFile.objects.get(project = project, id = fileid)
-            conn = S3.AWSAuthConnection(secrets.aws_id, secrets.aws_key)
+            conn = S3.AWSAuthConnection(secrets.AWS_ID, secrets.AWS_SECRET_KEY)
             for revision in file.projectfileversion_set.all():
                 conn.delete(defaults.bucket, revision.revision_name)
             file.delete()
