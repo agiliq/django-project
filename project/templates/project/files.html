@@ -39,7 +39,7 @@
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tbl">
  {% for file in project.projectfile_set.all %}
   <tr class="{% cycle '' 'tdbggrey' %}">
-    <td width="19%" class="projectname"><a href="{{file.current_revision.get_s3_url}}">{{file.filename}}</a></td>
+    <td width="19%" class="projectname"><a href="{{ file.get_s3_url|safe }}">{{file.filename}}</a></td>
     <td width="15%"> {{file.created_on|date}}  </td>
     <td width="14%"> {{file.current_revision.user.username}} </td>
     <td width="16%"> {{file.size_str}}</td>
@@ -48,7 +48,7 @@
         <ul>
             {% for revision in file.projectfileversion_set.all %}
             <li>
-                <a href="{{revision.get_s3_url}}">Version {{revision.version_number}}</a>
+                <a href="{{ revision.get_s3_url|safe }}">Version {{revision.version_number}}</a>
             </li>
             {% endfor %}
         </ul>

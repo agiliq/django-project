@@ -21,14 +21,7 @@ def files(request, project_name):
     """
     project = get_project(request, project_name)
     gen = S3.QueryStringAuthGenerator(secrets.AWS_ID, secrets.AWS_SECRET_KEY)
-    print gen.list_bucket(defaults.bucket)
-    """files = []
-    for file in project.projectfile_set.all():
-        url = gen.get(bucket, '/%s/%s' % (project.name, file.current_revision.get_name()))
-        files.append((file, url))"""
-        
     addfileform = bforms.AddFileForm(project = project, user = request.user)    
-    aws_id = secrets.AWS_ID
     if request.method == 'POST':
         if request.POST.has_key('Addfile'):
             addfileform = bforms.AddFileForm(project , request.user, request.POST, request.FILES)

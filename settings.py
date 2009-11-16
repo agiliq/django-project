@@ -19,9 +19,6 @@ USE_I18N = True
 # Examples: "http://foo.com/media/", "/media/".
 ADMIN_MEDIA_PREFIX = '/media/'
 
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = 'sta83wr209z@gq+j(q@_*0eak08_hzyr57%wl#c@u(@=+sjtcs'
-
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.load_template_source',
@@ -70,9 +67,3 @@ try:
     from localsettings import *
 except ImportError:
     raise
-
-
-#TESTING
-#
-#TEST_RUNNER='project.tests.test_runner_with_coverage'
-#COVERAGE_MODULES = ['project.models', 'project.urls', 'project.bforms']

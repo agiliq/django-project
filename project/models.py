@@ -938,6 +938,9 @@ class ProjectFile(models.Model):
         log.description = 'File was created on %s' % time.strftime('%d %B %y')
         log.save()
         super(ProjectFile, self).save()
+        
+    def get_s3_url(self):
+        return self.current_revision.get_s3_url()
     
     def __unicode__(self):
         return u'%s' % self.filename
@@ -962,28 +965,27 @@ class ProjectFileVersion(models.Model):
     user = models.ForeignKey(User)
     size = models.IntegerField()
     created_on = models.DateTimeField(auto_now_add = 1)
-    
-    def save(self):
-        "Save and log."
-        log = Log(text = "New revision for file %s has been created." % (self.filename, self.project.name), project = self.file.project)
-        log.description = 'Revision was created on %s' % time.strftime('%d %B %y')
-        log.save()
-        super(ProjectFileVersion, self).save()
+
     
     def get_name(self):
         #return '%s-%s' % (self.file.filename,self.version_number)
         return self.revision_name
     
+    def get_real_name(self):
+        return self.get_name()[1:]
+    
     def get_s3_url(self):
         import secrets
         import S3
         import defaults
-        gen = S3.QueryStringAuthGenerator(secrets.aws_id, secrets.aws_key)
-        #url = gen.get(defaults.bucket, '/%s/%s' % (self.file.project.shortname, self.get_name()))
-        url = gen.get(defaults.bucket, '%s' % (self.get_name()))
+        gen = S3.QueryStringAuthGenerator(secrets.AWS_ID, secrets.AWS_SECRET_KEY)
+        url = gen.get(defaults.bucket, self.get_real_name())
         return url
         
     def save(self):
+        log = Log(text = "New revision for file %s has been created." % (self.filename, self.project.name), project = self.file.project)
+        log.description = 'Revision was created on %s' % time.strftime('%d %B %y')
+        log.save()
         last_version = self.file.projectfileversion_set.count()
         self.version_number = last_version + 1
         super(ProjectFileVersion, self).save()
