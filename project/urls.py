@@ -39,7 +39,6 @@ urlpatterns += patterns('',
     )
 
 urlpatterns += patterns('project.main',
-    # Example:
     (r'^$', 'index'),
     (r'^foo/$', direct_to_template, {'template':'project/dummy.html'}),
     (r'^admin/', include('django.contrib.admin.urls')),
