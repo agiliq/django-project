@@ -1,5 +1,8 @@
-from django import newforms as forms
-from django.newforms import ValidationError
+from django import forms
+from django.forms import ValidationError
+from django.forms import widgets
+from django.contrib.auth.models import User
+
 import re
 
 from models import *
@@ -10,6 +13,9 @@ import datetime
 import S3
 import secrets
 import defaults
+
+
+
 
 class CreateProjectForm(MarkedForm):
     """Create a new project.
@@ -526,10 +532,6 @@ class PreferencesForm(forms.ModelForm):
     class Meta:
         model = pmodel.UserProfile
         exclude = ('user',)
-    
-                
-from django.newforms import widgets
-from django.contrib.auth.models import User
 
 class LoginForm(forms.Form):
     """Login form for users."""

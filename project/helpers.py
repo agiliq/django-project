@@ -4,7 +4,7 @@ from django.http import Http404
 from django.http import HttpResponseRedirect, HttpResponse
 import csv
 
-from django.core.paginator import ObjectPaginator, InvalidPage
+from django.core.paginator import Paginator, InvalidPage
 from django.template.loader import get_template
 from django.template import Context
 import StringIO

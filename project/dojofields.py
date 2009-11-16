@@ -1,4 +1,4 @@
-import django.newforms as forms
+from django import forms
 
 class DojoCharField(forms.CharField):
     def __init__(self, *args, **kwargs):
