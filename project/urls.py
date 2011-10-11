@@ -1,5 +1,8 @@
 from django.conf.urls.defaults import *
 from django.views.generic.simple import direct_to_template
+from django.contrib import admin
+
+admin.autodiscover()
 
 from rss import *
 
@@ -32,7 +35,7 @@ urlpatterns += patterns('',
 urlpatterns += patterns('project.main',
     (r'^$', 'index'),
     (r'^foo/$', direct_to_template, {'template':'project/dummy.html'}),
-    (r'^admin/', include('django.contrib.admin.urls')),
+    (r'^admin/', include(admin.site.urls)),
     (r'^dashboard/$', 'dashboard'),    
     (r'^(?P<project_name>\w+)/$', 'project_details'),
     (r'^(?P<project_name>\w+)/settings/$', 'settings'),                            
