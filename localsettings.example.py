@@ -28,3 +28,5 @@ TIME_ZONE = 'America/Chicago'
 MEDIA_ROOT = ''
 HELP_ROOT = ''
 MEDIA_URL = ''
+
+ACCOUNT_ACTIVATION_DAYS=7
