@@ -13,7 +13,7 @@ urlpatterns += patterns('project.users',
     (r'^accounts/profile/$', 'profile'),
     #(r'^accounts/register/$', 'register'),
     (r'^accounts/settings/$', 'settings'),
-    (r'^accounts/', include('registration.urls')),
+    (r'^accounts/', include('registration.backends.default.urls')),
     (r'^(?P<project_name>\w+)/user/(?P<username>\w+)/$', 'user_details'),
     )
 
