@@ -1,0 +1,4 @@
+django==1.3
+-e hg+https://bitbucket.org/ubernostrum/django-registration#egg=django_registration
+reportlab
+feedparser
