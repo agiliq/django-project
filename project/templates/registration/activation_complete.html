@@ -1,0 +1,10 @@
+{% extends "registration/base.html" %}
+
+{% block title %}
+{{block.super}} - Activation Complete
+{% endblock %}
+
+{% block contents %}
+<h2>Your account has been successfully activated.</h2>
+<p>Please <a href="{% url auth_login %}">login</a> to your account.</p>
+{% endblock %}
