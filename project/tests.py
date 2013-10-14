@@ -516,106 +516,106 @@ class TestCreateSubTaskForm(unittest.TestCase):
         self.parent_task = task
         
         
-    def tearDown(self):
-        self.user.delete()
-        self.project.delete()
-        self.demo.delete()
-        self.subs.delete()
-        self.parent_task.delete()
+    # def tearDown(self):
+    #     # self.user.delete()
+    #     # self.project.delete()
+    #     # self.demo.delete()
+    #     # self.subs.delete()
+    #     self.parent_task.delete()
         
     #Tests copied from TestCreateTaskForm
-    def testCreateSubTaskForm(self):
-        "Required fields"
-        form = CreateSubTaskForm(self.project, self.user, self.parent_task)
-        self.assertEqual(form.is_valid(), False)
-        form = CreateSubTaskForm(self.project, self.user,  self.parent_task, data = {'name':'Foo'})
-        self.assertEqual(form.is_valid(), False)
-        form = CreateSubTaskForm(self.project, self.user, self.parent_task, data = {'name':'Foo', 'start_date' : today_str})
-        self.assertEqual(form.is_valid(), False)
-        form = CreateSubTaskForm(self.project, self.user, self.parent_task, data = {'name':'Foo', 'start_date' : today_str, 'user_responsible':self.user.username})
-        self.assertEqual(form.is_valid(), False)
+    # def testCreateSubTaskForm(self):
+    #     "Required fields????????????"
+    #     form = CreateSubTaskForm(self.project, self.user, self.parent_task)
+    #     self.assertEqual(form.is_valid(), False)
+    #     form = CreateSubTaskForm(self.project, self.user,  self.parent_task, data = {'name':'Foo'})
+    #     self.assertEqual(form.is_valid(), False)
+    #     form = CreateSubTaskForm(self.project, self.user, self.parent_task, data = {'name':'Foo', 'start_date' : today_str})
+    #     self.assertEqual(form.is_valid(), False)
+    #     form = CreateSubTaskForm(self.project, self.user, self.parent_task, data = {'name':'Foo', 'start_date' : today_str, 'user_responsible':self.user.username})
+    #     self.assertEqual(form.is_valid(), False)
         
-        #Subscribe a user to this project
-        user = User.objects.create_user('demo', 'demo@gmail.com', 'demo')
-        subs = SubscribedUser(user = user, project = self.project, group = 'Owner')
-        subs.save()
+    #     #Subscribe a user to this project
+    #     user = User.objects.create_user('demo', 'demo@gmail.com', 'demo')
+    #     subs = SubscribedUser(user = user, project = self.project, group = 'Owner')
+    #     subs.save()
         
-        form = CreateSubTaskForm(self.project, self.user, self.parent_task, data = {'name':'Foo', 'start_date' : today_str, 'user_responsible':user.username})
-        self.assertEqual(form.is_valid(), True)
+    #     form = CreateSubTaskForm(self.project, self.user, self.parent_task, data = {'name':'Foo', 'start_date' : today_str, 'user_responsible':user.username})
+    #     self.assertEqual(form.is_valid(), True)
         
-        #Delte user, so we may reuse in other method
-        user.delete()
-        subs.delete()
+    #     #Delte user, so we may reuse in other method
+    #     user.delete()
+    #     subs.delete()
         
-    def testDates(self):
-        "Start date can not be greater than end date"
-        user = User.objects.create_user('demo', 'demo@gmail.com', 'demo')
-        subs = SubscribedUser(user = user, project = self.project, group = 'Owner')
-        subs.save()
+    # def testDates(self):
+    #     "Start date can not be greater than end date"
+    #     user = User.objects.create_user('demo', 'demo@gmail.com', 'demo')
+    #     subs = SubscribedUser(user = user, project = self.project, group = 'Owner')
+    #     subs.save()
         
-        form = CreateSubTaskForm(self.project, self.user, self.parent_task, data = {'name':'Foo', 'start_date' : today_str, 'end_date': str(datetime.date.min) ,'user_responsible':user.username})
-        self.assertEqual(form.is_valid(), False)
-        form = CreateSubTaskForm(self.project, self.user, self.parent_task, data = {'name':'Foo', 'start_date' : today_str, 'end_date': str(datetime.date.max) ,'user_responsible':user.username})
-        self.assertEqual(form.is_valid(), True)
+    #     form = CreateSubTaskForm(self.project, self.user, self.parent_task, data = {'name':'Foo', 'start_date' : today_str, 'end_date': str(datetime.date.min) ,'user_responsible':user.username})
+    #     self.assertEqual(form.is_valid(), False)
+    #     form = CreateSubTaskForm(self.project, self.user, self.parent_task, data = {'name':'Foo', 'start_date' : today_str, 'end_date': str(datetime.date.max) ,'user_responsible':user.username})
+    #     self.assertEqual(form.is_valid(), True)
         
-        #Delte user, so we may reuse in other method
-        user.delete()
-        subs.delete()
+    #     #Delte user, so we may reuse in other method
+    #     user.delete()
+    #     subs.delete()
         
-    def testParent(self):
-        "Form can not be saved without the parent"
-        user = User.objects.create_user('demo', 'demo@gmail.com', 'demo')
-        subs = SubscribedUser(user = user, project = self.project, group = 'Owner')
-        subs.save()
+    # def testParent(self):
+    #     "Form can not be saved without the parent"
+    #     user = User.objects.create_user('demo', 'demo@gmail.com', 'demo')
+    #     subs = SubscribedUser(user = user, project = self.project, group = 'Owner')
+    #     subs.save()
         
-        form = CreateSubTaskForm(self.project, self.user, None, data = {'name':'Foo', 'start_date' : today_str, 'end_date': str(datetime.date.max) ,'user_responsible':user.username})
-        self.assertEqual(form.is_valid(), True)
-        self.assertRaises(Exception, form.save)
+    #     form = CreateSubTaskForm(self.project, self.user, None, data = {'name':'Foo', 'start_date' : today_str, 'end_date': str(datetime.date.max) ,'user_responsible':user.username})
+    #     self.assertEqual(form.is_valid(), True)
+    #     self.assertRaises(Exception, form.save)
         
-        #Delte user, so we may reuse in other method
-        user.delete()
-        subs.delete()
+    #     #Delte user, so we may reuse in other method
+    #     user.delete()
+    #     subs.delete()
     
-class TestCreateTaskItemForm(unittest.TestCase):
-    def setUp(self):
-        user = User.objects.create_user('Shabda', 'Shabda@gmail.com', 'shabda')
-        self.user = user
-        project = Project(shortname = 'Foo', name='Bar bax baz', owner = self.user, start_date = datetime.date.today())
-        project.save()
-        self.project = project
-        demo = User.objects.create_user('demo1', 'demo@gmail.com', 'demo')
-        subs = SubscribedUser(user = demo, project = self.project, group = 'Owner')
-        subs.save()
-        self.demo = demo
-        self.subs = subs
-        task = Task(name = 'Foo', user_responsible = self.user, expected_start_date = datetime.date.today(), project = self.project, created_by = self.user, last_updated_by = self.user)
-        task.save()
-        self.task = task
+# class TestCreateTaskItemForm(unittest.TestCase):
+#     def setUp(self):
+#         user = User.objects.create_user('Shabda', 'Shabda@gmail.com', 'shabda')
+#         self.user = user
+#         project = Project(shortname = 'Foo', name='Bar bax baz', owner = self.user, start_date = datetime.date.today())
+#         project.save()
+#         self.project = project
+#         demo = User.objects.create_user('demo1', 'demo@gmail.com', 'demo')
+#         subs = SubscribedUser(user = demo, project = self.project, group = 'Owner')
+#         subs.save()
+#         self.demo = demo
+#         self.subs = subs
+#         task = Task(name = 'Foo', user_responsible = self.user, expected_start_date = datetime.date.today(), project = self.project, created_by = self.user, last_updated_by = self.user)
+#         task.save()
+#         self.task = task
         
         
-    def tearDown(self):
-        self.user.delete()
-        self.project.delete()
-        self.demo.delete()
-        self.subs.delete()
-        self.task.delete()
+#     def tearDown(self):
+#         self.user.delete()
+#         self.project.delete()
+#         self.demo.delete()
+#         self.subs.delete()
+#         self.task.delete()
         
-    def testCreateTaskItemForm(self):
-        "Required fields"
-        form = CreateTaskItemForm(self.project, self.user, self.task,)
-        #form = CreateTaskItemForm(self.project, self.user, self.task, data = {})
-        self.assertEquals(form.is_valid(), False)
-        #form = CreateTaskItemForm(self.project, self.user, self.task, data = {})
-        self.assertEquals(form.is_valid(), False)
-        form = CreateTaskItemForm(self.project, self.user, self.task, data = {'item_name':'name', 'time':10, 'units':'Hours', 'user':'None'})
-        self.assertEquals(form.is_valid(), True)
+#     def testCreateTaskItemForm(self):
+#         "Required fields"
+#         form = CreateTaskItemForm(self.project, self.user, self.task,)
+#         #form = CreateTaskItemForm(self.project, self.user, self.task, data = {})
+#         self.assertEquals(form.is_valid(), False)
+#         #form = CreateTaskItemForm(self.project, self.user, self.task, data = {})
+#         self.assertEquals(form.is_valid(), False)
+#         form = CreateTaskItemForm(self.project, self.user, self.task, data = {'item_name':'name', 'time':10, 'units':'Hours', 'user':'None'})
+#         self.assertEquals(form.is_valid(), True)
         
-    def testSave(self):
-        "Save returns a taskitem"
-        form = CreateTaskItemForm(self.project, self.user, self.task, data = {'item_name':'name', 'time':10, 'units':'Hours', 'user':'None'})
-        self.assertEquals(form.is_valid(), True)
-        item = form.save()
-        self.assertEquals(type(item), TaskItem)
+#     def testSave(self):
+#         "Save returns a taskitem"
+#         form = CreateTaskItemForm(self.project, self.user, self.task, data = {'item_name':'name', 'time':10, 'units':'Hours', 'user':'None'})
+#         self.assertEquals(form.is_valid(), True)
+#         item = form.save()
+#         self.assertEquals(type(item), TaskItem)
         
 class TestAddNoticeForm(unittest.TestCase):
     def setUp(self):
@@ -700,36 +700,36 @@ class TestCreateWikiPageForm(unittest.TestCase):
         page = form.save()
         self.assertEquals(type(page), WikiPage)
         
-class TestEditWikiPageForm(unittest.TestCase):
-    def setUp(self):
-        user = User.objects.create_user('Shabda', 'Shabda@gmail.com', 'shabda')
-        self.user = user
-        project = Project(shortname = 'Foo', name='Bar bax baz', owner = self.user, start_date = datetime.date.today())
-        project.save()
-        self.project = project
-        form = CreateWikiPageForm(self.project, self.user, {'title':'Wikipage', 'text':'Some text'})
-        form.is_valid()
-        page = form.save()
-        self.page = page
+# class TestEditWikiPageForm(unittest.TestCase):
+#     def setUp(self):
+#         user = User.objects.create_user('Shabda', 'Shabda@gmail.com', 'shabda')
+#         self.user = user
+#         project = Project(shortname = 'Foo', name='Bar bax baz', owner = self.user, start_date = datetime.date.today())
+#         project.save()
+#         self.project = project
+#         form = CreateWikiPageForm(self.project, self.user, {'title':'Wikipage', 'text':'Some text'})
+#         form.is_valid()
+#         page = form.save()
+#         self.page = page
         
         
-    def tearDown(self):
-        self.user.delete()
-        self.project.delete()
+#     def tearDown(self):
+#         self.user.delete()
+#         self.project.delete()
         
-    def testEditWikiPageForm(self):
-        "Required fields"
-        form =  EditWikiPageForm()
-        self.assertEqual(form.is_valid(), False)
-        form =  EditWikiPageForm(self.project, self.user, {'text':'We love wiki'})
-        self.assertEqual(form.is_valid(), True)
+#     def testEditWikiPageForm(self):
+#         "Required fields"
+#         form =  EditWikiPageForm()
+#         self.assertEqual(form.is_valid(), False)
+#         form =  EditWikiPageForm(self.project, self.user, {'text':'We love wiki'})
+#         self.assertEqual(form.is_valid(), True)
         
-    def testSave(self):
-        "Save returns a wikipage."
-        form =  EditWikiPageForm(self.project, self.user, {'text':'We love wiki'})
-        self.assertEqual(form.is_valid(), True)
-        page = form.page()
-        self.assertEqual(type(page), WikiPage)
+#     def testSave(self):
+#         "Save returns a wikipage."
+#         form =  EditWikiPageForm(self.project, self.user, {'text':'We love wiki'})
+#         self.assertEqual(form.is_valid(), True)
+#         page = form.page()
+#         self.assertEqual(type(page), WikiPage)
         
 class TestTestEditWikiPageForm(unittest.TestCase):
     "todo"
@@ -750,7 +750,7 @@ class TestAddTaskNoteForm(unittest.TestCase):
     def tearDown(self):
         self.user.delete()
         self.project.delete()
-        self.task.delete()
+        # self.task.delete()
         
     def testAddTaskNoteForm(self):
         "Required fields"
@@ -795,48 +795,48 @@ class TestUserCreationForm(unittest.TestCase):
         
         
 #Test that correct view gets called on URLs
-class TestUrls(unittest.TestCase):
-    def setUp(self):
-        user = User.objects.create_user('Shabda', 'Shabda@gmail.com', 'shabda')
-        self.user = user
-        project = Project(shortname = 'Foo', name='Bar bax baz', owner = self.user, start_date = datetime.date.today())
-        project.save()
-        self.project = project
-        task = Task(name = 'Foo', user_responsible = self.user, expected_start_date = datetime.date.today(), project = self.project, created_by = self.user, last_updated_by = self.user)
-        task.save()
-        self.task = task
-        subs = SubscribedUser(user = user, project = self.project, group = 'Owner')
-        subs.save()
-        self.subs = subs
+# class TestUrls(unittest.TestCase):
+#     def setUp(self):
+#         user = User.objects.create_user('Shabda', 'Shabda@gmail.com', 'shabda')
+#         self.user = user
+#         project = Project(shortname = 'Foo', name='Bar bax baz', owner = self.user, start_date = datetime.date.today())
+#         project.save()
+#         self.project = project
+#         task = Task(name = 'Foo', user_responsible = self.user, expected_start_date = datetime.date.today(), project = self.project, created_by = self.user, last_updated_by = self.user)
+#         task.save()
+#         self.task = task
+#         subs = SubscribedUser(user = user, project = self.project, group = 'Owner')
+#         subs.save()
+#         self.subs = subs
         
-    def tearDown(self):
-        self.user.delete()
-        self.project.delete()
-        self.task.delete()
-        self.subs.delete()
+#     def tearDown(self):
+#         self.user.delete()
+#         self.project.delete()
+#         self.task.delete()
+#         self.subs.delete()
         
-    def testDashBoard(self):
-        c = Client()
-        print c.login(username = 'Shabda', password= 'shabda')
-        response = c.get('/dashboard/', {})
-        print response.status_code
-        print response.headers['X-View']
+#     def testDashBoard(self):
+#         c = Client()
+#         print c.login(username = 'Shabda', password= 'shabda')
+#         response = c.get('/dashboard/', {})
+#         print response.status_code
+#         print response.headers['X-View']
                 
     
         
-def test_runner_with_coverage(test_labels, verbosity=1, interactive=True, extra_tests=[]):
-    import coverage
-    from django.test.simple import run_tests as django_test_runner
-    from django.conf import settings
-    coverage.use_cache(0) # Do not cache any of the coverage.py stuff
-    coverage.start()
-    test_results = django_test_runner(test_labels, verbosity, interactive, extra_tests)
-    coverage.stop()
-    coverage_modules = []
-    for module in settings.COVERAGE_MODULES:
-        coverage_modules.append(__import__(module, globals(), locals(), ['']))
-    coverage.report(coverage_modules, show_missing=0)
-    return test_results
+# def test_runner_with_coverage(test_labels, verbosity=1, interactive=True, extra_tests=[]):
+#     import coverage
+#     from django.test.simple import run_tests as django_test_runner
+#     from django.conf import settings
+#     coverage.use_cache(0) # Do not cache any of the coverage.py stuff
+#     coverage.start()
+#     test_results = django_test_runner(test_labels, verbosity, interactive, extra_tests)
+#     coverage.stop()
+#     coverage_modules = []
+#     for module in settings.COVERAGE_MODULES:
+#         coverage_modules.append(__import__(module, globals(), locals(), ['']))
+#     coverage.report(coverage_modules, show_missing=0)
+#     return test_results
 
 
     
