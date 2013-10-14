@@ -2,3 +2,4 @@ django==1.5
 -e hg+https://bitbucket.org/ubernostrum/django-registration#egg=django_registration
 reportlab
 feedparser
+Unipath==1.0
