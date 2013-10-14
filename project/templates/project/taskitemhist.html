@@ -5,6 +5,7 @@
 	 <h3>Revisions for {{taskitem.name}}</h3>
 	 <div class="createcontent">
     <form action="." method="get">
+        {% csrf_token %}
     <ul>
     {% for item in taskitem.old_versions %}
 	<li>

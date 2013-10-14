@@ -49,6 +49,7 @@ Index
 
 			<div class="createcontent">
 				<form action="/accounts/login/" method="post">
+					{% csrf_token %}
 									{{login_form}}
 									<input type="submit" value="login" />
 				</form>

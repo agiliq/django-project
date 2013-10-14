@@ -17,12 +17,14 @@
    <td>{{user.user.username}}</td>
 	 <td>
 	 <form action="."  method="post">
+	 	{% csrf_token %}
 	 <input type="submit" name="remove" value="Unsubscribe" />
 	 <input type="hidden" name="user" value="{{user.user.username}}" />
 	 </form>
 	 </td>
 	 <td>
 	 <form action="."  method="post">
+	 	{% csrf_token %}
   <label for="id_group">Group:</label> <select id="id_group" class="required" name="group">
   <option value="Owner" {% ifequal user.group 'Owner' %}selected="selected"{% endifequal %}>Owner</option>
   <option value="Participant" {% ifequal user.group 'Participant' %}selected="selected"{% endifequal %}>Participant</option>

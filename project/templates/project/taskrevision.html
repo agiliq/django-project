@@ -30,6 +30,7 @@
 	</table>
         
         <form action="."  method="post">
+            {% csrf_token %}
         <input type="hidden" name="taskid" value="{{task.id}}" \>
         <input type="submit" name="rollback" value="rollback" \>
         </form>

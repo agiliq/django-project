@@ -9,6 +9,7 @@
 	 <h3>Editing {{taskitem.name}}</h3>
 	  <div class="createcontent">
     <form action="." method="POST">
+        {% csrf_token %}
         {{itemform.as_p}}
         <input type="SUBMIT" name="edititem" value="Edit" />
     </form>

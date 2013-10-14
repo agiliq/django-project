@@ -10,6 +10,7 @@
         {{revision.html_text|safe}}
     </div>
     <form action="." method="post">
+        {% csrf_token %}
 	<input type="submit" name="rollback" value="rollback" />
     </form>
 {% endblock %}

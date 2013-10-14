@@ -37,6 +37,7 @@
 	    </tbody>
 	</table>
     <form action="." method="post">
+        {% csrf_token %}
         <input type="hidden" name="taskitemrev" value="{{taskitem.id}}" />
         <input type="submit" name="rollback" value="rollback" />
     </form>

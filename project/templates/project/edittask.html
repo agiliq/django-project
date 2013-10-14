@@ -10,6 +10,7 @@
 	 			<h3>Editing {{task.name}}</h3>
 		<div class="createcontent">
     <form action="." method="post">
+    	{% csrf_token %}
         {{editform.as_p}}
         <input type="submit" name="edit" value ="Edit Task" class="submitbutton" />
 			</fieldset>

@@ -109,6 +109,7 @@ No overdue tasks.
 		<div class="createcontent">
     <div id="inviteform">
         <form action="." method="post">
+            {% csrf_token %}
             {{inviteform.as_p}}
             <div><input type="submit" name="invite" value="Invite User" class="submitbutton" /></div>
         </form>
@@ -122,6 +123,7 @@ No overdue tasks.
 		<div class="createcontent">
     <div id="taskform">
         <form action="." method="post">
+            {% csrf_token %}
             {{taskform.as_p}}
             <div><input type="submit" name="task" value="Add a task" class="submitbutton" /></div>
         </form>

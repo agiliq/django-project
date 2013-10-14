@@ -63,6 +63,7 @@
     <td width="14%" class="completed">{{task.user_responsible}}<br />
     <td width="12%" style="vertical-align:middle; text-align:center">
 		<form action="." method="post" id="markdone-{{task.id}}" class="markdone">
+            {% csrf_token %}
 		<div>
             {% if task.is_complete %}
                 <input type="hidden" name="taskid" value="{{task.id}}" />
@@ -92,6 +93,7 @@
             <li>
                 {{invite.project.name}}
                 <form action="." method="post">
+                    {% csrf_token %}
                 <input type="hidden" name="projid" value={{invite.project.id}} />
                 <input type="hidden" name="invid" value={{invite.id}} />
                 <input type="submit" name="acceptinv" value="Accept" />
@@ -105,6 +107,7 @@
 			<h3>Create a new project</h3>
 			<div class="createcontent">
 				<form action="." method="post">
+                    {% csrf_token %}
             {{createform.as_p}}				
 					<input name="createproject" type="submit" value="Submit" class="submitbutton" />
 				</form>
@@ -124,6 +127,7 @@
         <a href="{{sub.project.get_absolute_url}}">{{sub.project.name}}</a>
 				<div class="floatform">
 				<form action="." method="post">
+                    {% csrf_token %}
             <input type="hidden" name="projectid" value="{{sub.project.id}}" />
             {% if sub.project.is_active %}
             <input type="hidden" name="activestatus" value="true" />

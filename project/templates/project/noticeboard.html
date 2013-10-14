@@ -48,6 +48,7 @@
     <div id="noticeform">		
 		<div class="createcontent">
         <form action="." method="post">
+        	{% csrf_token %}
             {{addnoticeform.as_p}}
             <input type="submit" name="addnotice" value="Add Notice" />
         </form>

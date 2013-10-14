@@ -7,6 +7,7 @@
     </h3>
 		
     <form action="." method="get">
+    	{% csrf_token %}
     <ul>
 	
     {% for version in task.get_old_versions %}

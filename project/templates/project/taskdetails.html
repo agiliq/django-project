@@ -126,6 +126,7 @@
 		<div class="createcontent">
 	  <div id="subtaskform">
 	<form action="." method="post">
+        {% csrf_token %}
 	{{addsubtaskform.as_p}}
 	<input type="SUBMIT" name="addsubtask" value="Add a subtask" class="submitbutton" />
 	</form>
@@ -137,7 +138,8 @@
 			<h3>Add a task item</h3>     
 	<div class="createcontent">
   <div id="itemform">
-	<form action="." method="post">            
+	<form action="." method="post">   
+    {% csrf_token %}         
 	{{additemform.as_p}}
 	<input type="SUBMIT" name="additem" value="Add a taskitem" class="submitbutton" />
         </fieldset>
@@ -151,6 +153,7 @@
 				<div class="createcontent">		
     <div id="noteform">
         <form action="." method="post">
+            {% csrf_token %}
             {{noteform.as_p}}
             <input type="submit" name="addnote" value="Add Note" class="submitbutton" />
         </form>

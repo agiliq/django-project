@@ -104,7 +104,7 @@ Tasks for project {{project.name}}
 			<div class="createcontent">  			
       <div id="taskform">      
         <form action="." method="post">
-
+        	{% csrf_token %}
                 </legend>
             {{taskform.as_p}}
             <input type="SUBMIT" name="addtask" value="Add Task" />

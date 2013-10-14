@@ -22,6 +22,7 @@
 	</td>
     <td width="10%" >
 		<form action="." method="post" id="markdone-{{task.id}}" class="markdone">
+			{% csrf_token %}
 		<div>
             {% if task.is_complete %}
                 <input type="hidden" name="taskid" value="{{task.id}}" />
@@ -37,6 +38,7 @@
 		</td>
 	<td width="9%" >
             <form action="." method="post" id="deletetask-{{task.id}}" class="deletetask">
+            	{% csrf_token %}
 		<div>
                 <input type="hidden" name="taskid" value="{{task.id}}" />
                 <input type="hidden" name="deletetask" value="deletetask" />								

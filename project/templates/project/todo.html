@@ -44,6 +44,7 @@
                         <td class="{% cycle 'odd' 'even' %}">{{item.text}}</td>
                         <td>
                             <form action="." method="post">
+                                {% csrf_token %}
                                 <p>
                                 {% if item.is_complete %}
                                 <input type="hidden" name="todoitemid" value="{{item.id}}" />
@@ -71,6 +72,7 @@
 								<h3>Add a todo item.</h3>
 								<div class="createcontent">
                 <form action="." method="post">
+                    {% csrf_token %}
                     {{list.item_form.as_p}}
 										
                     <input type="hidden" name="id" value="{{list.id}}" />
@@ -108,6 +110,7 @@
 			<h3>Create a new todo list</h3>
 			<div class="createcontent">
 				<form action="." method="post">
+                    {% csrf_token %}
             {{addlistform.as_p}}					
 					<p><input name="addlist" type="submit" value="Submit" class="submitbutton" /></p>
 				</form>

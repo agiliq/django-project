@@ -3,6 +3,7 @@
 {% block innercontent %}
 	 <div id="quickentry">
     <form action="." method="post" class="quick">
+      {% csrf_token %}
     <fieldset>
         <legend>
             Add tasks
