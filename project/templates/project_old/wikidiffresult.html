@@ -1,0 +1,25 @@
+{% extends 'project/base.html' %}
+
+{% block contents %}
+    <h3>{{page.title}}</h3>
+    <div class="revision">
+    <h3>Version {{revision1.version_number}}</h3>
+    {{revision1.html_text|truncatewords_html:50|safe}}
+    </div>
+    <div class="revision">
+    <h3>Version {{revision2.version_number}}</h3>
+    {{revision2.html_text|truncatewords_html:50|safe}}
+    </div>
+    <div class="diff">
+    <h3>Diff</h3>
+    {{htmldiff|safe}}
+    </div>
+{% endblock %}
+
+{% block sidebar %}
+    <h3>Meta</h3>
+    <ul>
+    <li><a href="{{page.edit_url}}">Edit this page</a></li>
+    <li><a href="{{page.version_url}}">See previous versions</a></li>
+    </ul>
+{% endblock %}

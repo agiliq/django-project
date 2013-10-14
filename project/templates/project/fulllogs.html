@@ -1,0 +1,71 @@
+{% extends 'project/base.html' %}
+
+{% block title %}
+Dash Bard
+{% endblock %}
+
+
+		
+	
+	{% block subnav %}
+                
+		<div class="subnav">	
+				 <a href="/dashboard/" class="dp-icon">Dashboard</a>  |  <a href="{{project.get_absolute_url}}">Project Details</a>  |  <a href="{{project.tasks_url}}">Tasks</a>  |  <a href="{{project.todo_url}}">Todo</a>  | 
+				 <a href="{{project.noticeboard_url}}">Noticeboard</a>  |  <a href="{{project.calendar_url}}">Calendar</a>  | <a href="{{project.wiki_url}}">Wiki</a> | <a href="{{project.files_url}}">Files</a>  |  <a href="{{project.metrics_url}}">Metrics</a>  |  <a href="{{project.logs_url}}"  class="subnav_selected">Logs</a>
+		</div>
+	{% endblock %}
+	
+	{% block contenttitle %}
+	<h1 class="title">Logs for {{project.name}} </h1>
+	{% endblock %}
+	
+{% block contents %}
+<div class="contenttext">
+			
+				<div class="curve"><p></p></div>
+				
+				<div class="tblpad">
+				
+					<div class="textcontent">
+					<div style="float:right; position:relative; top:-10px;"><a href="#"><img src="/site_media/images/rss.gif" alt="" /></a></div>
+<ul>
+    {% for log in logs %}
+    
+        <li class="{% cycle '' 'tdbggrey' %}">{{log.text}}
+            <br />
+            {% if log.description %}
+            {{log.description}}
+            {% endif %}
+            <br />
+            Created on {{log.created_on|date}} {{log.created_on|time}}
+        </li>
+    {% endfor %}
+    </ul>
+        
+    <div id="pagination">
+        {% if page_data.has_next_page %}
+        <a href="./?page={{page_data.next_page}}">next</a>
+        {% endif %}
+        
+        {% if page_data.has_prev_page %}
+        <a href="./?page={{page_data.prev_page}}">prev</a>
+        {% endif %}
+    </div>					
+					
+					</div><!-- end  textcontent -->
+				</div> <!-- end tblpad -->
+			</div><!-- end contenttext -->
+{% endblock %}
+
+		{% block sidebar %}
+		<h3>Meta</h3>
+		<p>You are viewing logs for :<br />
+		{{project.name}}<br />
+These are also available<br />
+ as <a href="/feeds/project/{{project.shortname}}/">RSS feeds</a></p>	
+		{% endblock %}
+		
+{% block footer %}
+<p class="footerlink"><a href="#">Home</a> | <a href="#">Contact</a> | <a href="#">Terms</a> | <a href="#">Links</a> | <a href="#">Privacy</a> | <a href="#">Site Map</a></p>
+<p style="margin:0px;">Powered By webfactional .Copyright 2007. webfactional.com</p>
+{% endblock %}

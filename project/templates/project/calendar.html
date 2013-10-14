@@ -1,0 +1,90 @@
+{% extends 'project/base.html' %}
+
+	{% block subnav %}
+                
+		<div class="subnav">	
+				 <a href="/dashboard/" class="dp-icon">Dashboard</a>  |  <a href="{{project.get_absolute_url}}">Project Details</a>  |  <a href="{{project.tasks_url}}">Tasks</a>  |  <a href="{{project.todo_url}}">Todo</a>  | 
+				 <a href="{{project.noticeboard_url}}">Noticeboard</a>  |  <a href="{{project.calendar_url}}"  class="subnav_selected">Calendar</a>  | <a href="{{project.wiki_url}}">Wiki</a> | <a href="{{project.files_url}}">Files</a>  |  <a href="{{project.metrics_url}}">Metrics</a>  |  <a href="{{project.logs_url}}">Logs</a>
+		</div>
+	{% endblock %}
+
+
+{% block contents %}
+			<div id="calendar">
+        <div class="month">
+				<span>February 2008</span>
+				</div><h1 class="title">{{project.name}}</h1>
+          <div class="contenttext">
+            <div class="curve"><p></p></div>
+
+            <div class="tblpad">
+			 
+				<table width="100%" border="0" cellspacing="0" cellpadding="0" class="tbltitle">
+				
+				
+  <tr>
+    <td width="13%" style=" padding-left:20px;">Monday</td>
+    <td width="13%"  >Tuesday</td>
+    <td width="15%" >Wednesday</td>
+    <td width="15%" >Thursday</td>
+
+	<td width="14%" >Friday</td>
+	<td width="15%" >Saturday</td>
+    <td width="15%"  style="background:#4D7CA7 url(images/curve_blue.gif) 100% 0px no-repeat">Sunday</td>
+  </tr>
+ 
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="tbl">
+
+
+    {% for week in month_dates %}
+    
+        <tr class="{% cycle "" "tdbggrey" %}">
+        {% for day in week %}
+        <td width="{% cycle 13 13 15 15 14 15 15 %}" {% if day.1 or day.2 %}class="yellowbg"{% endif %}>
+            {% if day.0 %}
+            <div class="date">
+            
+            {{day.0}}
+            </div>
+						{% else %}
+						&nbsp;
+            {% endif %}
+						
+						
+        <div class="starttasks">
+				<ul>
+        {% for task in  day.1 %}
+           <li><a href="{{task.get_absolute_url}}">{{task.name}}</a></li>
+        {% endfor %}
+				</ul>
+        </div>
+        
+        <div class="endtasks">
+				<ul>
+        {% for task in  day.2 %}
+           <li><a href="{{task.get_absolute_url}}">{{task.name}}</a></li>
+        {% endfor %}
+				</ul>
+        </div>
+        
+        </td>
+        {% endfor %}
+        </tr>
+		{% endfor %}
+ 
+</table>
+</div>
+</div>
+</div>
+	 
+{% endblock %}
+
+{% block sidebar %}
+<h3>Months</h3>
+<ul>
+{% for month in month_data %}
+    <li><a href="{{month.href}}" class="monthname">    {{month.name}}</a></li>
+{% endfor %}
+</ul>
+{% endblock %}

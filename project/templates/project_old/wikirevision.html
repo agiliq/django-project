@@ -1,0 +1,29 @@
+{% extends 'project/base.html'%}
+
+{% block title %}
+{{page.title}} - Revision for {{page.title}}
+{% endblock %}
+
+{% block contents %}
+    <h2>{{page.title}}</h2>
+    <div id="wikitext">
+        {{revision.html_text|safe}}
+    </div>
+    <form action="." method="post">
+	<input type="submit" name="rollback" value="rollback" />
+    </form>
+{% endblock %}
+
+{% block sidebar %}
+    You are looking at the revision for {{page.title}}, a page for {{project.name}}
+    <h3>Meta</h3>
+    <ul>
+    <li><a href="/{{project.shortname}}/wiki/new/">Create new page</a></li>
+    <li><a href="{{page.edit_url}}">Edit this page</a></li>
+    </ul>
+    
+    <h3>About this revision</h3>
+    <div class="blurb">
+	This is a revision created for {{page.title}} on {{revision.created_on|date}}
+    </div>
+{% endblock %}

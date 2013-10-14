@@ -1,0 +1,13 @@
+{% extends 'project/pdf/base.html' %}
+
+{% block title %}
+{{block.super}} - Edit {{taskitem.name}}
+{% endblock %}
+
+{% block contents %}
+    <form action="." method="POST">
+    	{% csrf_token %}
+        {{itemform.as_p}}
+        <input type="SUBMIT" name="edititem" value="Edit" />
+    </form>
+{% endblock %}

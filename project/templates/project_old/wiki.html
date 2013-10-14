@@ -1,0 +1,29 @@
+{% extends 'project/base.html' %}
+
+{% block title %}
+{{block.super}} - Wiki
+{% endblock %}
+
+{% block contents %}
+    <h3>Wiki Pages</h3>
+    <div id="pagelist">
+        <ul>
+            {% for page in wikipages %}
+            <li>
+                <a href="{{page.get_absolute_url}}">{{page.title}}</a>
+		<div class="wikipageblurb">
+		{{page.current_revision.html_text|safe|truncatewords_html:30}}
+		</div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}
+
+{% block sidebar %}
+    You are looking at the wiki for {{project.name}}
+    <h3>Meta</h3>
+    <ul>
+	<li><a href="{{project.new_wikipage_url}}">Create a new page</a></li>
+    </ul>  
+{% endblock %}

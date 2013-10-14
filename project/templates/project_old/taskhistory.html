@@ -1,0 +1,36 @@
+{% extends 'project/base.html' %}
+
+{% block contents %}
+    <h3>
+	{{task.name}}
+    </h3>
+    <form action="." method="get">
+    <ul>
+	
+    {% for version in task.get_old_versions %}
+	<li>
+	     <a href="{{version.revision_url}}">Version number {{version.version_number}} Versioned on {{version.effective_start_date}}</a>
+	    <input type="radio" name="version1" value="{{version.id}}" />
+	    <input type="radio" name="version2" value="{{version.id}}" />
+	    <pre>
+{{version.as_text}}
+	    </pre>
+	    
+	</li>
+    {% endfor %}
+    </ul>
+    <input type="submit" name="diff" value="diff" />
+    </form>
+{% endblock %}
+
+{% block sidebar %}
+    <h3>Meta</h3>
+    <ul>
+	<li>
+	    <a href="{{task.get_absolute_url}}">Details</a>
+	</li>
+	<li>
+	    <a href="{{task.edit_url}}">Edit</a>
+	</li>
+    </ul>
+{% endblock %}

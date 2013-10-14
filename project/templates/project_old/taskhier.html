@@ -1,0 +1,24 @@
+{% extends 'project/base.html' %}
+
+{% block jqueryarea %}
+<link rel="stylesheet" href="/site_media/css/treeview.css" />
+<script src="/site_media/js/jquery.treeview.min.js">
+</script>
+<script>
+$(document).ready(function(){
+    $('#tv').treeview({
+        control: "#treecontrols",
+        persist: "cookie"
+        })    
+    })
+
+</script>
+{% endblock %}
+
+{% block contents %}
+<div id="treecontrols">
+</div>
+<ul id="tv">
+{{tasks|unordered_list}}
+</ul>
+{% endblock %}

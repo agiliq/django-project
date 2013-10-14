@@ -1,0 +1,85 @@
+{% extends 'project/base.html' %}
+
+{% block title %}
+{{block.super}} - Files
+{% endblock %}
+
+{% block jqueryarea %}
+<script>
+$(document).ready(function(){
+ $('.oldrevisions').next().hide()
+ $('.oldrevisions').click(function(){
+    $(this).next().toggle();
+    /*$(this).toggle(function(){$(this)html('Hide Revisions')},
+                   function(){$(this)html('Show Revisions')})*/
+    });
+})
+</script>
+{% endblock %}
+
+{% block contents %}
+{% if  project.projectfile_set.all %}
+<table>
+    <thead>
+        <tr>
+            <td>
+                File
+            </td>
+            <td>
+                Created On
+            </td>
+            <td>
+                User
+            </td>
+            <td>
+                Total Size
+            </td>
+            <td>
+                Versions
+            </td>
+        </tr>
+    </thead>
+{% for file in project.projectfile_set.all %}
+<tr>
+    <td>
+        <a href="{{file.current_revision.get_s3_url}}">{{file.filename}}</a>
+    </td>
+    <td>
+        {{file.created_on|date}}
+    </td>
+    <td>
+        {{file.current_revision.user.username}}
+    </td>
+    <td>
+        {{file.size_str}}
+    </td>
+    <td>
+        <a class="oldrevisions" href="#">Show Revisions.</a>
+        <ul>
+            {% for revision in file.projectfileversion_set.all %}
+            <li>
+                <a href="{{revision.get_s3_url}}">Version {{revision.version_number}}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<h3>
+    No files added.
+</h3>
+{% endif %}
+
+
+<form action="." method="post" enctype="multipart/form-data">
+<fieldset>
+<legend>
+    Add a file
+</legend>
+{{addfileform.as_p}}
+<input type="submit" name="Add file" value="Add file" />
+</fieldset>
+</form>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'project/base.html' %}
+
+{% block title %}
+{{block.super}} - Create page
+{% endblock %}
+
+{% block jqueryarea %}
+    <script src="http://js.nicedit.com/nicEdit.js" type="text/javascript"></script>
+<script type="text/javascript">
+bkLib.onDomLoaded(nicEditors.allTextAreas);
+</script>
+{% endblock %}
+
+{% block innercontent %}
+	 <div id="wikicreate">
+	 <h3>Create a page</h3>
+	 <div class="createcontent">
+    <form method="post" action=".">
+        {{wikiform.as_p}}
+        <input type="submit" name="save" value="Create Page" class="submitbutton" />
+    </form>
+		</div>
+	</div>
+{% endblock %}
+
+{% block sidebar %}
+  <h3>Meta</h3>
+	<p class="sideblurb">
+	   You are creating a new wiki page for {{project.name}}
+	</p>
+  <ul>
+    <li>
+	<a href="{{project.wiki_url}}">Wiki</a>
+    </li>
+    </ul>
+{% endblock %}

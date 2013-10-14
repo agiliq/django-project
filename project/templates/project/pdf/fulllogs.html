@@ -1,0 +1,33 @@
+{% extends 'project/pdf/base.html' %}
+
+{% block title %}
+  {{block.super}} - Logs
+{% endblock %}
+
+
+{% block contents %}
+    <h3>Logs for project {{project.name}}</h3>
+    <ul>
+    {% for log in logs %}
+    
+        <li>{{log.text}}
+            <br />
+            {% if log.description %}
+            {{log.description}}
+            {% endif %}
+            <br />
+            Created on {{log.created_on|date}} {{log.created_on|time}}
+        </li>
+    {% endfor %}
+    </ul>
+        
+    <div id="pagination">
+        {% if page_data.has_next_page %}
+        <a href="./?page={{page_data.next_page}}">next</a>
+        {% endif %}
+        
+        {% if page_data.has_prev_page %}
+        <a href="./?page={{page_data.prev_page}}">prev</a>
+        {% endif %}
+    </div>
+{% endblock %}

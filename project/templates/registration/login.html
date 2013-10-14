@@ -1,0 +1,37 @@
+{% extends "registration/base.html" %}
+
+{% block title %}
+{{block.super}} - Login
+{% endblock %}
+
+{% block contents %}
+		  <div id="content" style="height:300px;">
+<div class="message">
+{% if user.is_authenticated %}
+<h3>
+    You are already logged in. <a href="/accounts/logout/">Logout?</a>
+</h3>
+{% else %}
+</div>
+{% if form.has_errors %}
+<p>Your username and password didn't match. Please try again.</p>
+{% endif %}
+
+<div class="password">
+			<h3>Login</h3>
+			<div class="createcontent">
+				<form method="post" action=".">
+
+    {{form.as_p}}
+    <input type="hidden" name="next" value="{{ next }}" />
+    <input type="submit" name="Login" value="login" />
+    </form>
+			</div>
+      <p style="padding-left:110px; margin-top:30px;"><span style="font-size:15px;">Don't have a Account yet ?</span><br />
+      <span style="font-size:13px;">Signing up is easy.</span></p>
+      <p style="font-size:14px; text-align:right; padding-right:10px"><a href="#">Sign Up</a></p>
+	</div>			
+</div>			
+{% endif %}
+			</div>
+{% endblock %}

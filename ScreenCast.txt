@@ -1,0 +1,36 @@
+What do we show in this video
+
+-1. Have three users.
+Foo, Bar, Baz
+Foo is the owner.
+Bar is participant.
+Baz is viewer.
+
+0. Creating a project.
+Name it Bridge building.
+
+1. Creating Tasks and taskitems.
+Three tasks 'Get Workers, Get Material, Build Bridge'
+4 Subtasks: Hire Engineers, Hire Labours, Buy Cement, Buy steel.
+2 Task items: Lay fondation, Build Structure.
+
+2. Editing Tasks and taskitems.
+Edit some tasks and task items
+3. Wiki features of Tasks.
+Take a diff.
+4. Adding notes on tasks.
+
+4.1. Quick entry screens.
+
+
+5. Creating Todolists and Items.
+6. Creating Notices.
+7. Creating wiki pages.
+8. Editing Wikipages.
+9. Taking diff for wikipages.
+
+10. Adding files.
+11. Metrics
+12. Logs
+
+

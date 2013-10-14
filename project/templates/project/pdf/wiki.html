@@ -1,0 +1,21 @@
+{% extends 'project/pdf/base.html' %}
+
+{% block title %}
+{{block.super}} - Wiki
+{% endblock %}
+
+{% block contents %}
+    <h3>Wiki Pages</h3>
+    <div id="pagelist">
+        <ul>
+            {% for page in wikipages %}
+            <li>
+                <a href="{{page.get_absolute_url}}">{{page.title}}</a>
+		<div class="wikipageblurb">
+		{{page.current_revision.html_text|safe|truncatewords_html:30}}
+		</div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

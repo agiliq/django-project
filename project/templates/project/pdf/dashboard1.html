@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+<title>Page title</title>
+<style>
+thead{
+  font-weight: bold;
+	font: 110%;
+}
+
+
+</style>
+</head>
+<body>
+<img src="/site_media/images/logo.gif" alt="Logo">
+<table>
+<thead>
+<tr>
+<td>
+Project
+</td>
+</tr>
+</thead>
+<tbody>
+{% for sub in subs %}
+<tr>
+<td>
+{{sub.project.name}}
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+<table>
+	<thead>
+	<tr>
+	  <td>
+		  Project
+		</td>
+		<td>
+		  Task
+		</td>
+		<td>
+		  Due On
+		</td>
+		<td>
+		  User
+		</td>
+	</tr>
+	</thead>
+ {% for sub in subs %}
+             {% for task in sub.project.overdue_tasks %}
+ <tr>
+    <td><a href="{{sub.project.get_absolute_url}}">{{sub.project.name}}</a></td>
+    <td> <a href="{{task.get_absolute_url}}">{{task.name}}</a></td>
+    <td> {{task.expected_end_date|date}}</td>
+    <td>{{task.user_responsible}}</td>
+  </tr> 
+	{% endfor %}
+ {% endfor %}
+ </tr> 
+</table>
+
+</body>
+</html>

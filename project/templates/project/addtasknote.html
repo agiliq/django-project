@@ -1,0 +1,18 @@
+{% extends 'project/base.html' %}
+
+{% block contents %}
+    <form action="." method="post">
+        {% csrf_token %}
+        {{noteform.as_p}}
+        <input type="submit" name="addnote" value="Add Note" />
+    </form>
+{% endblock %}
+
+{% block sidebar %}
+    <h3>Meta</h3>
+    <ul>
+        <li><a href="{{task.get_absolute_url}}">Task details</a></li>
+        <li><a href="{{task.edit_url}}">Edit this Task</a></li>
+    </ul>
+   Adding a note to task {{task.name}}
+{% endblock %}

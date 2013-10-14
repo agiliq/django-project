@@ -1,0 +1,37 @@
+{% extends 'project/base.html' %}
+
+{% block title %}
+{{block.super}} - Edit {{task.name}}
+{% endblock %}
+
+
+{% block innercontent %}
+	 <div class="genericform">
+	 			<h3>Editing {{task.name}}</h3>
+		<div class="createcontent">
+    <form action="." method="post">
+        {{editform.as_p}}
+        <input type="submit" name="edit" value ="Edit Task" class="submitbutton" />
+			</fieldset>
+    </form>
+		</div>
+		</div>
+{% endblock %}
+
+{% block sidebar %}
+
+
+<h3>
+    Meta
+</h3>
+	<p class="sideblurb">You are editing {{task.name}}.</p>
+	<ul>
+   <li><a href="{{task.get_absolute_url}}">Details</a></li>
+  </ul>
+
+<h3>
+    Older Versions
+</h3>
+{% include 'project/taskversions.html' %}
+       
+{% endblock %}

@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+      <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+        
+<head>
+    <title>
+        {% block title %}
+         {{project.name}}
+        {% endblock %}
+    </title>
+    {% block feeds %}
+    <link rel="alternate" type="application/rss+xml" title="{{project.name}} logs RSS feeds" href="/feeds/project/{{project.shortname}}/" />
+    {% endblock %}
+    {% block includes %}
+    <link rel="stylesheet" href="/site_media/css/flora.datepicker.css" type="text/css" media="screen" title="Flora (Default)" />
+    <script type="text/javascript" src="/site_media/js/jquery.js"></script>
+    <script type="text/javascript" src="/site_media/js/jquery.validate.js"></script>
+    <script type="text/javascript" src="/site_media/js/ui.datepicker.js"></script>
+    <script type="text/javascript" src="/site_media/js/jquery.cookie.js"></script>
+    <script type="text/javascript" src="/site_media/js/prajact.js"></script>
+    {% endblock %}
+    
+    {% block jqueryarea %}
+    {% endblock %}
+    
+    <link rel="stylesheet" type="text/css" href="/site_media/css/style.css" />
+</head>
+
+<body class="tundra">
+    <div id="topbar">
+    {% block topbar %}
+        {% if user.is_authenticated %}
+            <strong>Howdy {{user.username}}</strong>
+        {% endif %}
+        <ul>
+            {% if user.is_authenticated %}
+            <li><a href="/accounts/profile/">Settings</a></li>
+            <li><a href="/accounts/logout/">Logout</a></li>
+            {% else %}
+            <li><a href="/accounts/register/">Register</a></li>
+            <li><a href="/accounts/login/">Login</a></li>
+            {% endif %}
+        </ul>
+    {% endblock %}
+    </div>
+    
+    <div id="header">
+        <div id="logo">
+            {% block logo %}
+            {% endblock %}
+        </div>
+        
+        <div id="tabs">
+            {% block tabs %}
+            <ul>
+                <li><a href="/dashboard/">Dashboard</a></li>
+                    <li><a href="{{project.get_absolute_url}}">Project Details</a></li>
+                    <li><a href="{{project.tasks_url}}">Tasks</a></li>
+                    <li><a href="{{project.todo_url}}">Todo</a></li>
+                    <li><a href="{{project.noticeboard_url}}">Noticeboard</a></li>
+                    <li><a href="{{project.wiki_url}}">Wiki</a></li>
+                    <li><a href="{{project.files_url}}">Files</a></li>
+                    <li><a href="{{project.calendar_url}}">Calendar</a></li>
+                    <li><a href="{{project.metrics_url}}">Metrics</a></li>
+                    <li><a href="{{project.logs_url}}">Logs</a></li>
+                
+            </ul>
+            {% endblock %}
+        </div>
+    </div>
+    
+    <div id="main">
+        <div id="content">
+            {% block contents %}
+            {% endblock %}            
+        </div>
+        <div id="sidebar">
+            {% block sidebar %}
+            <h3>
+                {{project.name}}
+            </h3>
+            {% endblock %}                       
+        </div>
+    </div>
+    
+    <div id="footer">
+        {% block footer %}
+        {% endblock %}        
+    </div>
+</body>
+</html>

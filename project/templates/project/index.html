@@ -1,0 +1,75 @@
+{% extends 'project/base.html' %}
+
+{% block title %}
+Index
+{% endblock %}
+
+{% block subnav %}
+{% endblock %}
+
+{% block subheader %}
+{% endblock %}
+
+{% block feeds %}
+{% endblock %}
+
+		{% block topheader %}
+		<div class="signout"></div>
+		<div id="logo">
+		<img src="/site_media/images/logo.gif" alt="" /></div>
+		<div class="icon"></div>		
+		{% endblock %}	
+
+
+{% block outercontent %}
+	<div id="content1">
+		<div id="leftcontent">
+		<h1>Welcome to Dashbard!</h1>
+		<h3 class="arrowh3">Plan. Track. Manage.</h3>
+		<ul class="ultext">
+
+		<li>* Manage depenedencies with multi-level-hierchical task structure. </li>
+    <li>* Track time spent with task items.</li>
+    <li>* Integrated wiki, file storage and notice board.</li>
+    <li>* Versioned projects so your data is never lost.</li>
+    <li>* Integrated metrics.</li>
+		<li>* Keep track of changes via mail or rss. </li>
+		<li>* Multiple access levels.</li>		
+		</ul>
+
+	
+	<h2>Oh look. Some screenshots!</h2>
+	<div class="m-img"><img src="/site_media/screenshots/tn_calendar_1.png" alt="" /><br />Calendar</div>
+	<div class="m-img"><img src="/site_media/screenshots/tn_dashboard_1.png" alt="" /><br />Metrics</div>
+	<div class="m-img"><img src="/site_media/screenshots/tn_metrics_1.png" alt="" /><br />Dashboard</div>		
+		</div>
+		
+		<div id="rightcontent"><div id="sigin">
+			<h3>Signin into DashBoard</h3>
+
+			<div class="createcontent">
+				<form action="/accounts/login/" method="post">
+									{{login_form}}
+									<input type="submit" value="login" />
+				</form>
+				
+			
+			</div>
+			<div class="forgatpass">
+			<p style="color:#4D7CA7; padding-left:95px;"><a href="/accounts/reset/">Forgot your password?</a> | <a href="#">Help</a></p>
+
+			<p style="padding-left:110px; margin-top:30px;"><span style="font-size:15px;">Don't have a Account yet ?</span><br />
+Signing up is easy.</p>
+<p style="padding-left:140px; margin-top:20px;"><a href="/accounts/register/" class="join"></a></p>
+			
+			
+			</div>
+			
+			
+			</div></div>
+		
+	
+		
+	<br style="clear:both" />
+	</div>
+{% endblock outercontent %}

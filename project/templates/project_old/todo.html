@@ -1,0 +1,101 @@
+{% extends 'project/base.html' %}
+
+{% block title %}
+{{block.super}} - Todo
+{% endblock %}
+
+{% block jqueryarea %}
+<script type="text/javascript" src="/site_media/js/todo.js">
+
+</script>
+{% endblock %}
+
+{% block contents %}
+    <h2>Your Todo lists</h2>
+    
+    <ul id="accordion" style="margin-right: 30px; width: 400px;">
+    {% for list in lists %}
+            <li id="list-{{list.id}}" class="todolist">
+                <a id="todolist-{{list.id}}">{{list.name}}</a>
+                <div class="accordionitem">
+                
+                aaa
+            <div class="items">
+                {% if list.todoitem_set.all %}
+                <table>
+                    {% for item in list.todoitem_set.all %}
+                    <tr>
+                        <td class="{% cycle 'odd' 'even' %}">{{item.text}}</td>
+                        <td>
+                            <form action="." method="post">
+                                <p>
+                                {% if item.is_complete %}
+                                <input type="hidden" name="todoitemid" value="{{item.id}}" />
+                                <input type="checkbox" name="itemmarkdone" value="" checked="checked" disabled="disabled" />
+                                {% else %}
+                                <input type="hidden" name="id" value="{{item.id}}" />
+                                <input type="checkbox" name="itemmarkdone" value="" onchange="submit()" />
+                                {% endif %}
+                                </p>
+                                
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                {% else %}
+                <div>
+                    No items added for this todo list.
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="listcontrols">
+                <form action="." method="post">
+                    <fieldset>
+                    {{list.item_form.as_p}}
+                    <legend>Add a todo item.</legend>
+                    <input type="hidden" name="id" value="{{list.id}}" />
+                    <input type="submit" name="additem" value="Add todo item" />
+                    </fieldset>
+                </form>
+            </div>
+            
+            <div class="listcontrols">
+                    <form action='.' method="post">
+                        <fieldset>
+                        <label>Complete</label>
+                        {% if list.is_complete %}
+                            <input type="hidden" name="todoitemid" value="{{list.id}}" />
+                            <input type="checkbox" name="listmarkdone" value="" checked="checked" disabled="disabled" />  
+                        {% else %}
+                            <input type="hidden" name="id" value="{{list.id}}" />
+                            <input type="checkbox" name="listmarkdone" value="" onchange="submit()" />
+                        {% endif %}
+                        </fieldset>
+                    </form>
+            </div>
+            
+            </div>
+        </li>
+    {% endfor %}
+    </ul>
+    
+    <div id="addlistform">
+        <form action="." method="post">
+	<fieldset>
+	    <legend>Add a todo list.</legend>
+            {{addlistform.as_p}}
+	<input type="submit" name="addlist" value="Add todo list" />
+	</fieldset>
+        </form>
+    </div>
+{% endblock %}
+
+{% block sidebar %}
+    <h3>Meta</h3>
+    <ul>
+    <li><a href="./?includecomplete=1">Display completed lists</a></li>
+    </ul>
+   You are looking at your todo items created for {{project.name}}
+{% endblock %}

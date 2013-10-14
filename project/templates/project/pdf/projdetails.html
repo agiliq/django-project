@@ -1,0 +1,95 @@
+{% extends 'project/pdf/base.html' %}
+
+{% block title %}
+{{block.super}} - Project details
+{% endblock %}
+
+{% block contents %}
+    <h2>{{project.name}}</h2>
+    
+    {% if new_tasks %}
+    <h3>Recent tasks</h3>
+    <table>
+        <thead>
+            <tr>
+            <td>Task
+            </td>
+            <td>Expected Start Date
+            </td>
+            <td>
+                Expected End Date
+            </td>
+            <td>
+                User Responsible
+            </td>
+            <td>
+                Details
+            </td>
+						<td>
+						</td>
+						<td>
+						</td>
+						<td>
+						</td>
+						
+            </tr>
+        </thead>
+        
+    {% for task in new_tasks %}
+        <tbody class="recenttasks">
+        {% include 'project/taskrow.html' %}
+        </tbody>
+    {% endfor %}
+        
+    </table>
+    {% endif %}
+    
+    {% if overdue_tasks %}
+    <h3>Overdue tasks</h3>
+    <table>
+        <thead>
+            <tr>
+            <td>Task
+            </td>
+            <td>Expected Start Date
+            </td>
+            <td>
+                Expected End Date
+            </td>
+            <td>
+                User Responsible
+            </td>
+             <td>
+                Details
+            </td>
+						<td>
+						</td>
+						<td>
+						</td>
+						<td>
+						</td>
+            </tr>
+        </thead>
+        
+    {% for task in overdue_tasks %}
+        <tbody>
+        {% include 'project/taskrow.html' %}
+        </tbody>
+    {% endfor %}
+        
+    </table>
+    {% endif %}   
+    
+    <h3>Details for:</h3>
+    <ul>
+        
+        {% for user in project.subscribeduser_set.all %}
+        <li>
+          <a href="{{user.get_absolute_url}}">{{user.user.username}}</a>
+        </li>
+        {% endfor %}
+    </ul>
+    
+ 
+
+{% endblock %}

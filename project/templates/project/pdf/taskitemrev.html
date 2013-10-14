@@ -1,0 +1,59 @@
+{% extends 'project/pdf/base.html' %}
+
+{% block title %}
+{{block.super}} -Revision for  {{taskitem.name}}
+{% endblock %}
+
+
+{% block contents %}
+        <h2>{{taskitem.name}}</h2>
+        
+    <div id="taskitems">
+	<h4>Items for task {{taskitem.task.name}}</h4>
+        <table>
+        <thead>
+            <tr>
+                <td>
+                    Item
+                </td>
+                <td>
+                    User
+                </td>
+                <td>
+                    Estimated Time
+                </td>
+                <td>
+                    Actual Time
+                </td>
+            </tr>
+        </thead>
+	    <tbody>
+            <tr class={% cycle "odd" "even" %}>
+	    <td><a href="{{taskitem.edit_url}}">{{taskitem.name}}</a></td>
+            <td>{{taskitem.user}}</td>
+            <td>{{taskitem.expected_time}}</td>
+            <td>{{taskitem.actual_time}}</td>
+            </tr>
+	    </tbody>
+	</table>
+    <form action="." method="post">
+        {% csrf_token %}
+        <input type="hidden" name="taskitemrev" value="{{taskitem.id}}" />
+        <input type="submit" name="rollback" value="rollback" />
+    </form>
+    </div>
+    
+{% endblock %}
+
+{% block sidebar %}
+    <h3>Meta</h3>
+        <ul>
+        <li>
+            <a href="{{taskitem.edit_url}}">Edit this item</a>
+        </li>
+        <li>
+            <a href="{{taskitem.task.get_absolute_url}}">Task</a>
+        </li>
+        </ul>
+    This is  a version number {{taskitem.version_number}} created for {{taskitem.name}}, on {{task_item.created_on|date}}
+{% endblock %}

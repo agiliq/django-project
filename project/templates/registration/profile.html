@@ -1,0 +1,44 @@
+{% extends "registration/base.html" %}
+
+{% block title %}
+{{block.super}} - Profile
+{% endblock %}
+
+{% block contents %}
+<table>
+<thead>
+    <tr>
+        <td>
+            Project name
+        </td>
+        <td>
+            Group
+        </td>
+        <td>
+            Unsubscribe
+        </td>
+    </tr>
+</thead>
+{% for project in projects %}
+    <tr>
+        <td>
+            {{project.0.name}}
+        </td>
+        <td>
+            {{project.1}}
+        </td>
+        <td>
+            <form method="post" action=".">
+                <div>
+                    <input type="hidden" name="shortname" value="{{project.0.shortname}}" />
+                    <input type="submit" name="unsubscribe" value="unsubscribe" />
+                </div>
+            </form>
+        </td>
+    </tr>
+{% endfor %}
+</table>
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}

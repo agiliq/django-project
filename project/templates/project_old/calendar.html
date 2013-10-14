@@ -1,0 +1,52 @@
+{% extends 'project/base.html' %}
+
+{% block contents %}
+    <table class="calendar">
+    <thead>
+        <tr>
+            {% for day in weekheader %}
+            <td>
+                
+                {{day}}
+                
+            </td>
+            {% endfor %}
+        </tr>
+    </thead>
+   {% for week in month_dates %}
+    
+        <tr>
+        {% for day in week %}
+        <td>
+            {% if day.0 %}
+            <div class="date">
+            
+            {{day.0}}
+            </div>
+            {% endif %}
+        <div class="starttasks">
+        {% for task in  day.1 %}
+           <a href="{{task.get_absolute_url}}">{{task.name}}</a>
+        {% endfor %}
+        </div>
+        
+        <div class="endtasks">
+        {% for task in  day.2 %}
+           <a href="{{task.get_absolute_url}}">{{task.name}}</a>
+        {% endfor %}
+        </div>
+        
+        </td>
+        {% endfor %}
+        </tr>
+   {% endfor %}
+   </table>
+{% endblock %}
+
+{% block sidebar %}
+<ul>
+{% for month in month_data %}
+    <li><a href="{{month.href}}" class="monthname">    {{month.name}}</a></li>
+{% endfor %}
+</ul>
+{% endblock %}

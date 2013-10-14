@@ -1,0 +1,47 @@
+{% extends 'project/base.html' %}
+
+{% block title %}
+{{block.super}} - Noticeboard
+{% endblock %}
+
+
+{% block contents %}
+    <h2>Noticeboard</h2>
+    <ul>
+    {% for notice in notices %}
+        <div class={% cycle "noticeodd" "noticeeven" %}>
+	<li>
+        {{notice.text}}
+        <div class="info">
+            Put by {{notice.user.username}} on {{notice.created_on|date}} {{notice.created_on|time}}
+        </div>
+	</li>
+        </div>
+    {% endfor %}
+    </ul>
+    
+    <div id="noticeform">
+        <form action="." method="post">
+            {{addnoticeform.as_p}}
+            <input type="SUBMIT" name="addnotice" value="Add Notice" />
+        </form>
+    </div>
+    
+    <div id="pagination">
+        {% if page_data.has_next_page %}
+        <a href="./?page={{page_data.next_page}}">next</a>
+        {% endif %}
+        
+        {% if page_data.has_prev_page %}
+        <a href="./?page={{page_data.prev_page}}">prev</a>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block sidebar %}
+    You are viewing notices put for {{project.name}}.
+    There are {{notices.count}} notices.
+    {% if notices %}
+        The latest notice was put by {{notices.0.user.username}} on {{notices.0.created_on|date}}
+    {% endif %}
+{% endblock %}

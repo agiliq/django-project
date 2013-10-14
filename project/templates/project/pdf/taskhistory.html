@@ -1,0 +1,21 @@
+{% extends 'project/pdf/base.html' %}
+
+{% block contents %}
+    <h3>
+	{{task.name}}
+    </h3>
+    <ul>
+	
+    {% for version in task.get_old_versions %}
+	<li>
+	     <a href="{{version.revision_url}}">Version number {{version.version_number}} Versioned on {{version.effective_start_date}}</a>
+	    <input type="radio" name="version1" value="{{version.id}}" />
+	    <input type="radio" name="version2" value="{{version.id}}" />
+	    <pre>
+{{version.as_text}}
+	    </pre>
+	    
+	</li>
+    {% endfor %}
+    </ul>
+{% endblock %}

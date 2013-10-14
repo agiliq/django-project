@@ -1,0 +1,48 @@
+{% extends 'project/base.html' %}
+
+{% block title %}
+{{page.title}} - {{page.title}}
+{% endblock %}
+
+	{% block subnav %}
+                
+		<div class="subnav">	
+		 <a href="/dashboard/" class="dp-icon">Dashboard</a>  |  <a href="{{project.get_absolute_url}}">Project Details</a>  |  <a href="{{project.tasks_url}}">Tasks</a>  |  <a href="{{project.todo_url}}">Todo</a>  | 
+		 <a href="{{project.noticeboard_url}}">Noticeboard</a>  |  <a href="{{project.calendar_url}}">Calendar</a>  | <a href="{{project.wiki_url}}"   class="subnav_selected">Wiki</a> | <a href="{{project.files_url}}">Files</a>  |  <a href="{{project.metrics_url}}">Metrics</a>  |  <a href="{{project.logs_url}}">Logs</a>
+		</div>
+	{% endblock %}
+		
+		{% block contents %}
+		 <div class="contenttext">
+				<div class="curve"><p></p></div>
+				<div class="tblpad">
+					<div class="textcontent1">		
+										<div class="textpad"><h3 >{{page.title}}</h3>
+										{{page.current_revision.html_text|safe}}
+										</div>
+										<div class="textbottom">
+											<p><span>Last Modifeid by</span>  : {{page.current_revision.user.username}}  <span>on</span> {{page.current_revision.created_on|date}}</p>
+										</div>
+					</div>
+				</div>
+			</div>
+		{% endblock %}		
+		
+		{% block sidebar %}		
+		
+		<h3>Meta</h3>
+		<p class="totalproject">You are viewing {{page.name}}, a wiki page for {{project.name}}</p>
+    <ul>
+    <li><a href="/{{project.shortname}}/wiki/new/">Create new page</a></li>
+    <li><a href="{{page.edit_url}}">Edit this page</a></li>
+    <li><a href="{{page.version_url}}">See previous versions</a></li>
+    </ul>
+		
+		<h3>Revision</h3>
+		{% for rev in page.wikipagerevision_set.all %}
+	    <p>
+			<a href="{{rev.get_absolute_url}}">Version {{rev.version_number}} created on {{rev.created_on|date}}</a>
+			</p>
+    {% endfor %}
+	
+		{% endblock %}

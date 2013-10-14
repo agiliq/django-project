@@ -1,0 +1,42 @@
+{% extends 'project/base.html' %}
+
+{% block title %}
+{{block.super}} - Edit {{page.title}}
+{% endblock %}
+
+{% block jqueryarea %}
+    <script src="http://js.nicedit.com/nicEdit.js" type="text/javascript"></script>
+<script type="text/javascript">
+bkLib.onDomLoaded(nicEditors.allTextAreas);
+</script>
+{% endblock %}
+
+{% block innercontent %}
+	 <div id="wikiedit">
+	 <h3>
+	    Edit {{page.title}}
+	 </h3>
+	 <div class="createcontent">
+    <form method="post" action=".">
+        {{editform.as_p}}
+        <input type="submit" name="createpage" value="Edit Page" class="submitbutton" />
+    </form>
+		</div>
+		</div>
+{% endblock %}
+
+{% block sidebar %}
+   
+    <h3>revisions</h3>
+		<p class="sideblurb">
+		You are editing {{page.title}}, a wiki page for {{project.name}}
+		</p>
+    <ul>
+    {% for rev in page.wikipagerevision_set.all %}
+	<li>
+	    <a href="{{rev.get_absolute_url}}">{{rev.created_on}}</a>
+	</li>
+    {% endfor %}
+    </ul>   
+   
+{% endblock %}

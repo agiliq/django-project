@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>
+{% block title %}
+Dash Bard
+{% endblock %}
+</title>
+<link href="/site_media/style.css" type="text/css" rel="stylesheet" />
+</head>
+
+<body>
+
+<div id="container">
+	<div id="header">
+		{% block topheader %}
+		<div id="logo">
+		<img src="/site_media/images/logo.gif" alt="" /></div>
+		<div class="icon"></div>
+		{% endblock %}		
+	</div>
+	<div id="subheader">
+		{% block subheader %}
+		<div class="sub_header">
+		</div>
+		{% endblock %}
+		
+	
+	</div>
+  <div id="content" style="height:300px;">
+	{% block contents %}
+	<div class="password">
+			<h3>Lost username or password?</h3>
+			<div class="createcontent">
+				<form action="">
+					<p><label>Enter email address:</label><input name="" type="text" class="input help" title="required" /></p>
+					
+					<input name="" type="button" value="Submit" class="submitbutton" />
+				</form>
+			</div>
+			
+			<p style="padding-left:110px; margin-top:30px;"><span style="font-size:15px;">Don't have a Account yet ?</span><br />
+<span style="font-size:13px;">Signing up is easy.</span></p>
+<p style="font-size:14px; text-align:right; padding-right:10px"><a href="#">Sign Up</a></p>
+	</div>
+	{% endblock contents %}
+	</div>
+	
+<div id="footer">
+{% block footer %}
+<p class="footerlink"><a href="#">Home</a> | <a href="#">Contact</a> | <a href="#">Terms</a> | <a href="#">Links</a> | <a href="#">Privacy</a> | <a href="#">Site Map</a></p>
+<p style="margin:0px;">Powered By webfactional .Copyright 2007. webfactional.com</p>
+{% endblock footer %}
+</div>
+
+</div>
+</body>
+</html>

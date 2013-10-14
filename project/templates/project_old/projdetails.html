@@ -1,0 +1,158 @@
+{% extends 'project/base.html' %}
+
+{% block title %}
+{{block.super}} - Project details
+{% endblock %}
+
+{% block includes %}
+    <link rel="stylesheet" href="/site_media/css/flora.datepicker.css" type="text/css" media="screen" title="Flora (Default)" />
+    <script type="text/javascript" src="/site_media/js/jquery.js"></script>
+    <script type="text/javascript" src="/site_media/js/jquery.validate.js"></script>
+    <script type="text/javascript" src="/site_media/js/ui.datepicker.js"></script>
+    <script type="text/javascript" src="/site_media/js/jquery.cookie.js"></script>
+    <script type="text/javascript" src="/site_media/js/prajact.js"></script>
+{% endblock %}
+
+{% block jqueryarea %}
+<script type="text/javascript" src="/site_media/js/projectdetails.js"></script>
+{% endblock %}
+
+{% block contents %}
+    <h2>{{project.name}}</h2>
+    
+    {% if new_tasks %}
+    <h3>Recent tasks</h3>
+    <table>
+        <thead>
+            <tr>
+            <td>Task
+            </td>
+            <td>Expected Start Date
+            </td>
+            <td>
+                Expected End Date
+            </td>
+            <td>
+                User Responsible
+            </td>
+            <td>
+                Details
+            </td>
+            <td>
+                Edit
+            </td>
+            <td>
+                Mark Done
+            </td>
+            <td>
+                Delete
+            </td>
+            </tr>
+        </thead>
+        
+    {% for task in new_tasks %}
+        <tbody class="recenttasks">
+        {% include 'project/taskrow.html' %}
+        </tbody>
+    {% endfor %}
+        
+    </table>
+    {% endif %}
+    
+    {% if overdue_tasks %}
+    <h3>Overdue tasks</h3>
+    <table>
+        <thead>
+            <tr>
+            <td>Task
+            </td>
+            <td>Expected Start Date
+            </td>
+            <td>
+                Expected End Date
+            </td>
+            <td>
+                User Responsible
+            </td>
+             <td>
+                Details
+            </td>
+            <td>
+                Edit
+            </td>
+            <td>
+                Mark Done
+            </td>
+            <td>
+                Delete
+            </td> 
+            </tr>
+        </thead>
+        
+    {% for task in overdue_tasks %}
+        <tbody>
+        {% include 'project/taskrow.html' %}
+        </tbody>
+    {% endfor %}
+        
+    </table>
+    {% endif %}   
+    
+    <h3>Details for:</h3>
+    <ul>
+        
+        {% for user in project.subscribeduser_set.all %}
+        <li>
+          <a href="{{user.get_absolute_url}}">{{user.user.username}}</a>
+        </li>
+        {% endfor %}
+    </ul>
+    
+    <div id="inviteform">
+        <form action="." method="post">
+            <fieldset>
+                <legend class="collapasble">Invite a User</legend>
+            {{inviteform.as_p}}
+            <input type="submit" name="invite" value="Invite User" />
+            </fieldset>
+        </form>
+    </div>
+    <div id="taskform">
+        <form action="." method="post">
+            <fieldset>
+                <legend class="collapasble">Add a task</legend>
+            {{taskform.as_p}}
+            <input type="submit" name="task" value="Add a task" />
+            </fieldset>
+        </form>
+    </div>
+
+{% endblock %}
+
+{% block sidebar %}
+    <h3>Actions</h3>
+    <ul>
+    <li><a href="#" id="taskshow">Add a task</a></li>
+    <li><a href="#" id="inviteshow">Invite a user</a></li>
+    </ul>
+    
+    <h3>Meta</h3>
+    <ul>
+      <li><a href="{{project.quicktasks_url}}">Tasks Quick Entry</a></li>
+      <li><a href="{{project.quicktaskitems_url}}">Task Items Quick Entry</a></li>
+    </ul>
+    You are looking at details for project {{project.name}}.
+    This project has {{project.task_set.all.count}} tasks.
+    {% if project.invited_users %}
+    <div>
+        <h3>Pending users.</h3>
+        <ul>
+        {% for user in project.invited_users %}
+           <li> {{user.user.username}}</li>
+        {% endfor %}
+        </ul>
+        
+        
+    </div>
+    {% endif %}  
+{% endblock %}

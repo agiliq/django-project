@@ -1,0 +1,112 @@
+{% extends 'project/base.html' %}
+
+{% block feeds %}
+{% endblock %}
+
+{% block jqueryarea %}
+<script>
+ $(document).ready(function() {
+   $('.projstatus').change(function(){
+        return false;
+   });
+    });
+
+ </script>
+{% endblock %}
+
+{% block title %}
+   Dashboard
+{% endblock %}
+
+            {% block tabs %}
+            <ul>
+                <li>
+                    <a href="/dashboard/">Dashboard</a>
+                </li>
+            </ul>
+            {% endblock %}
+
+{% block contents %}
+    <h2>Your Projects</h2>
+    
+    <ul>
+    {% for sub in subs %}
+        <li>
+        <h3><a href="{{sub.project.get_absolute_url}}">{{sub.project.name}}</a></h3>
+        <form action="." method="post">
+            <label>Active</label>
+            <input type="hidden" name="projectid" value="{{sub.project.id}}" />
+            {% if sub.project.is_active %}
+            <input type="hidden" name="activestatus" value="true" />
+            <input type="checkbox" name="inactivate" value="" onchange="submit()" checked="checked" class="projstatus" />
+            {% else %}
+            <input type="hidden" name="activestatus" value="false" />
+            <input type="checkbox" name="activate" value="" onchange="submit()" class="projstatus" />
+            {% endif %}
+        </form>
+        {% if sub.project.overdue_tasks %}
+            <h4>Critical Tasks</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <td>
+                            Task
+                        </td>
+                        <td>
+                            Was due on
+                        </td>
+                    </tr>
+                </th>
+            {% for task in sub.project.overdue_tasks %}
+                <tbody>
+                <tr class={% cycle "odd" "even" %}>
+                    <td><a href="{{task.get_absolute_url}}">{{task.name}}</a></td>
+                    <td>{{task.expected_end_date|date}}</a></td>
+                </tr>
+                </tbody>
+            {% endfor %}
+            </table>
+        {% endif %}
+        </li>
+    {% endfor %}
+    </ul>
+    
+    {% if invites %}
+        <h2>Pending Invites</h2>
+        <ul>
+        {% for invite in invites %}
+            <li>
+                {{invite.project.name}}
+                <form action="." method="post">
+                <input type="hidden" name="projid" value={{invite.project.id}} />
+                <input type="hidden" name="invid" value={{invite.id}} />
+                <input type="SUBMIT" name="acceptinv" value="Accept" />
+                </form>
+            </li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    
+    <div id="createprojectform">
+        <fieldset>
+            <legend>
+                Create a new project.
+            </legend>
+        <form action="." method="POST">
+            <div id="formfield">
+            {{createform.as_p}}
+            <input type="SUBMIT" name="createproject" value="Create new project" id="createproject" />
+            </div>
+        </form>
+        </fieldset>
+    </div>
+{% endblock %}
+
+
+{% block sidebar %}
+    <h3>Meta</h3>
+    <ul>
+        <li><a href="./?includeinactive=1">Show inactive projects</a></li>
+    </ul>
+   Your dashboard has {{subs.count}} projects.
+{% endblock %}

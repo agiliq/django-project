@@ -1,0 +1,47 @@
+{% extends 'project/base.html' %}
+
+{% block innercontent %}
+<div class="sintable">
+<table>
+
+<thead>
+<tr>
+<td>User</td>
+<td>Unsubscribe</td>
+<td>Change Permisson</td>
+</tr>
+</thead>
+{% for user in project.subscribeduser_set.all %}
+<tr>
+
+   <td>{{user.user.username}}</td>
+	 <td>
+	 <form action="."  method="post">
+	 <input type="submit" name="remove" value="Unsubscribe" />
+	 <input type="hidden" name="user" value="{{user.user.username}}" />
+	 </form>
+	 </td>
+	 <td>
+	 <form action="."  method="post">
+  <label for="id_group">Group:</label> <select id="id_group" class="required" name="group">
+  <option value="Owner" {% ifequal user.group 'Owner' %}selected="selected"{% endifequal %}>Owner</option>
+  <option value="Participant" {% ifequal user.group 'Participant' %}selected="selected"{% endifequal %}>Participant</option>
+  
+  <option value="Viewer" {% ifequal user.group 'Viewer' %}selected="selected"{% endifequal %}>Viewer</option>
+  </select>
+	 <input type="submit" name="chgroup" value="Change group" />
+	 <input type="hidden" name="user" value="{{user.user.username}}" />
+	 </form>
+	 </td>
+	 
+	 
+</tr>	
+{% endfor %}
+</table>
+</div>
+{% endblock %}
+
+{% block sidebar %}
+<h3>About</h3>
+<p>You are viewing settings for project {{project.name}}</p>
+{% endblock %}

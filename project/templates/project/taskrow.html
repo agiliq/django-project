@@ -1,0 +1,71 @@
+  <tr class="{% cycle "" "tdbggrey" %} taskrow">
+    <td width="19%" class="projectname1"  >
+		<a class="showtaskdetails" href="#">{{task.name}}</a>   
+		</td>
+    <td width="16%">
+		 {{task.expected_start_date|date}} 
+		 </td>
+    <td width="16%"> 
+		{{task.expected_end_date|date}} 
+		</td>
+	  <td width="16%">
+		 {{task.user_responsible}}
+		 </td>
+    <td width="8%" >
+		<a href="{{task.get_absolute_url}}">Details</a>
+		 </td>
+	<td width="6%" >
+					<a href="{{task.edit_url}}">
+                <img src="/site_media/images/edit.png" alt="edit" />
+                
+            </a>
+	</td>
+    <td width="10%" >
+		<form action="." method="post" id="markdone-{{task.id}}" class="markdone">
+		<div>
+            {% if task.is_complete %}
+                <input type="hidden" name="taskid" value="{{task.id}}" />
+		<input type="hidden" name="markundone" value="markundone" />
+		<input type="checkbox" name="markundone_check" value="{{task.is_complete}}" checked="checked" onclick="this.form.submit();" />
+            
+            {% else %}
+                <input type="hidden" name="taskid" value="{{task.id}}" />
+		<input type="checkbox" name="markdone" value="{{task.is_complete}}" onclick="this.form.submit();"/>         
+            {% endif %}
+		</div>
+    </form> 
+		</td>
+	<td width="9%" >
+            <form action="." method="post" id="deletetask-{{task.id}}" class="deletetask">
+		<div>
+                <input type="hidden" name="taskid" value="{{task.id}}" />
+                <input type="hidden" name="deletetask" value="deletetask" />								
+                <input type="image" src="/site_media/images/x-icon.gif" name="deletetask" value="Delete" />
+		</div>
+            </form>	
+	</td>
+	
+  </tr>
+	
+	            <tr class="taskrowdetail">
+                <td>Actual start date</td>
+                <td>
+								{% if task.actual_start_date %}
+								{{task.actual_start_date|date}}
+								{% else %}
+								No date specified
+								{% endif %}
+								
+								</td>
+            </tr>
+            <tr class="taskrowdetail">
+                <td>Actual end date</td>
+                <td>
+								{% if task.actual_end_date %}								
+								{{task.actual_end_date|date}}
+								{% else %}
+								No date specified
+								{% endif %}
+								
+								</td>
+            </tr>

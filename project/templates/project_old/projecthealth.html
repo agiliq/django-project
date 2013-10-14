@@ -1,0 +1,101 @@
+{% extends 'project/base.html' %}
+
+{% block title %}
+{{block.super}} - Metrics
+{% endblock %}
+
+
+{% block contents %}
+    <div id="projectinfo">
+        {{project.name}} has {{num_tasks}} tasks with {{num_taskitems}} task items, and {{num_tasks_complete}} tasks are complete.
+        The total effort required is {{time_str}} and  {{time_str_complete}} work has been completed.
+        
+    </div>
+    
+    <div id="graphs">
+        <div class="graph">
+            <img src="{{task_chart_url}}" alt="Task chart" />
+            <br />
+            Total tasks: {{num_tasks}}
+            Tasks complete: {{num_tasks_complete}}
+        </div>
+        <div class="graph">
+            <img src="{{deadl_chart_url}}" alt="Deadline status chart" />
+            <br />
+            Total tasks: {{num_tasks}}
+            Missed deadlines: {{num_deadline_miss}}
+        </div>
+        item_chart_url
+        <div class="graph">
+            <img src="{{item_chart_url}}" alt="Taskitem status chart" />
+            <br />
+            Total tasksitems: {{num_taskitems}}
+            Extra hours: {{num_extra_hours}}
+        </div>
+    </div>
+    
+    <div id="monthlyview">
+        {% if start_month %}
+            <h3>Tasks staring this month</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <td>
+                            Month
+                        </td>
+                        <td>
+                            Starting this month.
+                        </td>
+                    </tr>
+                </thead>
+            {% for monthview in start_month %}
+                <tr>
+                <td>
+                    {{monthview.0}} {{monthview.1}}
+                </td>
+                <td>
+                    {{monthview.2}}
+                </td>
+                </tr>
+            {% endfor %}
+            </table>
+        {% endif %}
+        
+        {% if end_month %}
+            <h3>Tasks ending this month</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <td>
+                            Month
+                        </td>
+                        <td>
+                            Ending this month.
+                        </td>
+                    </tr>
+                </thead>
+            {% for monthview in end_month %}
+                <tr>
+                <td>
+                    {% if monthview.0 %}
+                    {{monthview.0}} {{monthview.1}}
+                    {% else %}
+                    Not specified
+                    {% endif %}
+                </td>
+                <td>
+                    {{monthview.2}}
+                </td>
+                </tr>
+            {% endfor %}
+            </table>
+        {% endif %}        
+    </div>
+    
+    
+    
+{% endblock %}
+
+{% block sidebar %}
+  You are looking at the metrics for {{project.name}}.
+{% endblock %}

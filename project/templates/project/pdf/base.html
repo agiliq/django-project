@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+      <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+        
+<head>
+    <title>
+        {% block title1 %}
+         {{project.name}}
+        {% endblock %}
+    </title>
+		<style>
+		thead{
+		font: 110% bold;
+		}
+		.pdftitle{
+		  background-color: black;
+			color: white;
+			font: 130% bold;
+			padding: 1px 1px 1px 1px
+		}
+		</style>
+</head>
+
+<body class="tundra">
+    
+		<div class="pdftitle">
+		<img src="http://shabda.tld:8000/site_media/images/logo.gif" alt="" />
+		{% block title %}
+         {{project.name}}
+     {% endblock %}
+		 </div>
+		
+    <div id="main">
+        <div id="content">
+            {% block contents %}
+            {% endblock %}            
+        </div>
+        <div id="sidebar">
+            {% block sidebar %}
+            <h3>
+                {{project.name}}
+            </h3>
+            {% endblock %}                       
+        </div>
+    </div>
+    
+</body>
+</html>
