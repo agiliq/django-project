@@ -9,6 +9,7 @@
 		<h2>Join Now! It's quick and easy.</h2>
 			<div class="textcontent register">
 			<form action="." method="post">
+				{% csrf_token %}
 				{{form.as_p}}
 				<input name="Submit" type="submit" class="button" value="Register" />				
 			</form>

@@ -21,6 +21,7 @@
 			<h3>Login</h3>
 			<div class="createcontent">
 				<form method="post" action=".">
+          {% csrf_token %}
 
     {{form.as_p}}
     <input type="hidden" name="next" value="{{ next }}" />

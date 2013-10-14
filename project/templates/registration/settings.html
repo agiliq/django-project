@@ -16,6 +16,7 @@
 <h3>Change password</h3>
 <div class="createcontent" >
 <form action="." method="post">
+	{% csrf_token %}
 {{passch_form.as_p}}
 <input type="submit" name="changepass" value="Change Password" class="submitbtn"/>
 </form>

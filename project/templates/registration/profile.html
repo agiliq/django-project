@@ -29,6 +29,7 @@
         </td>
         <td>
             <form method="post" action=".">
+                {% csrf_token %}
                 <div>
                     <input type="hidden" name="shortname" value="{{project.0.shortname}}" />
                     <input type="submit" name="unsubscribe" value="unsubscribe" />
