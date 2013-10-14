@@ -12,10 +12,7 @@
             </a></td>
             <td class="taskcontrol">
             <form action="." method="post" id="markdone-{{task.id}}" class="markdone">
-<<<<<<< HEAD
                 {% csrf_token %}
-=======
->>>>>>> 8e01a46447ed03195ef99988162c0dc97bbca7af
 		<div>
             {% if task.is_complete %}
                 <input type="hidden" name="taskid" value="{{task.id}}" />
@@ -31,10 +28,7 @@
             </td>            
             <td class="taskcontrol">
             <form action="." method="post" id="deletetask-{{task.id}}" class="deletetask">
-<<<<<<< HEAD
                 {% csrf_token %}
-=======
->>>>>>> 8e01a46447ed03195ef99988162c0dc97bbca7af
 		<div>
                 <input type="hidden" name="taskid" value="{{task.id}}" />
                 <input type="image" src="/site_media/images/delete.png" name="deletetask" value="Delete" />

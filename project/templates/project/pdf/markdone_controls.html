@@ -1,9 +1,6 @@
 	    <td class="taskcontrol">
             <form action="." method="post" id="markdone-{{task.id}}" class="markdone">
-<<<<<<< HEAD
                 {% csrf_token %}
-=======
->>>>>>> 8e01a46447ed03195ef99988162c0dc97bbca7af
             {% if task.is_complete %}
                 <input type="hidden" name="taskid" value="{{task.id}}" />
 		<input type="hidden" name="markundone" value="markundone" />

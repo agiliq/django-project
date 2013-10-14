@@ -1,20 +1,14 @@
 	    <td>
             {% if item.is_complete %}
             <form action="." method="post">
-<<<<<<< HEAD
                 {% csrf_token %}
-=======
->>>>>>> 8e01a46447ed03195ef99988162c0dc97bbca7af
                 <input type="hidden" name="taskitemid" value="{{item.id}}" />
 		<input type="hidden" name="itemmarkundone" value="markundone" />
 		<input type="checkbox" name="itemmarkundone_check" value="{{item.is_complete}}" checked="checked" onchange="submit()" />
             </form>
             {% else %}
             <form action="." method="post">
-<<<<<<< HEAD
                 {% csrf_token %}
-=======
->>>>>>> 8e01a46447ed03195ef99988162c0dc97bbca7af
                 <input type="hidden" name="taskitemid" value="{{item.id}}" />
 		<input type="checkbox" name="itemmarkdone" value="{{item.is_complete}}" onchange="submit()"/>
             </form>            
