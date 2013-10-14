@@ -549,8 +549,11 @@ class LoginForm(forms.Form):
     
     def clean(self):
         try:
-            user = User.objects.get(username__iexact = self.cleaned_data['username'])
-        except User.DoesNotExist, KeyError:
+            try:
+                user = User.objects.get(username__iexact = self.cleaned_data['username'])
+            except KeyError:
+                raise forms.ValidationError('Please provide a username.')
+        except User.DoesNotExist:
             raise forms.ValidationError('Invalid username, please try again.')
         
         if not user.check_password(self.cleaned_data['password']):

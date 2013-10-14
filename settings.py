@@ -2,15 +2,41 @@ import os
 from unipath import Path
 SITE_PATH = Path(__file__).ancestor(1)
 
+DEBUG = True
+TEMPLATE_DEBUG = DEBUG
+
+
+ADMINS = (
+    # ('Your Name', 'your_email@domain.com'),
+)
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'django_project.db',                      # Or path to database file if using sqlite3.
+        # The following settings are not used with sqlite3:
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+        'PORT': '',                      # Set to empty string for default.
+    }
+}
+
+MANAGERS = ADMINS
+
+# Make this unique, and don't share it with anybody.
+SECRET_KEY = 'aadsfrewqsghfsdjaskdljsakl'
+
+# Local time zone for this installation. Choices can be found here:
+# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
+# although not all choices may be available on all operating systems.
+# If running in a Windows environment this must be set to the same as your
+# system time zone.
+TIME_ZONE = 'America/Chicago'
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = []
-TIME_ZONE = 'America/Chicago'
-
-# Language code for this installation. All choices can be found here:
-# http://www.i18nguy.com/unicode/language-identifiers.html
-TIME_ZONE = 'America/Chicago'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -27,7 +53,6 @@ USE_I18N = True
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
 ADMIN_MEDIA_PREFIX = '/media/'
-
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
         'django.template.loaders.filesystem.Loader',
@@ -139,8 +164,3 @@ PERSISTENT_SESSION_KEY = 'persistant'
 REDIRECT_FIELD_NAME = "next"
 
 ACCOUNT_ACTIVATION_DAYS=7
-
-try:
-    from localsettings import *
-except ImportError:
-    print "There is no file called localsettings to import !!!!"
