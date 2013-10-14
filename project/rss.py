@@ -37,5 +37,4 @@ def proj_feed(request, url, feed_dict=None):
     project_name = param
     project = get_project(request, project_name)
     return feed_view(request, url, feed_dict)
-    
 

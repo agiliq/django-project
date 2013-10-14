@@ -23,7 +23,6 @@ SITE_ID = 1
 USE_I18N = True
 
 
-
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
@@ -80,12 +79,6 @@ STATIC_ROOT = ''
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
 STATIC_URL = '/static/'
-
-TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-)
 
 INSTALLED_APPS = (
     'django.contrib.auth',

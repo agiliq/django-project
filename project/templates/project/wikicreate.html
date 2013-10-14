@@ -16,6 +16,7 @@ bkLib.onDomLoaded(nicEditors.allTextAreas);
 	 <h3>Create a page</h3>
 	 <div class="createcontent">
     <form method="post" action=".">
+        {% csrf_token %}
         {{wikiform.as_p}}
         <input type="submit" name="save" value="Create Page" class="submitbutton" />
     </form>

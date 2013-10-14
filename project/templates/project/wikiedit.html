@@ -18,6 +18,7 @@ bkLib.onDomLoaded(nicEditors.allTextAreas);
 	 </h3>
 	 <div class="createcontent">
     <form method="post" action=".">
+    	{% csrf_token %}
         {{editform.as_p}}
         <input type="submit" name="createpage" value="Edit Page" class="submitbutton" />
     </form>
