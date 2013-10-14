@@ -1,0 +1,7 @@
+*.pyc
+*.log
+*.temp
+*secrets.py
+*secret.py
+*.*~
+*.db
