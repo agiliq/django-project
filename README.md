@@ -1,4 +1,4 @@
-
+[![Build Status](https://travis-ci.org/agiliq/django-project.png?branch=master)](https://travis-ci.org/agiliq/django-project)
 
 Dashbard is a tool to manage and track your projects and it will help you get the most out of your projects.
 
